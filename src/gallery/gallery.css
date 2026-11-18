@@ -1,0 +1,365 @@
+/* ============================================================
+   Gallery root
+   ============================================================ */
+.gr-root {
+  position: fixed;
+  inset: 0;
+  background: #14100c;
+  overflow: hidden;
+  overscroll-behavior: none;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  color: #ece4d6;
+}
+
+.gr-root canvas {
+  display: block;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.gr-root button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.gr-root button:focus-visible {
+  outline: 2px solid #d4af37;
+  outline-offset: 2px;
+}
+
+/* ============================================================
+   Desktop keyboard hints
+   ============================================================ */
+.gr-hints {
+  position: absolute;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 16px;
+  padding: 8px 18px;
+  background: rgba(20, 16, 12, 0.72);
+  border: 1px solid rgba(212, 175, 110, 0.28);
+  border-radius: 3px;
+  backdrop-filter: blur(6px);
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  color: #d9cfbd;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.gr-hints kbd {
+  font: inherit;
+  font-weight: 600;
+  color: #e8c98a;
+  border: 1px solid rgba(212, 175, 110, 0.4);
+  border-radius: 3px;
+  padding: 1px 5px;
+  margin-right: 3px;
+}
+
+.gr-hints kbd + kbd {
+  margin-right: 6px;
+}
+
+/* ============================================================
+   Information panel — desktop side panel
+   ============================================================ */
+.gr-scrim {
+  display: none;
+}
+
+.gr-panel {
+  position: absolute;
+  top: 50%;
+  right: 26px;
+  transform: translateY(-50%);
+  width: min(380px, 32vw);
+  max-height: 82vh;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(160deg, rgba(26, 21, 16, 0.97), rgba(16, 13, 10, 0.97));
+  border: 1px solid rgba(212, 175, 110, 0.35);
+  border-radius: 4px;
+  box-shadow: 0 14px 44px rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(8px);
+  z-index: 30;
+  animation: gr-panel-in 0.22s ease-out;
+}
+
+@keyframes gr-panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(-50%) translateX(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(-50%) translateX(0);
+  }
+}
+
+.gr-panel-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 22px 22px 16px;
+  border-bottom: 1px solid rgba(212, 175, 110, 0.22);
+}
+
+.gr-panel-title {
+  min-width: 0;
+}
+
+.gr-name {
+  margin: 0;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: #f3e8d2;
+}
+
+.gr-years {
+  margin: 6px 0 0;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-style: italic;
+  font-size: 14px;
+  color: #c8a86a;
+}
+
+.gr-close {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  background: rgba(212, 175, 110, 0.08);
+  border: 1px solid rgba(212, 175, 110, 0.4);
+  border-radius: 3px;
+  color: #ecd9b0;
+  font-size: 22px;
+  line-height: 1;
+  transition: background 0.15s ease;
+}
+
+.gr-close:hover {
+  background: rgba(212, 175, 110, 0.2);
+}
+
+.gr-panel-body {
+  padding: 18px 22px;
+  overflow-y: auto;
+}
+
+.gr-portrait {
+  display: block;
+  width: 100%;
+  height: 200px;
+  object-fit: contain;
+  background: #14100c;
+  border: 1px solid rgba(212, 175, 110, 0.25);
+  border-radius: 3px;
+}
+
+.gr-index {
+  margin-top: 14px;
+  font-size: 12px;
+  color: rgba(236, 228, 214, 0.5);
+}
+
+.gr-panel-foot {
+  padding: 14px 22px 20px;
+  border-top: 1px solid rgba(212, 175, 110, 0.18);
+}
+
+.gr-continue {
+  width: 100%;
+  min-height: 44px;
+  background: linear-gradient(180deg, #d4af37, #b98f2e);
+  border: none;
+  border-radius: 3px;
+  color: #241a10;
+  font-size: 15px;
+  font-weight: 600;
+  transition: filter 0.15s ease;
+}
+
+.gr-continue:hover {
+  filter: brightness(1.08);
+}
+
+/* ============================================================
+   Mobile controls
+   ============================================================ */
+.gr-mobile {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 20;
+}
+
+.gr-back,
+.gr-reset {
+  position: absolute;
+  top: max(14px, env(safe-area-inset-top));
+  min-height: 44px;
+  padding: 10px 16px;
+  background: rgba(24, 19, 14, 0.82);
+  border: 1px solid rgba(212, 175, 110, 0.45);
+  border-radius: 4px;
+  color: #ecd9b0;
+  font-size: 15px;
+  pointer-events: auto;
+}
+
+.gr-back {
+  left: max(14px, env(safe-area-inset-left));
+}
+
+.gr-reset {
+  right: max(14px, env(safe-area-inset-right));
+}
+
+.gr-joystick {
+  position: absolute;
+  left: 22px;
+  bottom: calc(26px + env(safe-area-inset-bottom));
+  width: 128px;
+  height: 128px;
+  border-radius: 50%;
+  background: rgba(24, 19, 14, 0.55);
+  border: 1.5px solid rgba(212, 175, 110, 0.45);
+  pointer-events: auto;
+  touch-action: none;
+  transition: opacity 0.2s ease;
+}
+
+.gr-joystick.gr-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.gr-knob {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #e8c98a, #a9803f);
+  border: 1px solid rgba(255, 240, 210, 0.6);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+}
+
+.gr-joy-label {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -24px;
+  text-align: center;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(233, 214, 177, 0.75);
+}
+
+.gr-mobile-hint {
+  position: absolute;
+  right: 18px;
+  bottom: calc(34px + env(safe-area-inset-bottom));
+  max-width: 150px;
+  margin: 0;
+  text-align: right;
+  font-size: 12px;
+  line-height: 1.5;
+  color: rgba(226, 214, 192, 0.75);
+}
+
+/* ============================================================
+   Mobile layout — designed separately, not a shrunken desktop
+   ============================================================ */
+@media (max-width: 820px) {
+  .gr-hints {
+    display: none;
+  }
+
+  .gr-scrim {
+    display: block;
+    position: absolute;
+    inset: 0;
+    background: rgba(10, 8, 6, 0.45);
+    z-index: 25;
+  }
+
+  .gr-panel {
+    top: auto;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    transform: none;
+    width: auto;
+    max-height: 60svh;
+    border-radius: 14px 14px 0 0;
+    border-left: none;
+    border-right: none;
+    border-bottom: none;
+    z-index: 30;
+    padding-bottom: env(safe-area-inset-bottom);
+    animation: gr-sheet-in 0.24s ease-out;
+  }
+
+  @keyframes gr-sheet-in {
+    from {
+      transform: translateY(24px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  .gr-panel-head {
+    padding: 18px 20px 14px;
+  }
+
+  .gr-name {
+    font-size: 22px;
+  }
+
+  .gr-close {
+    width: 44px;
+    height: 44px;
+  }
+
+  .gr-panel-body {
+    padding: 16px 20px;
+  }
+
+  .gr-portrait {
+    height: 150px;
+  }
+
+  .gr-panel-foot {
+    padding: 12px 20px 16px;
+  }
+
+  .gr-mobile-hint {
+    max-width: 130px;
+    font-size: 11px;
+  }
+}
+
+/* ============================================================
+   Accessibility
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  .gr-panel {
+    animation: none;
+  }
+}
