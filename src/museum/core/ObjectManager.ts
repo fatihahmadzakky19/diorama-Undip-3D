@@ -26,6 +26,14 @@ export interface ObstacleBox {
  */
 export class ObjectManager {
   private group: THREE.Group
+  private zone1Group: THREE.Group
+  private zone1Targets: InteractiveTarget[] = []
+  private zone1Obstacles: ObstacleBox[] = []
+
+  private zone2Group: THREE.Group
+  private zone2Targets: InteractiveTarget[] = []
+  private zone2Obstacles: ObstacleBox[] = []
+
   private assetManager: AssetManager
   private interactiveTargets: InteractiveTarget[] = []
   private obstacleBoxes: ObstacleBox[] = []
@@ -35,10 +43,25 @@ export class ObjectManager {
   private labelMaterialCache = new Map<string, THREE.MeshStandardMaterial>()
 
   constructor() {
-    this.group = new THREE.Group()
-    this.group.name = 'ObjectGroup'
     this.assetManager = AssetManager.getInstance()
+
+    // Build Zone 1 objects
+    this.zone1Group = new THREE.Group()
+    this.zone1Group.name = 'Zone1ObjectGroup'
+    this.group = this.zone1Group
+    this.interactiveTargets = this.zone1Targets
+    this.obstacleBoxes = this.zone1Obstacles
     this.buildAllObjects()
+
+    // Build Zone 2 objects
+    this.zone2Group = new THREE.Group()
+    this.zone2Group.name = 'Zone2ObjectGroup'
+    this.buildZone2Objects()
+
+    // Backwards compatibility: default group is zone1Group
+    this.group = this.zone1Group
+    this.interactiveTargets = this.zone1Targets
+    this.obstacleBoxes = this.zone1Obstacles
   }
 
   public getGroup(): THREE.Group {
@@ -51,6 +74,30 @@ export class ObjectManager {
 
   public getObstacles(): ObstacleBox[] {
     return this.obstacleBoxes
+  }
+
+  public getZone1Group(): THREE.Group {
+    return this.zone1Group
+  }
+
+  public getZone1Targets(): InteractiveTarget[] {
+    return this.zone1Targets
+  }
+
+  public getZone1Obstacles(): ObstacleBox[] {
+    return this.zone1Obstacles
+  }
+
+  public getZone2Group(): THREE.Group {
+    return this.zone2Group
+  }
+
+  public getZone2Targets(): InteractiveTarget[] {
+    return this.zone2Targets
+  }
+
+  public getZone2Obstacles(): ObstacleBox[] {
+    return this.zone2Obstacles
   }
 
   public triggerBookPageTurn(): void {
@@ -616,17 +663,770 @@ export class ObjectManager {
     this.group.add(wallDocs)
   }
 
-  public dispose(): void {
-    this.group.traverse((obj) => {
-      if (obj instanceof THREE.Mesh) {
-        obj.geometry.dispose()
-        if (Array.isArray(obj.material)) obj.material.forEach((m) => m.dispose())
-        else obj.material.dispose()
-      }
+  // =========================================================================
+  // ZONA 2 OBJECT BUILDERS — THE GROWTH OF KNOWLEDGE
+  // =========================================================================
+
+  private buildZone2Objects(): void {
+    this.buildZone2CentralMiniature()
+    this.buildZone2FacultyDevelopment()
+    this.buildZone2CampusTransformation()
+    this.buildZone2EducationResearch()
+    this.buildZone2AcademicAchievements()
+    this.buildZone2AtmosphereProps()
+  }
+
+  // 1. CENTRAL EXHIBITION: 3D Miniature Table of Campus Transformation
+  private buildZone2CentralMiniature(): void {
+    const miniGroup = new THREE.Group()
+    miniGroup.position.set(0, 0, 0)
+
+    const walnutMat = new THREE.MeshStandardMaterial({ color: 0x241a13, roughness: 0.52, metalness: 0.04 })
+    const brassMat = new THREE.MeshStandardMaterial({ color: 0x8c6f48, roughness: 0.35, metalness: 0.65 })
+    const limestoneMat = new THREE.MeshStandardMaterial({ color: 0xded6c9, roughness: 0.85 })
+    const terracottaMat = new THREE.MeshStandardMaterial({ color: 0x803822, roughness: 0.72 })
+    const roofDarkMat = new THREE.MeshStandardMaterial({ color: 0x48281a, roughness: 0.65 })
+    const waterMat = new THREE.MeshStandardMaterial({ color: 0x244448, roughness: 0.18, metalness: 0.1 })
+    const treeGreen = new THREE.MeshStandardMaterial({ color: 0x2e3d24, roughness: 0.85 })
+    const treeDark = new THREE.MeshStandardMaterial({ color: 0x212f1a, roughness: 0.85 })
+    const trunkMat = new THREE.MeshStandardMaterial({ color: 0x2a1c12, roughness: 0.75 })
+
+    // Display Table (3.4m x 2.2m x 0.85m)
+    const tableTop = new THREE.Mesh(new THREE.BoxGeometry(3.4, 0.1, 2.2), walnutMat)
+    tableTop.position.y = 0.80
+    tableTop.castShadow = true
+    tableTop.receiveShadow = true
+    miniGroup.add(tableTop)
+
+    // Brass edge molding around table top
+    const tableRim = new THREE.Mesh(new THREE.BoxGeometry(3.44, 0.04, 2.24), brassMat)
+    tableRim.position.y = 0.84
+    miniGroup.add(tableRim)
+
+    // Stepped plinth base
+    const plinth = new THREE.Mesh(new THREE.BoxGeometry(3.6, 0.12, 2.4), walnutMat)
+    plinth.position.y = 0.06
+    plinth.receiveShadow = true
+    miniGroup.add(plinth)
+
+    // 4 square turned table legs
+    const legGeo = new THREE.BoxGeometry(0.16, 0.74, 0.16)
+    const legPositions = [
+      [-1.5, 0.43, -0.9],
+      [1.5, 0.43, -0.9],
+      [-1.5, 0.43, 0.9],
+      [1.5, 0.43, 0.9],
+    ]
+    legPositions.forEach(([lx, ly, lz]) => {
+      const leg = new THREE.Mesh(legGeo, walnutMat)
+      leg.position.set(lx, ly, lz)
+      leg.castShadow = true
+      miniGroup.add(leg)
+      // Bronze sabot at foot of leg
+      const sabot = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.06, 0.18), brassMat)
+      sabot.position.set(lx, 0.15, lz)
+      miniGroup.add(sabot)
     })
+
+    // Glass vitrine case hood
+    const vitrineGlassMat = new THREE.MeshStandardMaterial({
+      color: 0xf5f8fa,
+      roughness: 0.08,
+      metalness: 0.1,
+      transparent: true,
+      opacity: 0.24,
+    })
+    const vitrineHood = new THREE.Mesh(new THREE.BoxGeometry(3.2, 0.65, 2.0), vitrineGlassMat)
+    vitrineHood.position.y = 0.85 + 0.325
+    miniGroup.add(vitrineHood)
+
+    // Vitrine bronze frame struts
+    const frameEdgeMat = brassMat
+    const strutV = new THREE.BoxGeometry(0.025, 0.65, 0.025)
+    const cornerOffsets = [
+      [-1.6, -1.0], [1.6, -1.0], [-1.6, 1.0], [1.6, 1.0]
+    ]
+    cornerOffsets.forEach(([cx, cz]) => {
+      const strut = new THREE.Mesh(strutV, frameEdgeMat)
+      strut.position.set(cx, 0.85 + 0.325, cz)
+      miniGroup.add(strut)
+    })
+    const strutTopX = new THREE.BoxGeometry(3.2, 0.025, 0.025)
+    const strutTopZ = new THREE.BoxGeometry(0.025, 0.025, 2.0)
+    const topBarN = new THREE.Mesh(strutTopX, frameEdgeMat); topBarN.position.set(0, 0.85 + 0.65, -1.0); miniGroup.add(topBarN)
+    const topBarS = new THREE.Mesh(strutTopX, frameEdgeMat); topBarS.position.set(0, 0.85 + 0.65, 1.0); miniGroup.add(topBarS)
+    const topBarW = new THREE.Mesh(strutTopZ, frameEdgeMat); topBarW.position.set(-1.6, 0.85 + 0.65, 0); miniGroup.add(topBarW)
+    const topBarE = new THREE.Mesh(strutTopZ, frameEdgeMat); topBarE.position.set(1.6, 0.85 + 0.65, 0); miniGroup.add(topBarE)
+
+    // Diorama Ground (Inside vitrine, top of table)
+    const ground = new THREE.Mesh(
+      new THREE.BoxGeometry(3.14, 0.03, 1.94),
+      new THREE.MeshStandardMaterial({
+        map: this.assetManager.getCampusMiniatureGroundTexture(),
+        roughness: 0.85,
+      }),
+    )
+    ground.position.y = 0.865
+    ground.receiveShadow = true
+    miniGroup.add(ground)
+
+    // --- 3D MINIATURE ARCHITECTURE: GEDUNG WIDYA PURAYA ---
+    const widyaPurayaGroup = new THREE.Group()
+    widyaPurayaGroup.position.set(0, 0.88, 0)
+
+    // Base podium & grand staircase
+    const basePodium = new THREE.Mesh(new THREE.BoxGeometry(0.78, 0.09, 0.52), limestoneMat)
+    basePodium.position.y = 0.045
+    basePodium.castShadow = true
+    widyaPurayaGroup.add(basePodium)
+
+    // Colonnade entrance facade
+    const facadeWall = new THREE.Mesh(new THREE.BoxGeometry(0.68, 0.12, 0.42), limestoneMat)
+    facadeWall.position.y = 0.14
+    facadeWall.castShadow = true
+    widyaPurayaGroup.add(facadeWall)
+
+    for (let c = -3; c <= 3; c++) {
+      const col = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.014, 0.12, 8), limestoneMat)
+      col.position.set(c * 0.09, 0.14, 0.22)
+      widyaPurayaGroup.add(col)
+    }
+
+    // Iconic 3-Tier Stepped Pyramid Roof (Punden Berundak)
+    const tier1 = new THREE.Mesh(new THREE.ConeGeometry(0.56, 0.16, 4), terracottaMat)
+    tier1.position.y = 0.28
+    tier1.rotation.y = Math.PI / 4
+    tier1.castShadow = true
+    widyaPurayaGroup.add(tier1)
+
+    const tier2 = new THREE.Mesh(new THREE.ConeGeometry(0.40, 0.13, 4), terracottaMat)
+    tier2.position.y = 0.38
+    tier2.rotation.y = Math.PI / 4
+    tier2.castShadow = true
+    widyaPurayaGroup.add(tier2)
+
+    const tier3 = new THREE.Mesh(new THREE.ConeGeometry(0.24, 0.10, 4), terracottaMat)
+    tier3.position.y = 0.46
+    tier3.rotation.y = Math.PI / 4
+    tier3.castShadow = true
+    widyaPurayaGroup.add(tier3)
+
+    // Central Clock Tower & Spire
+    const tower = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.20, 0.09), walnutMat)
+    tower.position.y = 0.54
+    widyaPurayaGroup.add(tower)
+
+    // 4 clock faces
+    const dialMat = new THREE.MeshStandardMaterial({ color: 0xf5eedd, roughness: 0.3 })
+    const dialPositions = [
+      [0, 0.58, 0.046], [0, 0.58, -0.046], [0.046, 0.58, 0], [-0.046, 0.58, 0]
+    ]
+    dialPositions.forEach(([dx, dy, dz]) => {
+      const dial = new THREE.Mesh(new THREE.CircleGeometry(0.024, 12), dialMat)
+      dial.position.set(dx, dy, dz)
+      if (Math.abs(dz) > 0.01) dial.rotation.y = dz > 0 ? 0 : Math.PI
+      else dial.rotation.y = dx > 0 ? Math.PI / 2 : -Math.PI / 2
+      widyaPurayaGroup.add(dial)
+    })
+
+    const spire = new THREE.Mesh(new THREE.ConeGeometry(0.04, 0.12, 8), brassMat)
+    spire.position.y = 0.68
+    widyaPurayaGroup.add(spire)
+
+    miniGroup.add(widyaPurayaGroup)
+
+    // --- SURROUNDING FACULTY PAVILIONS ---
+    const buildPavilion = (x: number, z: number, w: number, d: number, _name: string) => {
+      const pav = new THREE.Group()
+      pav.position.set(x, 0.88, z)
+      const bldg = new THREE.Mesh(new THREE.BoxGeometry(w, 0.09, d), limestoneMat)
+      bldg.position.y = 0.045
+      bldg.castShadow = true
+      pav.add(bldg)
+      const roof = new THREE.Mesh(new THREE.BoxGeometry(w + 0.04, 0.04, d + 0.04), roofDarkMat)
+      roof.position.y = 0.11
+      pav.add(roof)
+      miniGroup.add(pav)
+    }
+
+    // East Wing: Faculty of Engineering (FT)
+    buildPavilion(0.95, -0.25, 0.48, 0.26, 'FT')
+    buildPavilion(0.95, 0.25, 0.44, 0.22, 'FSM')
+
+    // West Wing: Faculty of Law (FH) & FEB
+    buildPavilion(-0.95, -0.25, 0.48, 0.26, 'FH')
+    buildPavilion(-0.95, 0.25, 0.44, 0.22, 'FEB')
+
+    // North Wing: Faculty of Medicine (FK) & FPP
+    buildPavilion(-0.45, -0.65, 0.42, 0.20, 'FK')
+    buildPavilion(0.45, -0.65, 0.42, 0.20, 'FPP')
+
+    // South Wing: FPIK & FISIP
+    buildPavilion(-0.55, 0.65, 0.44, 0.20, 'FPIK')
+    buildPavilion(0.55, 0.65, 0.44, 0.20, 'FISIP')
+
+    // --- WADUK PENDIDIKAN MINIATURE ---
+    const waduk = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.35, 0.015, 24), waterMat)
+    waduk.position.set(-0.85, 0.885, -0.55)
+    waduk.scale.set(1.4, 1, 0.8)
+    miniGroup.add(waduk)
+
+    // Arched miniature stone bridge
+    const bridge = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.035, 0.38), limestoneMat)
+    bridge.position.set(-0.85, 0.90, -0.55)
+    miniGroup.add(bridge)
+
+    // --- MINIATURE PINE & DECIDUOUS TREES ---
+    const treeLocations = [
+      [-0.4, -0.3], [0.4, -0.3], [-0.4, 0.3], [0.4, 0.3],
+      [-1.3, -0.6], [-1.3, 0.6], [1.3, -0.6], [1.3, 0.6],
+      [-0.1, -0.75], [0.1, -0.75], [-0.1, 0.75], [0.1, 0.75],
+      [-0.7, -0.15], [-1.2, 0.0], [0.7, -0.15], [1.2, 0.0]
+    ]
+    treeLocations.forEach(([tx, tz], i) => {
+      const tree = new THREE.Group()
+      tree.position.set(tx, 0.88, tz)
+      const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.01, 0.05, 6), trunkMat)
+      trunk.position.y = 0.025
+      tree.add(trunk)
+      const mat = i % 2 === 0 ? treeGreen : treeDark
+      const foliage = new THREE.Mesh(new THREE.ConeGeometry(0.045, 0.10, 6), mat)
+      foliage.position.y = 0.09
+      tree.add(foliage)
+      miniGroup.add(tree)
+    })
+
+    // Brass Plaque in front of table
+    const titlePlaque = new THREE.Mesh(
+      new THREE.BoxGeometry(2.4, 0.16, 0.02),
+      this.label(
+        'MINIATUR 3D: TRANSFORMASI KAWASAN KAMPUS UNDIP',
+        'Pusat Ruangan · Masterplan Tembalang 180 Ha, Pleburan & Teluk Awur',
+      ),
+    )
+    titlePlaque.position.set(0, 0.82, 1.11)
+    miniGroup.add(titlePlaque)
+
+    this.zone2Group.add(miniGroup)
+
+    // Register Target & Obstacle
+    this.zone2Targets.push({
+      id: 'z2_miniature',
+      zoneNumber: 2,
+      name: 'Miniatur 3D: Transformasi Kampus Undip',
+      areaName: 'Pusat Ruangan · Meja Vitrine Miniatur Arsitektur Kampus',
+      subItemIndex: 0,
+      mesh: miniGroup,
+      highlightMeshes: [tableTop, vitrineHood, basePodium],
+      position: new THREE.Vector3(0, 1.0, 0),
+    })
+
+    this.zone2Obstacles.push({
+      minX: -1.9,
+      maxX: 1.9,
+      minZ: -1.3,
+      maxZ: 1.3,
+    })
+  }
+
+  // 2. AREA A: FACULTY DEVELOPMENT (West Wall)
+  private buildZone2FacultyDevelopment(): void {
+    const group = new THREE.Group()
+    group.position.set(-8.85, 0, 0)
+    group.rotation.y = Math.PI / 2
+
+    const frameMat = new THREE.MeshStandardMaterial({ color: 0x19120c, roughness: 0.48, metalness: 0.06 })
+    const matMat = new THREE.MeshStandardMaterial({ color: 0xf7f2e8, roughness: 0.85 })
+
+    const faculties = [
+      // ROW 1 (TOP) — Fakultas Rintisan 1957–1965
+      { key: 'z2_img_fac_hukum', name: '1. Fakultas Hukum', year: '1957 · Rintisan Pertama', row: 1, col: 0, idx: 0 },
+      { key: 'z2_img_fac_feb', name: '2. Fakultas Ekonomika & Bisnis', year: '1957 · Rintisan Pertama', row: 1, col: 1, idx: 1 },
+      { key: 'z2_img_fac_teknik', name: '3. Fakultas Teknik', year: '1957 · Rintisan Pertama', row: 1, col: 2, idx: 2 },
+      { key: 'z2_img_fac_kedokteran', name: '4. Fakultas Kedokteran', year: '1961 · Kerja Sama Kariadi', row: 1, col: 3, idx: 3 },
+      { key: 'z2_img_fac_fpp', name: '5. Fakultas Peternakan & Pertanian', year: '1964 · Pangan Berkelanjutan', row: 1, col: 4, idx: 4 },
+      { key: 'z2_img_fac_fib', name: '6. Fakultas Ilmu Budaya', year: '1965 · Sastra & Humaniora', row: 1, col: 5, idx: 5 },
+
+      // ROW 0 (BOTTOM) — Pemekaran Fakultas 1968–Kini
+      { key: 'z2_img_fac_fisip', name: '7. FISIP Undip', year: '1968 · Kebijakan Publik', row: 0, col: 0, idx: 6 },
+      { key: 'z2_img_fac_fpik', name: '8. Fakultas Perikanan & Kelautan', year: '1968/1994 · PIP Maritim', row: 0, col: 1, idx: 7 },
+      { key: 'z2_img_fac_fsm', name: '9. Fakultas Sains & Matematika', year: '1988/1993 · Riset MIPA', row: 0, col: 2, idx: 8 },
+      { key: 'z2_img_fac_fkm', name: '10. Fakultas Kesehatan Masyarakat', year: '1993/2001 · Promosi Sehat', row: 0, col: 3, idx: 9 },
+      { key: 'z2_img_fac_psikologi', name: '11. Fakultas Psikologi', year: '2007 · Potensi Insani', row: 0, col: 4, idx: 10 },
+      { key: 'z2_img_fac_vokasi', name: '12. Sekolah Pascasarjana & Vokasi', year: '1999 & 2016 · Terapan', row: 0, col: 5, idx: 11 },
+    ]
+
+    const fw = 0.88
+    const fh = 0.80
+    const colSpacing = 1.85
+
+    const sharedFrameGeo = new THREE.BoxGeometry(fw, fh, 0.045)
+    const sharedMatGeo = new THREE.PlaneGeometry(fw - 0.07, fh - 0.07)
+    const sharedPlateGeo = new THREE.PlaneGeometry(fw - 0.14, fh - 0.14)
+    const sharedTagGeo = new THREE.BoxGeometry(fw * 0.96, 0.15, 0.015)
+
+    faculties.forEach((f) => {
+      const isTop = f.row === 1
+      const z = (f.col - 2.5) * colSpacing // 97 cm horizontal gap between pictures!
+      const y = isTop ? 2.45 : 1.25 // 26 cm vertical gap, zero overlap!
+
+      const frameGroup = new THREE.Group()
+      frameGroup.position.set(z, y, 0)
+
+      const frame = new THREE.Mesh(sharedFrameGeo, frameMat)
+      frame.castShadow = true
+      frameGroup.add(frame)
+
+      const mat = new THREE.Mesh(sharedMatGeo, matMat)
+      mat.position.z = 0.024
+      frameGroup.add(mat)
+
+      const portrait = new THREE.Mesh(
+        sharedPlateGeo,
+        new THREE.MeshStandardMaterial({
+          map: this.assetManager.getImageTexture(f.key),
+          roughness: 0.45,
+        }),
+      )
+      portrait.position.z = 0.03
+      frameGroup.add(portrait)
+
+      const tag = new THREE.Mesh(sharedTagGeo, this.label(f.name, f.year))
+      tag.position.set(0, -fh / 2 - 0.09, 0.012)
+      frameGroup.add(tag)
+
+      group.add(frameGroup)
+
+      // Target world coordinate: rotated 90 deg around Y, so X is -8.6, Z is z
+      this.zone2Targets.push({
+        id: 'z2_faculties',
+        zoneNumber: 2,
+        name: f.name,
+        areaName: 'Sayap Barat · Panel & Galeri Perkembangan Fakultas',
+        subItemIndex: f.idx,
+        mesh: frameGroup,
+        highlightMeshes: [frame, portrait],
+        position: new THREE.Vector3(-8.6, y, z),
+      })
+    })
+
+    const title = new THREE.Mesh(
+      new THREE.BoxGeometry(7.6, 0.32, 0.025),
+      this.label(
+        'PERKEMBANGAN & EVOLUSI FAKULTAS UNIVERSITAS DIPONEGORO',
+        'Transformasi 4 Fakultas Perintis (1957) Menjadi 11 Fakultas & 2 Sekolah',
+      ),
+    )
+    title.position.set(0, 3.35, 0.012)
+    group.add(title)
+
+    this.zone2Group.add(group)
+
+    this.zone2Obstacles.push({
+      minX: -9.0,
+      maxX: -8.3,
+      minZ: -5.6,
+      maxZ: 5.6,
+    })
+  }
+
+  // 3. AREA B: CAMPUS TRANSFORMATION (North Wall)
+  private buildZone2CampusTransformation(): void {
+    const group = new THREE.Group()
+    group.position.set(0, 0, -7.05)
+    group.rotation.y = 0
+
+    const frameMat = new THREE.MeshStandardMaterial({ color: 0x1b130d, roughness: 0.48, metalness: 0.06 })
+    const matMat = new THREE.MeshStandardMaterial({ color: 0xf7f2e8, roughness: 0.85 })
+
+    const campusPhotos = [
+      { key: 'z2_img_trans_gris', title: '1. Aula GRIS Jl. Pemuda', year: '1957 · Kuliah Perdana', idx: 0 },
+      { key: 'z2_img_trans_pleburan', title: '2. Kampus Pleburan Klasik', year: '1960-an · Semarang Bawah', idx: 1 },
+      { key: 'z2_img_trans_blueprint', title: '3. Masterplan Tembalang 180 Ha', year: '1977 · Visi Rektor Soedarto', idx: 2 },
+      { key: 'z2_img_trans_widya_build', title: '4. Konstruksi Widya Puraya', year: '1986–1989 · Ikon Limas', idx: 3 },
+      { key: 'z2_img_trans_rsnd', title: '5. Rumah Sakit RSND Undip', year: '2014 · Pendidikan Medis', idx: 4 },
+      { key: 'z2_img_trans_eco', title: '6. Lanskap Kampus Hijau & Waduk', year: 'Era Modern · Green Campus', idx: 5 },
+    ]
+
+    const fw = 1.15
+    const fh = 0.85
+    const colSpacing = 2.40 // 125 cm horizontal gap!
+    const y = 1.85
+
+    const sharedFrameGeo = new THREE.BoxGeometry(fw, fh, 0.045)
+    const sharedMatGeo = new THREE.PlaneGeometry(fw - 0.08, fh - 0.08)
+    const sharedPhotoGeo = new THREE.PlaneGeometry(fw - 0.16, fh - 0.16)
+    const sharedTagGeo = new THREE.BoxGeometry(fw * 0.96, 0.16, 0.015)
+
+    campusPhotos.forEach((c, i) => {
+      const x = (i - 2.5) * colSpacing
+      const frameGroup = new THREE.Group()
+      frameGroup.position.set(x, y, 0)
+
+      const frame = new THREE.Mesh(sharedFrameGeo, frameMat)
+      frame.castShadow = true
+      frameGroup.add(frame)
+
+      const mat = new THREE.Mesh(sharedMatGeo, matMat)
+      mat.position.z = 0.024
+      frameGroup.add(mat)
+
+      const photo = new THREE.Mesh(
+        sharedPhotoGeo,
+        new THREE.MeshStandardMaterial({
+          map: this.assetManager.getImageTexture(c.key),
+          roughness: 0.45,
+        }),
+      )
+      photo.position.z = 0.03
+      frameGroup.add(photo)
+
+      const tag = new THREE.Mesh(sharedTagGeo, this.label(c.title, c.year))
+      tag.position.set(0, -fh / 2 - 0.10, 0.012)
+      frameGroup.add(tag)
+
+      group.add(frameGroup)
+
+      this.zone2Targets.push({
+        id: 'z2_campus_transformation',
+        zoneNumber: 2,
+        name: c.title,
+        areaName: 'Dinding Utara · Galeri Transformasi Kampus dari Masa ke Masa',
+        subItemIndex: c.idx,
+        mesh: frameGroup,
+        highlightMeshes: [frame, photo],
+        position: new THREE.Vector3(x, y, -6.85),
+      })
+    })
+
+    const title = new THREE.Mesh(
+      new THREE.BoxGeometry(8.0, 0.32, 0.025),
+      this.label(
+        'TRANSFORMASI INFRASTRUKTUR & LANSKAP KAMPUS UNDIP',
+        'Dari GRIS & Pleburan (1957) Hingga Megaproyek Kampus Terpadu Tembalang',
+      ),
+    )
+    title.position.set(0, 3.35, 0.012)
+    group.add(title)
+
+    this.zone2Group.add(group)
+
+    this.zone2Obstacles.push({
+      minX: -7.0,
+      maxX: 7.0,
+      minZ: -7.2,
+      maxZ: -6.5,
+    })
+  }
+
+  // 4. AREA C: EDUCATION & RESEARCH DEVELOPMENT (East Wall)
+  private buildZone2EducationResearch(): void {
+    const group = new THREE.Group()
+    group.position.set(8.85, 0, 0)
+    group.rotation.y = -Math.PI / 2
+
+    const frameMat = new THREE.MeshStandardMaterial({ color: 0x18120c, roughness: 0.48, metalness: 0.06 })
+    const matMat = new THREE.MeshStandardMaterial({ color: 0xf7f2e8, roughness: 0.85 })
+    const walnutMat = new THREE.MeshStandardMaterial({ color: 0x241a13, roughness: 0.52 })
+    const brassMat = new THREE.MeshStandardMaterial({ color: 0x8c6f48, roughness: 0.35, metalness: 0.65 })
+
+    const researchItems = [
+      { key: 'z2_img_res_pip', title: '1. Piagam PIP Kelautan 1974', sub: 'Pola Ilmiah Pokok Bahari', idx: 0 },
+      { key: 'z2_img_res_station', title: '2. Stasiun Laut Teluk Awur', sub: '52 Ha Kampus Bahari Jepara', idx: 1 },
+      { key: 'z2_img_res_intlab', title: '3. Laboratorium Sentral Terpadu', sub: 'Standar Mutu ISO 17025', idx: 2 },
+      { key: 'z2_img_res_journals', title: '4. Galeri Jurnal Scopus Q1/Q2', sub: 'Publikasi Bereputasi Global', idx: 3 },
+      { key: 'z2_img_res_energy', title: '5. Desalinisasi & Energi Bersih', sub: 'Inovasi Tepat Guna Maritim', idx: 4 },
+    ]
+
+    const fw = 1.05
+    const fh = 0.85
+    const colSpacing = 2.20
+    const y = 1.85
+
+    const sharedFrameGeo = new THREE.BoxGeometry(fw, fh, 0.045)
+    const sharedMatGeo = new THREE.PlaneGeometry(fw - 0.08, fh - 0.08)
+    const sharedPhotoGeo = new THREE.PlaneGeometry(fw - 0.16, fh - 0.16)
+    const sharedTagGeo = new THREE.BoxGeometry(fw * 0.96, 0.16, 0.015)
+
+    researchItems.forEach((r, i) => {
+      const z = (i - 2.0) * colSpacing
+      const frameGroup = new THREE.Group()
+      frameGroup.position.set(z, y, 0)
+
+      const frame = new THREE.Mesh(sharedFrameGeo, frameMat)
+      frame.castShadow = true
+      frameGroup.add(frame)
+
+      const mat = new THREE.Mesh(sharedMatGeo, matMat)
+      mat.position.z = 0.024
+      frameGroup.add(mat)
+
+      const photo = new THREE.Mesh(
+        sharedPhotoGeo,
+        new THREE.MeshStandardMaterial({
+          map: this.assetManager.getImageTexture(r.key),
+          roughness: 0.45,
+        }),
+      )
+      photo.position.z = 0.03
+      frameGroup.add(photo)
+
+      const tag = new THREE.Mesh(sharedTagGeo, this.label(r.title, r.sub))
+      tag.position.set(0, -fh / 2 - 0.10, 0.012)
+      frameGroup.add(tag)
+
+      group.add(frameGroup)
+
+      this.zone2Targets.push({
+        id: 'z2_research',
+        zoneNumber: 2,
+        name: r.title,
+        areaName: 'Sayap Timur · Ruang Arsip Akademik & Riset Keilmuan',
+        subItemIndex: r.idx,
+        mesh: frameGroup,
+        highlightMeshes: [frame, photo],
+        position: new THREE.Vector3(8.6, y, z),
+      })
+    })
+
+    // 2 Antique Scientific Showcase Consoles
+    const buildVitrineConsole = (zPos: number, isCompass: boolean) => {
+      const vGroup = new THREE.Group()
+      vGroup.position.set(zPos, 0, 0.70)
+
+      // Console Table
+      const table = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.85, 0.65), walnutMat)
+      table.position.y = 0.425
+      table.castShadow = true
+      vGroup.add(table)
+
+      // Glass hood
+      const glass = new THREE.Mesh(
+        new THREE.BoxGeometry(1.1, 0.55, 0.55),
+        new THREE.MeshStandardMaterial({ color: 0xf0f5f8, roughness: 0.1, transparent: true, opacity: 0.25 }),
+      )
+      glass.position.y = 0.85 + 0.275
+      vGroup.add(glass)
+
+      // Antique Scientific Instrument
+      if (isCompass) {
+        // Brass Maritime Theodolite
+        const base = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.15, 0.04, 16), brassMat)
+        base.position.y = 0.87
+        vGroup.add(base)
+        const scope = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.03, 0.32, 12), brassMat)
+        scope.rotation.z = Math.PI / 4
+        scope.position.set(0, 1.05, 0)
+        vGroup.add(scope)
+      } else {
+        // Marine Coral Sample under glass bell jar
+        const stand = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.16, 0.03, 16), walnutMat)
+        stand.position.y = 0.865
+        vGroup.add(stand)
+        const coral = new THREE.Mesh(new THREE.DodecahedronGeometry(0.09, 1), new THREE.MeshStandardMaterial({ color: 0xe8d2be, roughness: 0.8 }))
+        coral.position.y = 0.98
+        vGroup.add(coral)
+      }
+
+      group.add(vGroup)
+    }
+
+    buildVitrineConsole(-3.3, true)
+    buildVitrineConsole(3.3, false)
+
+    const title = new THREE.Mesh(
+      new THREE.BoxGeometry(7.6, 0.32, 0.025),
+      this.label(
+        'PUSAT RISET KEILMUAN & POLA ILMIAH POKOK PESISIR',
+        'Coastal Region Eco-Development, Stasiun Teluk Awur & Laboratorium Terpadu',
+      ),
+    )
+    title.position.set(0, 3.35, 0.012)
+    group.add(title)
+
+    this.zone2Group.add(group)
+
+    this.zone2Obstacles.push({
+      minX: 7.8,
+      maxX: 9.0,
+      minZ: -4.8,
+      maxZ: 4.8,
+    })
+  }
+
+  // 5. AREA D: ACADEMIC ACHIEVEMENTS & COMMUNITY CONTRIBUTION (South Wall)
+  private buildZone2AcademicAchievements(): void {
+    const group = new THREE.Group()
+    group.position.set(0, 0, 7.05)
+    group.rotation.y = Math.PI
+
+    const frameMat = new THREE.MeshStandardMaterial({ color: 0x19120c, roughness: 0.48, metalness: 0.06 })
+    const matMat = new THREE.MeshStandardMaterial({ color: 0xf7f2e8, roughness: 0.85 })
+    const walnutMat = new THREE.MeshStandardMaterial({ color: 0x241a13, roughness: 0.52 })
+    const bronzeMat = new THREE.MeshStandardMaterial({ color: 0x8a6a42, roughness: 0.38, metalness: 0.65 })
+
+    const achievements = [
+      { key: 'z2_img_ach_kkn', title: '1. Pelopor KKN Tematik', sub: '1971 · Ribuan Desa Binaan', idx: 0 },
+      { key: 'z2_img_ach_qs', title: '2. Juara Employability QS', sub: 'Peringkat 1 & 2 di Indonesia', idx: 1 },
+      { key: 'z2_img_ach_robot', title: '3. Mobil Listrik & Robotik', sub: 'Shell Eco-Marathon & Kontes Robot', idx: 2 },
+      { key: 'z2_img_ach_bionic', title: '4. Tangan Bionik CBIOM3S', sub: 'Inovasi Murah Bagi Disabilitas', idx: 3 },
+      { key: 'z2_img_ach_disaster', title: '5. Tim Medis Darurat', sub: 'Bakti Kemanusiaan Bencana', idx: 4 },
+    ]
+
+    const fw = 1.15
+    const fh = 0.85
+    const colSpacing = 2.40
+    const y = 1.85
+
+    const sharedFrameGeo = new THREE.BoxGeometry(fw, fh, 0.045)
+    const sharedMatGeo = new THREE.PlaneGeometry(fw - 0.08, fh - 0.08)
+    const sharedPhotoGeo = new THREE.PlaneGeometry(fw - 0.16, fh - 0.16)
+    const sharedTagGeo = new THREE.BoxGeometry(fw * 0.96, 0.16, 0.015)
+
+    achievements.forEach((a, i) => {
+      const x = (i - 2.0) * colSpacing
+      const frameGroup = new THREE.Group()
+      frameGroup.position.set(x, y, 0)
+
+      const frame = new THREE.Mesh(sharedFrameGeo, frameMat)
+      frame.castShadow = true
+      frameGroup.add(frame)
+
+      const mat = new THREE.Mesh(sharedMatGeo, matMat)
+      mat.position.z = 0.024
+      frameGroup.add(mat)
+
+      const photo = new THREE.Mesh(
+        sharedPhotoGeo,
+        new THREE.MeshStandardMaterial({
+          map: this.assetManager.getImageTexture(a.key),
+          roughness: 0.45,
+        }),
+      )
+      photo.position.z = 0.03
+      frameGroup.add(photo)
+
+      const tag = new THREE.Mesh(sharedTagGeo, this.label(a.title, a.sub))
+      tag.position.set(0, -fh / 2 - 0.10, 0.012)
+      frameGroup.add(tag)
+
+      group.add(frameGroup)
+
+      this.zone2Targets.push({
+        id: 'z2_achievements',
+        zoneNumber: 2,
+        name: a.title,
+        areaName: 'Dinding Selatan · Galeri Prestasi & Pengabdian Masyarakat',
+        subItemIndex: a.idx,
+        mesh: frameGroup,
+        highlightMeshes: [frame, photo],
+        position: new THREE.Vector3(-x, y, 6.85),
+      })
+    })
+
+    // Pedestal of Honor with Bronze Award Trophies in Center
+    const honorTable = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.85, 0.65), walnutMat)
+    honorTable.position.set(0, 0.425, 0.85)
+    honorTable.castShadow = true
+    group.add(honorTable)
+
+    // Two classical bronze trophies
+    for (let t = -1; t <= 1; t += 2) {
+      const cup = new THREE.Mesh(new THREE.CylinderGeometry(0.09, 0.04, 0.22, 12), bronzeMat)
+      cup.position.set(t * 0.55, 0.85 + 0.11, 0.85)
+      group.add(cup)
+      const base = new THREE.Mesh(new THREE.BoxGeometry(0.12, 0.06, 0.12), walnutMat)
+      base.position.set(t * 0.55, 0.85 + 0.03, 0.85)
+      group.add(base)
+    }
+
+    const title = new THREE.Mesh(
+      new THREE.BoxGeometry(8.0, 0.32, 0.025),
+      this.label(
+        'PRESTASI AKADEMIK & PELOPOR KKN PENGABDIAN MASYARAKAT',
+        'Sumbangsih Nyata Bagi Bangsa: Dari KKN Perintis Desa Hingga Rekor Employability Dunia',
+      ),
+    )
+    title.position.set(0, 3.35, 0.012)
+    group.add(title)
+
+    this.zone2Group.add(group)
+
+    this.zone2Obstacles.push({
+      minX: -1.5,
+      maxX: 1.5,
+      minZ: 5.8,
+      maxZ: 7.2,
+    })
+  }
+
+  // 6. ZONE 2 ATMOSPHERE PROPS: Corner Bookcases
+  private buildZone2AtmosphereProps(): void {
+    const walnut = new THREE.MeshStandardMaterial({ color: 0x241812, roughness: 0.5 })
+    const bookColors = [0x503322, 0x1f2b24, 0x472228, 0x5a4a35, 0x1b1d28]
+
+    const makeBookcase = (x: number, z: number, ry: number) => {
+      const g = new THREE.Group()
+      g.position.set(x, 0, z)
+      g.rotation.y = ry
+
+      const body = new THREE.Mesh(new THREE.BoxGeometry(1.2, 3.2, 0.44), walnut)
+      body.position.y = 1.6
+      body.castShadow = true
+      g.add(body)
+
+      // Shelves
+      for (let s = 0; s < 5; s++) {
+        const sy = 0.5 + s * 0.55
+        const row = new THREE.Group()
+        row.position.set(0, sy, 0.05)
+        for (let b = 0; b < 9; b++) {
+          const mat = new THREE.MeshStandardMaterial({ color: bookColors[b % bookColors.length], roughness: 0.7 })
+          const bk = new THREE.Mesh(new THREE.BoxGeometry(0.08, 0.32, 0.28), mat)
+          bk.position.x = -0.42 + b * 0.105
+          row.add(bk)
+        }
+        g.add(row)
+      }
+      this.zone2Group.add(g)
+    }
+
+    makeBookcase(-8.2, -6.4, 0.3)
+    makeBookcase(8.2, -6.4, -0.3)
+
+    this.zone2Obstacles.push({
+      minX: -8.8,
+      maxX: -7.6,
+      minZ: -7.0,
+      maxZ: -5.8,
+    })
+    this.zone2Obstacles.push({
+      minX: 7.6,
+      maxX: 8.8,
+      minZ: -7.0,
+      maxZ: -5.8,
+    })
+  }
+
+  public dispose(): void {
+    const disposeGroup = (g: THREE.Group) => {
+      g.traverse((obj) => {
+        if (obj instanceof THREE.Mesh) {
+          obj.geometry.dispose()
+          if (Array.isArray(obj.material)) obj.material.forEach((m) => m.dispose())
+          else obj.material.dispose()
+        }
+      })
+    }
+    disposeGroup(this.zone1Group)
+    disposeGroup(this.zone2Group)
     this.labelMaterialCache.forEach((mat) => mat.dispose())
     this.labelMaterialCache.clear()
     this.interactiveTargets = []
     this.obstacleBoxes = []
+    this.zone1Targets = []
+    this.zone1Obstacles = []
+    this.zone2Targets = []
+    this.zone2Obstacles = []
   }
 }

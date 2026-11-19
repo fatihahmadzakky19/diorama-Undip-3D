@@ -1141,3 +1141,389 @@ kbd {
     padding-bottom: 8px;
   }
 }
+
+/* ==========================================================================
+   GLOBAL MUSEUM SIDEBAR & INTER-ZONE TELEPORTATION (ZONA 1 & 2)
+   Strict Palette: Hitam #171513, Putih #E8E2D8, Cokelat #79583E
+   ========================================================================== */
+
+/* Header Sidebar Trigger Button */
+.hud-btn-sidebar-toggle {
+  background: rgba(42, 26, 16, 0.88);
+  border: 1px solid rgba(197, 157, 83, 0.5);
+  color: #fae1a0;
+  font-weight: 600;
+}
+
+.hud-btn-sidebar-toggle:hover {
+  background: rgba(65, 42, 26, 0.95);
+  border-color: #c59d53;
+  color: #fff;
+}
+
+/* Floating Left-Side Sidebar Toggle */
+.museum-floating-sidebar-toggle {
+  position: absolute;
+  left: 18px;
+  top: 64px;
+  z-index: 22;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  height: 32px;
+  padding: 0 12px;
+  background: rgba(23, 21, 19, 0.88);
+  border: 1px solid rgba(197, 157, 83, 0.45);
+  border-radius: 4px;
+  color: #E8E2D8;
+  font-family: var(--font-heading);
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.55);
+  transition: all 0.2s ease;
+  pointer-events: auto;
+}
+
+.museum-floating-sidebar-toggle:hover {
+  background: #3d2b1e;
+  border-color: #c59d53;
+  color: #fae1a0;
+  transform: translateX(2px);
+}
+
+.museum-floating-sidebar-toggle .toggle-icon {
+  font-size: 0.95rem;
+}
+
+/* Sidebar Overlay & Sliding Drawer */
+.museum-sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 45;
+  background: rgba(15, 11, 8, 0.65);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  animation: museumFadeIn 0.22s ease-out;
+}
+
+.museum-sidebar-panel {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 350px;
+  max-width: 88vw;
+  background: #171513;
+  border-right: 1px solid rgba(197, 157, 83, 0.35);
+  display: flex;
+  flex-direction: column;
+  box-shadow: 10px 0 40px rgba(0, 0, 0, 0.75);
+  animation: museumSlideInLeft 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes museumFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes museumSlideInLeft {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}
+
+.sidebar-header {
+  padding: 18px 18px 14px;
+  border-bottom: 1px solid rgba(185, 163, 138, 0.2);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  background: linear-gradient(180deg, rgba(36, 26, 19, 0.8), rgba(23, 21, 19, 0.9));
+}
+
+.sidebar-badge {
+  display: block;
+  font-family: var(--font-heading);
+  font-size: 0.64rem;
+  letter-spacing: 0.14em;
+  font-weight: 700;
+  color: #c59d53;
+  margin-bottom: 3px;
+}
+
+.sidebar-brand-title h3 {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #E8E2D8;
+  letter-spacing: 0.02em;
+}
+
+.sidebar-close-btn {
+  width: 28px;
+  height: 28px;
+  display: grid;
+  place-items: center;
+  background: rgba(36, 26, 19, 0.6);
+  border: 1px solid rgba(185, 163, 138, 0.3);
+  border-radius: 4px;
+  color: #E8E2D8;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.sidebar-close-btn:hover {
+  background: #3d2b1e;
+  border-color: #c59d53;
+  color: #fff;
+}
+
+.sidebar-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px;
+}
+
+.sidebar-zone-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sidebar-zone-card {
+  background: #241a13;
+  border: 1px solid rgba(185, 163, 138, 0.25);
+  border-radius: 4px;
+  padding: 14px 15px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.sidebar-zone-card:hover:not(.is-active):not(.is-locked) {
+  background: #2e2118;
+  border-color: #c59d53;
+  transform: translateY(-1px);
+}
+
+.sidebar-zone-card.is-active {
+  background: #2d2016;
+  border: 1.5px solid #c59d53;
+  box-shadow: 0 0 16px rgba(197, 157, 83, 0.22);
+  cursor: default;
+}
+
+.sidebar-zone-card.is-locked {
+  opacity: 0.52;
+  cursor: not-allowed;
+  background: #1b140f;
+  border-color: rgba(185, 163, 138, 0.12);
+}
+
+.zone-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.zone-number-badge {
+  font-family: var(--font-heading);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #c59d53;
+}
+
+.zone-status-pill {
+  font-family: var(--font-ui);
+  font-size: 0.62rem;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.zone-status-pill.status-active {
+  background: rgba(197, 157, 83, 0.22);
+  color: #fae1a0;
+  border: 1px solid rgba(197, 157, 83, 0.55);
+}
+
+.zone-status-pill.status-ready {
+  background: rgba(80, 110, 80, 0.25);
+  color: #d0edd0;
+  border: 1px solid rgba(120, 180, 120, 0.45);
+}
+
+.zone-status-pill.status-locked {
+  background: rgba(35, 27, 22, 0.6);
+  color: #8c7b6d;
+  border: 1px solid rgba(100, 80, 70, 0.25);
+}
+
+.zone-card-title {
+  margin: 0 0 4px;
+  font-family: var(--font-heading);
+  font-size: 0.94rem;
+  font-weight: 600;
+  color: #E8E2D8;
+  line-height: 1.3;
+}
+
+.zone-card-subtitle {
+  margin: 0;
+  font-size: 0.73rem;
+  color: #b9a38a;
+  line-height: 1.4;
+  font-style: italic;
+}
+
+.zone-card-action {
+  margin-top: 10px;
+}
+
+.btn-zone-teleport {
+  width: 100%;
+  background: #3d2b1e;
+  border: 1px solid #c59d53;
+  color: #fae1a0;
+  padding: 7px 12px;
+  font-family: var(--font-ui);
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.btn-zone-teleport:hover {
+  background: #523a28;
+  color: #fff;
+  border-color: #ffd88a;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.zone-active-hint {
+  margin-top: 8px;
+  font-size: 0.70rem;
+  color: #c59d53;
+  font-style: italic;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.sidebar-footer {
+  padding: 12px 16px;
+  border-top: 1px solid rgba(185, 163, 138, 0.2);
+  background: rgba(18, 14, 11, 0.95);
+}
+
+.sidebar-footer-hint {
+  margin: 0;
+  font-size: 0.68rem;
+  color: #9c8a76;
+  font-style: italic;
+  line-height: 1.35;
+}
+
+/* Fullscreen Teleportation Overlay */
+.museum-teleport-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 65;
+  background: #171513;
+  display: grid;
+  place-items: center;
+  animation: museumFadeIn 0.35s ease-out;
+  pointer-events: all;
+}
+
+.teleport-card {
+  text-align: center;
+  max-width: 440px;
+  padding: 32px 28px;
+  background: #241a13;
+  border: 1px solid rgba(197, 157, 83, 0.45);
+  border-radius: 6px;
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.85);
+}
+
+.teleport-emblem {
+  color: #c59d53;
+  margin-bottom: 12px;
+  display: inline-block;
+  animation: teleportSpin 2.5s linear infinite;
+}
+
+@keyframes teleportSpin {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+.teleport-tag {
+  font-family: var(--font-heading);
+  font-size: 0.72rem;
+  letter-spacing: 0.15em;
+  color: #c59d53;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.teleport-title {
+  margin: 0 0 16px;
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #E8E2D8;
+  letter-spacing: 0.03em;
+}
+
+.teleport-progress-bar {
+  width: 220px;
+  height: 3px;
+  background: rgba(185, 163, 138, 0.22);
+  margin: 0 auto 14px;
+  overflow: hidden;
+  border-radius: 2px;
+}
+
+.teleport-progress-fill {
+  width: 45%;
+  height: 100%;
+  background: #c59d53;
+  border-radius: 2px;
+  animation: teleportIndeterminate 1.2s ease-in-out infinite;
+}
+
+@keyframes teleportIndeterminate {
+  0% { transform: translateX(-100%); }
+  50% { transform: translateX(120%); }
+  100% { transform: translateX(250%); }
+}
+
+.teleport-hint {
+  margin: 0;
+  font-size: 0.78rem;
+  color: #b9a38a;
+  font-style: italic;
+}
+
+@media (max-width: 768px) {
+  .museum-sidebar-panel {
+    width: 310px;
+  }
+  .museum-floating-sidebar-toggle {
+    left: 12px;
+    top: 56px;
+    height: 28px;
+    padding: 0 9px;
+    font-size: 0.70rem;
+  }
+}

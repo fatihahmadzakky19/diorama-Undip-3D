@@ -48,7 +48,22 @@ export class InteractionManager {
   }
 
   public setTargets(targets: InteractiveTarget[]): void {
+    this.clearHover()
     this.targets = targets
+  }
+
+  public clearHover(): void {
+    if (this.currentTarget) {
+      this.currentTarget.highlightMeshes.forEach((mesh) => {
+        const orig = this.originalEmissives.get(mesh)
+        if (orig && 'emissive' in mesh.material) {
+          ;(mesh.material as THREE.MeshStandardMaterial).emissive.copy(orig.color)
+          ;(mesh.material as THREE.MeshStandardMaterial).emissiveIntensity = orig.intensity
+        }
+      })
+      this.currentTarget = null
+      this.onHoverChange(null)
+    }
   }
 
   public hasActiveHighlight(): boolean {

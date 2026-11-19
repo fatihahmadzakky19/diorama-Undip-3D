@@ -9,28 +9,52 @@ import { AssetManager } from './AssetManager'
  */
 export class RoomBuilder {
   private group: THREE.Group
+  private zone1Group: THREE.Group
+  private zone2Group: THREE.Group
   private assetManager: AssetManager
+
   public readonly roomSize = 14.4
   public readonly roomHeight = 5.0
+  public readonly zone2Width = 18.0
+  public readonly zone2Depth = 14.4
 
   constructor() {
-    this.group = new THREE.Group()
-    this.group.name = 'RoomGroup'
     this.assetManager = AssetManager.getInstance()
-    this.buildRoom()
+    this.zone1Group = this.buildRoomGroup(this.roomSize, this.roomSize, this.roomHeight, 1)
+    this.zone1Group.name = 'Zone1RoomGroup'
+
+    this.zone2Group = this.buildRoomGroup(this.zone2Width, this.zone2Depth, this.roomHeight, 2)
+    this.zone2Group.name = 'Zone2RoomGroup'
+
+    // Maintain backwards compatibility
+    this.group = this.zone1Group
   }
 
   public getGroup(): THREE.Group {
     return this.group
   }
 
-  private buildRoom(): void {
-    const half = this.roomSize / 2
-    const height = this.roomHeight
+  public getZone1Group(): THREE.Group {
+    return this.zone1Group
+  }
 
-    // 1. FLOOR — warm walnut parquet, matte finish, softened by lighting
+  public getZone2Group(): THREE.Group {
+    return this.zone2Group
+  }
+
+  private buildRoomGroup(
+    width: number,
+    depth: number,
+    height: number,
+    chandelierMode: 1 | 2,
+  ): THREE.Group {
+    const room = new THREE.Group()
+    const halfX = width / 2
+    const halfZ = depth / 2
+
+    // 1. FLOOR — warm walnut parquet
     const floor = new THREE.Mesh(
-      new THREE.PlaneGeometry(this.roomSize, this.roomSize),
+      new THREE.PlaneGeometry(width, depth),
       new THREE.MeshStandardMaterial({
         map: this.assetManager.getFloorTexture(),
         roughness: 0.72,
@@ -39,11 +63,11 @@ export class RoomBuilder {
     )
     floor.rotation.x = -Math.PI / 2
     floor.receiveShadow = true
-    this.group.add(floor)
+    room.add(floor)
 
-    // 2. CEILING — simplified coffered pattern, never dominant
+    // 2. CEILING — simplified coffered pattern
     const ceiling = new THREE.Mesh(
-      new THREE.PlaneGeometry(this.roomSize, this.roomSize),
+      new THREE.PlaneGeometry(width, depth),
       new THREE.MeshStandardMaterial({
         map: this.assetManager.getCeilingTexture(),
         roughness: 0.85,
@@ -53,7 +77,7 @@ export class RoomBuilder {
     )
     ceiling.rotation.x = Math.PI / 2
     ceiling.position.y = height
-    this.group.add(ceiling)
+    room.add(ceiling)
 
     // 3. WALLS — warm white plaster + dark walnut panelling
     const wallMat = new THREE.MeshStandardMaterial({
@@ -62,39 +86,53 @@ export class RoomBuilder {
       metalness: 0.01,
     })
 
-    const north = new THREE.Mesh(new THREE.PlaneGeometry(this.roomSize, height), wallMat)
-    north.position.set(0, height / 2, -half)
+    const north = new THREE.Mesh(new THREE.PlaneGeometry(width, height), wallMat)
+    north.position.set(0, height / 2, -halfZ)
     north.receiveShadow = true
-    this.group.add(north)
+    room.add(north)
 
-    const south = new THREE.Mesh(new THREE.PlaneGeometry(this.roomSize, height), wallMat)
+    const south = new THREE.Mesh(new THREE.PlaneGeometry(width, height), wallMat)
     south.rotation.y = Math.PI
-    south.position.set(0, height / 2, half)
+    south.position.set(0, height / 2, halfZ)
     south.receiveShadow = true
-    this.group.add(south)
+    room.add(south)
 
-    const west = new THREE.Mesh(new THREE.PlaneGeometry(this.roomSize, height), wallMat)
+    const west = new THREE.Mesh(new THREE.PlaneGeometry(depth, height), wallMat)
     west.rotation.y = Math.PI / 2
-    west.position.set(-half, height / 2, 0)
+    west.position.set(-halfX, height / 2, 0)
     west.receiveShadow = true
-    this.group.add(west)
+    room.add(west)
 
-    const east = new THREE.Mesh(new THREE.PlaneGeometry(this.roomSize, height), wallMat)
+    const east = new THREE.Mesh(new THREE.PlaneGeometry(depth, height), wallMat)
     east.rotation.y = -Math.PI / 2
-    east.position.set(half, height / 2, 0)
+    east.position.set(halfX, height / 2, 0)
     east.receiveShadow = true
-    this.group.add(east)
+    room.add(east)
 
-    // 4. ARCHITECTURAL TRIM — base, picture rail, crown and restrained dentils
-    this.buildMoldings(half, height)
-    this.buildPilasters(half)
-    this.buildWallSconces(half)
+    // 4. ARCHITECTURAL TRIM — base, picture rail, crown and dentils
+    this.buildMoldings(room, width, depth, halfX, halfZ, height)
+    this.buildPilasters(room, halfX, halfZ)
+    this.buildWallSconces(room, halfX, halfZ)
 
-    // 5. SIMPLE CLASSIC CHANDELIER
-    this.buildChandelier(height)
+    // 5. CLASSIC CHANDELIERS
+    if (chandelierMode === 1) {
+      this.buildChandelier(room, 0, height, 0)
+    } else {
+      this.buildChandelier(room, -4.5, height, 0)
+      this.buildChandelier(room, 4.5, height, 0)
+    }
+
+    return room
   }
 
-  private buildMoldings(half: number, height: number): void {
+  private buildMoldings(
+    parent: THREE.Group,
+    width: number,
+    depth: number,
+    halfX: number,
+    halfZ: number,
+    height: number,
+  ): void {
     const walnut = new THREE.MeshStandardMaterial({
       color: 0x231610,
       roughness: 0.46,
@@ -108,88 +146,90 @@ export class RoomBuilder {
 
     // Baseboards
     const baseH = 0.24
-    const baseLong = new THREE.BoxGeometry(this.roomSize, baseH, 0.07)
-    const northBase = new THREE.Mesh(baseLong, walnut)
-    northBase.position.set(0, baseH / 2, -half + 0.035)
-    this.group.add(northBase)
-    const southBase = new THREE.Mesh(baseLong, walnut)
-    southBase.position.set(0, baseH / 2, half - 0.035)
-    this.group.add(southBase)
-    const westBase = new THREE.Mesh(new THREE.BoxGeometry(0.07, baseH, this.roomSize), walnut)
-    westBase.position.set(-half + 0.035, baseH / 2, 0)
-    this.group.add(westBase)
-    const eastBase = new THREE.Mesh(new THREE.BoxGeometry(0.07, baseH, this.roomSize), walnut)
-    eastBase.position.set(half - 0.035, baseH / 2, 0)
-    this.group.add(eastBase)
+    const northBase = new THREE.Mesh(new THREE.BoxGeometry(width, baseH, 0.07), walnut)
+    northBase.position.set(0, baseH / 2, -halfZ + 0.035)
+    parent.add(northBase)
+    const southBase = new THREE.Mesh(new THREE.BoxGeometry(width, baseH, 0.07), walnut)
+    southBase.position.set(0, baseH / 2, halfZ - 0.035)
+    parent.add(southBase)
+    const westBase = new THREE.Mesh(new THREE.BoxGeometry(0.07, baseH, depth), walnut)
+    westBase.position.set(-halfX + 0.035, baseH / 2, 0)
+    parent.add(westBase)
+    const eastBase = new THREE.Mesh(new THREE.BoxGeometry(0.07, baseH, depth), walnut)
+    eastBase.position.set(halfX - 0.035, baseH / 2, 0)
+    parent.add(eastBase)
 
-    // Slim picture rail — a classical line that separates plaster and display zone
+    // Slim picture rail
     const railY = 3.78
-    const railLong = new THREE.BoxGeometry(this.roomSize, 0.045, 0.035)
-    const railNorth = new THREE.Mesh(railLong, walnut)
-    railNorth.position.set(0, railY, -half + 0.02)
-    this.group.add(railNorth)
-    const railSouth = new THREE.Mesh(railLong, walnut)
-    railSouth.position.set(0, railY, half - 0.02)
-    this.group.add(railSouth)
-    const railWest = new THREE.Mesh(new THREE.BoxGeometry(0.035, 0.045, this.roomSize), walnut)
-    railWest.position.set(-half + 0.02, railY, 0)
-    this.group.add(railWest)
-    const railEast = new THREE.Mesh(new THREE.BoxGeometry(0.035, 0.045, this.roomSize), walnut)
-    railEast.position.set(half - 0.02, railY, 0)
-    this.group.add(railEast)
+    const railNorth = new THREE.Mesh(new THREE.BoxGeometry(width, 0.045, 0.035), walnut)
+    railNorth.position.set(0, railY, -halfZ + 0.02)
+    parent.add(railNorth)
+    const railSouth = new THREE.Mesh(new THREE.BoxGeometry(width, 0.045, 0.035), walnut)
+    railSouth.position.set(0, railY, halfZ - 0.02)
+    parent.add(railSouth)
+    const railWest = new THREE.Mesh(new THREE.BoxGeometry(0.035, 0.045, depth), walnut)
+    railWest.position.set(-halfX + 0.02, railY, 0)
+    parent.add(railWest)
+    const railEast = new THREE.Mesh(new THREE.BoxGeometry(0.035, 0.045, depth), walnut)
+    railEast.position.set(halfX - 0.02, railY, 0)
+    parent.add(railEast)
 
-    // Crown molding + fine dark reveal
-    const crownLong = new THREE.BoxGeometry(this.roomSize, 0.16, 0.1)
-    const northCrown = new THREE.Mesh(crownLong, walnut)
-    northCrown.position.set(0, height - 0.08, -half + 0.05)
-    this.group.add(northCrown)
-    const southCrown = new THREE.Mesh(crownLong, walnut)
-    southCrown.position.set(0, height - 0.08, half - 0.05)
-    this.group.add(southCrown)
-    const westCrown = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.16, this.roomSize), walnut)
-    westCrown.position.set(-half + 0.05, height - 0.08, 0)
-    this.group.add(westCrown)
-    const eastCrown = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.16, this.roomSize), walnut)
-    eastCrown.position.set(half - 0.05, height - 0.08, 0)
-    this.group.add(eastCrown)
+    // Crown molding + dark reveal
+    const crownNorth = new THREE.Mesh(new THREE.BoxGeometry(width, 0.16, 0.1), walnut)
+    crownNorth.position.set(0, height - 0.08, -halfZ + 0.05)
+    parent.add(crownNorth)
+    const crownSouth = new THREE.Mesh(new THREE.BoxGeometry(width, 0.16, 0.1), walnut)
+    crownSouth.position.set(0, height - 0.08, halfZ - 0.05)
+    parent.add(crownSouth)
+    const westCrown = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.16, depth), walnut)
+    westCrown.position.set(-halfX + 0.05, height - 0.08, 0)
+    parent.add(westCrown)
+    const eastCrown = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.16, depth), walnut)
+    eastCrown.position.set(halfX - 0.05, height - 0.08, 0)
+    parent.add(eastCrown)
 
-    const revealLong = new THREE.BoxGeometry(this.roomSize, 0.02, 0.012)
-    const revNorth = new THREE.Mesh(revealLong, shadow)
-    revNorth.position.set(0, height - 0.19, -half + 0.012)
-    this.group.add(revNorth)
-    const revSouth = new THREE.Mesh(revealLong, shadow)
-    revSouth.position.set(0, height - 0.19, half - 0.012)
-    this.group.add(revSouth)
+    const revNorth = new THREE.Mesh(new THREE.BoxGeometry(width, 0.02, 0.012), shadow)
+    revNorth.position.set(0, height - 0.19, -halfZ + 0.012)
+    parent.add(revNorth)
+    const revSouth = new THREE.Mesh(new THREE.BoxGeometry(width, 0.02, 0.012), shadow)
+    revSouth.position.set(0, height - 0.19, halfZ - 0.012)
+    parent.add(revSouth)
 
-    // Minimal dentil band below the crown (fine, widely spaced)
+    // Dentil band below the crown
     const dentilMat = new THREE.MeshStandardMaterial({ color: 0x2a1a10, roughness: 0.5 })
-    const count = 24
-    const step = (this.roomSize - 1.2) / count
-    const dentilGeo = new THREE.BoxGeometry(0.12, 0.05, 0.028)
-    for (let i = 0; i < count; i++) {
-      const p = -half + 0.6 + i * step
-      const dn = new THREE.Mesh(dentilGeo, dentilMat)
-      dn.position.set(p, height - 0.27, -half + 0.018)
-      this.group.add(dn)
-      const ds = new THREE.Mesh(dentilGeo, dentilMat)
-      ds.position.set(p, height - 0.27, half - 0.018)
-      this.group.add(ds)
-      const dw = new THREE.Mesh(new THREE.BoxGeometry(0.028, 0.05, 0.12), dentilMat)
-      dw.position.set(-half + 0.018, height - 0.27, p)
-      this.group.add(dw)
-      const de = new THREE.Mesh(new THREE.BoxGeometry(0.028, 0.05, 0.12), dentilMat)
-      de.position.set(half - 0.018, height - 0.27, p)
-      this.group.add(de)
+    const countX = Math.round((width - 1.2) / 0.55)
+    const stepX = (width - 1.2) / countX
+    const dentilGeoX = new THREE.BoxGeometry(0.12, 0.05, 0.028)
+    for (let i = 0; i < countX; i++) {
+      const p = -halfX + 0.6 + i * stepX
+      const dn = new THREE.Mesh(dentilGeoX, dentilMat)
+      dn.position.set(p, height - 0.27, -halfZ + 0.018)
+      parent.add(dn)
+      const ds = new THREE.Mesh(dentilGeoX, dentilMat)
+      ds.position.set(p, height - 0.27, halfZ - 0.018)
+      parent.add(ds)
+    }
+
+    const countZ = Math.round((depth - 1.2) / 0.55)
+    const stepZ = (depth - 1.2) / countZ
+    const dentilGeoZ = new THREE.BoxGeometry(0.028, 0.05, 0.12)
+    for (let i = 0; i < countZ; i++) {
+      const p = -halfZ + 0.6 + i * stepZ
+      const dw = new THREE.Mesh(dentilGeoZ, dentilMat)
+      dw.position.set(-halfX + 0.018, height - 0.27, p)
+      parent.add(dw)
+      const de = new THREE.Mesh(dentilGeoZ, dentilMat)
+      de.position.set(halfX - 0.018, height - 0.27, p)
+      parent.add(de)
     }
   }
 
-  /** Shallow classical pilasters give each wall an architectural rhythm without clutter. */
-  private buildPilasters(half: number): void {
+  /** Shallow classical pilasters give walls an architectural rhythm without clutter. */
+  private buildPilasters(parent: THREE.Group, halfX: number, halfZ: number): void {
     const mat = new THREE.MeshStandardMaterial({ color: 0x2d1d13, roughness: 0.5, metalness: 0.03 })
     const capMat = new THREE.MeshStandardMaterial({ color: 0x352318, roughness: 0.45, metalness: 0.04 })
     const h = 3.5
     const y = 0.26 + h / 2
-    const offsets = [-5.8, 5.8]
 
     const makePilaster = (x: number, z: number, rotY: number) => {
       const g = new THREE.Group()
@@ -203,18 +243,23 @@ export class RoomBuilder {
       const cap = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.1, 0.075), capMat)
       cap.position.y = h / 2
       g.add(cap)
-      this.group.add(g)
+      parent.add(g)
     }
 
-    offsets.forEach((o) => {
-      makePilaster(o, -half + 0.035, 0)
-      makePilaster(o, half - 0.035, Math.PI)
-      makePilaster(-half + 0.035, o, Math.PI / 2)
-      makePilaster(half - 0.035, o, -Math.PI / 2)
+    const xOffsets = [-halfX + 2.4, -halfX / 2, 0, halfX / 2, halfX - 2.4]
+    xOffsets.forEach((ox) => {
+      makePilaster(ox, -halfZ + 0.035, 0)
+      makePilaster(ox, halfZ - 0.035, Math.PI)
+    })
+
+    const zOffsets = [-halfZ + 2.8, 0, halfZ - 2.8]
+    zOffsets.forEach((oz) => {
+      makePilaster(-halfX + 0.035, oz, Math.PI / 2)
+      makePilaster(halfX - 0.035, oz, -Math.PI / 2)
     })
   }
 
-  private buildWallSconces(half: number): void {
+  private buildWallSconces(parent: THREE.Group, halfX: number, halfZ: number): void {
     const metal = new THREE.MeshStandardMaterial({ color: 0x171310, roughness: 0.5, metalness: 0.35 })
     const shade = new THREE.MeshStandardMaterial({
       color: 0xf7f0e2,
@@ -222,15 +267,16 @@ export class RoomBuilder {
       emissiveIntensity: 0.35,
       roughness: 0.35,
     })
+
     const configs = [
-      { x: -half + 0.09, y: 2.8, z: -3, r: Math.PI / 2 },
-      { x: -half + 0.09, y: 2.8, z: 3, r: Math.PI / 2 },
-      { x: half - 0.09, y: 2.8, z: -3, r: -Math.PI / 2 },
-      { x: half - 0.09, y: 2.8, z: 3, r: -Math.PI / 2 },
-      { x: -3.5, y: 2.8, z: -half + 0.09, r: 0 },
-      { x: 3.5, y: 2.8, z: -half + 0.09, r: 0 },
-      { x: -3.5, y: 2.8, z: half - 0.09, r: Math.PI },
-      { x: 3.5, y: 2.8, z: half - 0.09, r: Math.PI },
+      { x: -halfX + 0.09, y: 2.8, z: -3.2, r: Math.PI / 2 },
+      { x: -halfX + 0.09, y: 2.8, z: 3.2, r: Math.PI / 2 },
+      { x: halfX - 0.09, y: 2.8, z: -3.2, r: -Math.PI / 2 },
+      { x: halfX - 0.09, y: 2.8, z: 3.2, r: -Math.PI / 2 },
+      { x: -halfX * 0.5, y: 2.8, z: -halfZ + 0.09, r: 0 },
+      { x: halfX * 0.5, y: 2.8, z: -halfZ + 0.09, r: 0 },
+      { x: -halfX * 0.5, y: 2.8, z: halfZ - 0.09, r: Math.PI },
+      { x: halfX * 0.5, y: 2.8, z: halfZ - 0.09, r: Math.PI },
     ]
 
     configs.forEach((cfg) => {
@@ -248,13 +294,13 @@ export class RoomBuilder {
       lamp.rotation.x = Math.PI
       lamp.position.set(0.13, 0.13, 0)
       s.add(lamp)
-      this.group.add(s)
+      parent.add(s)
     })
   }
 
-  private buildChandelier(height: number): void {
+  private buildChandelier(parent: THREE.Group, x: number, height: number, z: number): void {
     const chandelier = new THREE.Group()
-    chandelier.position.set(0, height, 0)
+    chandelier.position.set(x, height, z)
 
     const iron = new THREE.MeshStandardMaterial({ color: 0x15120e, roughness: 0.55, metalness: 0.4 })
     const wax = new THREE.MeshStandardMaterial({ color: 0xf2ead8, roughness: 0.65 })
@@ -301,16 +347,20 @@ export class RoomBuilder {
       chandelier.add(flame)
     }
 
-    this.group.add(chandelier)
+    parent.add(chandelier)
   }
 
   public dispose(): void {
-    this.group.traverse((obj) => {
-      if (obj instanceof THREE.Mesh) {
-        obj.geometry.dispose()
-        if (Array.isArray(obj.material)) obj.material.forEach((m) => m.dispose())
-        else obj.material.dispose()
-      }
-    })
+    const disposeGroup = (g: THREE.Group) => {
+      g.traverse((obj) => {
+        if (obj instanceof THREE.Mesh) {
+          obj.geometry.dispose()
+          if (Array.isArray(obj.material)) obj.material.forEach((m) => m.dispose())
+          else obj.material.dispose()
+        }
+      })
+    }
+    disposeGroup(this.zone1Group)
+    disposeGroup(this.zone2Group)
   }
 }

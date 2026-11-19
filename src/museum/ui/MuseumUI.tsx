@@ -1,17 +1,27 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react'
 import type { InteractiveTarget } from '../core/ObjectManager'
-import { EXHIBIT_DATA, type ExhibitData, type ExhibitSubItem, type HistoryBookPage } from '../data/historyData'
+import {
+  EXHIBIT_DATA,
+  MUSEUM_ZONES,
+  type ExhibitData,
+  type ExhibitSubItem,
+  type HistoryBookPage,
+} from '../data/historyData'
 import { AssetManager } from '../core/AssetManager'
 import { SoundManager } from '../core/SoundManager'
 
 interface MuseumUIProps {
   hoveredTarget: InteractiveTarget | null
   activeExhibitId: string | null
+  activeZoneId: string
+  isTeleporting: boolean
+  teleportTargetName: string
   initialSubItemIndex: number
   isStarted: boolean
   onStartExploration: () => void
   onCloseExhibit: () => void
   onResetCamera: () => void
+  onTeleportZone: (zoneId: string) => void
   onJoystickMove?: (x: number, y: number) => void
   onTouchLook?: (dx: number, dy: number) => void
   onInteractButton?: () => void
@@ -27,25 +37,42 @@ const ZOOM_STEPS = [1, 1.5, 2, 2.5]
 interface HeaderProps {
   isFullscreen: boolean
   isMuted: boolean
+  activeZoneId: string
   onResetCamera: () => void
   onToggleSound: () => void
   onToggleSettings: () => void
   onOpenHelp: () => void
   onToggleFullscreen: () => void
+  onToggleSidebar: () => void
 }
 
 const MuseumHeader = React.memo(function MuseumHeader({
   isFullscreen,
   isMuted,
+  activeZoneId,
   onResetCamera,
   onToggleSound,
   onToggleSettings,
   onOpenHelp,
   onToggleFullscreen,
+  onToggleSidebar,
 }: HeaderProps) {
+  const currentZone = useMemo(
+    () => MUSEUM_ZONES.find((z) => z.id === activeZoneId) || MUSEUM_ZONES[0],
+    [activeZoneId],
+  )
+
   return (
     <header className="museum-hud-header">
       <div className="museum-hud-brand">
+        <button
+          className="hud-btn hud-btn-sidebar-toggle"
+          onClick={onToggleSidebar}
+          title="Buka Navigasi Zona Museum"
+        >
+          <span className="hud-btn-icon">🏛</span>
+          <span className="hud-btn-label">Zona</span>
+        </button>
         <div className="museum-brand-logo">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
             <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
@@ -53,7 +80,7 @@ const MuseumHeader = React.memo(function MuseumHeader({
         </div>
         <div className="museum-brand-text">
           <h1>Museum Sejarah Universitas Diponegoro</h1>
-          <p>Zona 1 — The Origin of Undip · Arsip Warisan 1957</p>
+          <p>{currentZone.name} · {currentZone.theme}</p>
         </div>
       </div>
       <div className="museum-hud-actions">
@@ -490,7 +517,15 @@ const SettingsModal = React.memo(function SettingsModal({
   )
 })
 
-const HelpModal = React.memo(function HelpModal({ onClose }: { onClose: () => void }) {
+const HelpModal = React.memo(function HelpModal({
+  activeZoneId,
+  onClose,
+}: {
+  activeZoneId: string
+  onClose: () => void
+}) {
+  const isZone2 = activeZoneId === 'zone-2'
+
   return (
     <div className="museum-modal-backdrop" onClick={onClose}>
       <div className="museum-parchment-modal help-card" onClick={(e) => e.stopPropagation()}>
@@ -515,23 +550,162 @@ const HelpModal = React.memo(function HelpModal({ onClose }: { onClose: () => vo
             </div>
             <div className="help-box">
               <h4>Koleksi di Ruangan Ini</h4>
-              <ul>
-                <li><strong>Sayap barat</strong> — buku sejarah di mimbar baca & lemari arsip 1956</li>
-                <li><strong>Dinding utara</strong> — galeri foto kampus awal Pleburan & GRIS</li>
-                <li><strong>Dinding selatan</strong> — galeri rektor & pimpinan rektorat dari periode ke periode</li>
-                <li><strong>Sayap timur</strong> — etalase dokumen resmi penegerian</li>
-              </ul>
+              {isZone2 ? (
+                <ul>
+                  <li><strong>Pusat ruangan</strong> — miniatur 3D arsitektur & masterplan Tembalang</li>
+                  <li><strong>Sayap barat</strong> — galeri perkembangan 11 fakultas & 2 sekolah</li>
+                  <li><strong>Dinding utara</strong> — foto transformasi kampus dari GRIS ke Tembalang</li>
+                  <li><strong>Sayap timur</strong> — pusat riset kelautan & vitrine oseanografi</li>
+                  <li><strong>Dinding selatan</strong> — rekor employability, robotik & pelopor KKN</li>
+                </ul>
+              ) : (
+                <ul>
+                  <li><strong>Sayap barat</strong> — buku sejarah di mimbar baca & lemari arsip 1956</li>
+                  <li><strong>Dinding utara</strong> — galeri foto kampus awal Pleburan & GRIS</li>
+                  <li><strong>Dinding selatan</strong> — galeri rektor & pimpinan rektorat dari periode ke periode</li>
+                  <li><strong>Sayap timur</strong> — etalase dokumen resmi penegerian</li>
+                </ul>
+              )}
             </div>
           </div>
           <p className="modal-main-narrative">
             Tidak ada denah yang dibutuhkan: mendekatlah ke objek pameran. Nama koleksi akan muncul,
             lalu tekan <strong>E</strong> (atau tombol aksi di smartphone) untuk membuka informasi lengkapnya.
+            Gunakan tombol <strong>🏛 Zona</strong> di kiri atas layar untuk berpindah ke ruangan museum lainnya.
           </p>
         </div>
         <div className="modal-footer-bar">
           <span>Selamat menjelajah.</span>
           <button className="btn-resume" onClick={onClose}>Mengerti →</button>
         </div>
+      </div>
+    </div>
+  )
+})
+
+// ============================================================================
+// GLOBAL MUSEUM SIDEBAR (Cross-Zone Navigation Drawer)
+// ============================================================================
+interface SidebarProps {
+  isOpen: boolean
+  activeZoneId: string
+  onClose: () => void
+  onSelectZone: (zoneId: string) => void
+}
+
+const GlobalMuseumSidebar = React.memo(function GlobalMuseumSidebar({
+  isOpen,
+  activeZoneId,
+  onClose,
+  onSelectZone,
+}: SidebarProps) {
+  if (!isOpen) return null
+
+  return (
+    <aside className="museum-sidebar-overlay" onClick={onClose}>
+      <div className="museum-sidebar-panel" onClick={(e) => e.stopPropagation()}>
+        <div className="sidebar-header">
+          <div className="sidebar-brand-title">
+            <span className="sidebar-badge">MUSEUM NAVIGATION</span>
+            <h3>Pilih Ruang Diorama</h3>
+          </div>
+          <button className="sidebar-close-btn" onClick={onClose} title="Tutup Navigasi">
+            ✕
+          </button>
+        </div>
+
+        <div className="sidebar-body">
+          <div className="sidebar-zone-list">
+            {MUSEUM_ZONES.map((zone) => {
+              const isActive = zone.id === activeZoneId
+              const isAvailable = zone.status === 'available'
+
+              return (
+                <div
+                  key={zone.id}
+                  className={`sidebar-zone-card ${isActive ? 'is-active' : ''} ${
+                    !isAvailable ? 'is-locked' : ''
+                  }`}
+                  onClick={() => {
+                    if (isAvailable && !isActive) {
+                      onSelectZone(zone.id)
+                      onClose()
+                    }
+                  }}
+                >
+                  <div className="zone-card-top">
+                    <span className="zone-number-badge">ZONA {zone.zoneNumber}</span>
+                    <span
+                      className={`zone-status-pill ${
+                        isActive
+                          ? 'status-active'
+                          : isAvailable
+                            ? 'status-ready'
+                            : 'status-locked'
+                      }`}
+                    >
+                      {isActive ? '● Sedang Aktif' : isAvailable ? 'Tersedia' : 'Coming Soon'}
+                    </span>
+                  </div>
+
+                  <h4 className="zone-card-title">{zone.name.replace(/^Zona \d+ — /, '')}</h4>
+                  <p className="zone-card-subtitle">{zone.subtitle}</p>
+
+                  {isAvailable && !isActive ? (
+                    <div className="zone-card-action">
+                      <button className="btn-zone-teleport">
+                        <span>Teleportasi ke Ruangan Ini →</span>
+                      </button>
+                    </div>
+                  ) : isActive ? (
+                    <div className="zone-active-hint">
+                      <span>✓ Sedang Anda jelajahi saat ini</span>
+                    </div>
+                  ) : null}
+                </div>
+              )
+            })}
+          </div>
+        </div>
+
+        <div className="sidebar-footer">
+          <p className="sidebar-footer-hint">
+            ✦ Teleportasi instan antar-zona secara langsung tanpa reload halaman.
+          </p>
+        </div>
+      </div>
+    </aside>
+  )
+})
+
+// ============================================================================
+// TELEPORTATION TRANSITION OVERLAY (Seamless Vintage Fade & Teleport Hint)
+// ============================================================================
+interface TeleportOverlayProps {
+  isVisible: boolean
+  targetName: string
+}
+
+const TeleportTransitionOverlay = React.memo(function TeleportTransitionOverlay({
+  isVisible,
+  targetName,
+}: TeleportOverlayProps) {
+  if (!isVisible) return null
+
+  return (
+    <div className="museum-teleport-overlay">
+      <div className="teleport-card">
+        <div className="teleport-emblem">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+          </svg>
+        </div>
+        <div className="teleport-tag">Teleportasi Ruang Museum...</div>
+        <h2 className="teleport-title">{targetName}</h2>
+        <div className="teleport-progress-bar">
+          <div className="teleport-progress-fill" />
+        </div>
+        <p className="teleport-hint">Menyiapkan tata ruang dan koleksi pameran...</p>
       </div>
     </div>
   )
@@ -578,11 +752,15 @@ const WelcomeScreen = React.memo(function WelcomeScreen({
 export const MuseumUI = React.memo(function MuseumUI({
   hoveredTarget,
   activeExhibitId,
+  activeZoneId,
+  isTeleporting,
+  teleportTargetName,
   initialSubItemIndex,
   isStarted,
   onStartExploration,
   onCloseExhibit,
   onResetCamera,
+  onTeleportZone,
   onJoystickMove,
   onTouchLook,
   onInteractButton,
@@ -593,6 +771,7 @@ export const MuseumUI = React.memo(function MuseumUI({
   const [isMuted, setIsMuted] = useState(false)
   const [showHelp, setShowHelp] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
+  const [showSidebar, setShowSidebar] = useState(false)
   const [isTouchDevice, setIsTouchDevice] = useState(false)
   const [sensitivity, setSensitivity] = useState(1.0)
 
@@ -687,11 +866,39 @@ export const MuseumUI = React.memo(function MuseumUI({
       <MuseumHeader
         isFullscreen={isFullscreen}
         isMuted={isMuted}
+        activeZoneId={activeZoneId}
         onResetCamera={onResetCamera}
         onToggleSound={toggleSound}
         onToggleSettings={() => setShowSettings((prev) => !prev)}
         onOpenHelp={() => setShowHelp(true)}
         onToggleFullscreen={toggleFullscreen}
+        onToggleSidebar={() => setShowSidebar((s) => !s)}
+      />
+
+      {/* Floating Sidebar Toggle Button on the Left */}
+      {isStarted && !showSidebar && (
+        <button
+          className="museum-floating-sidebar-toggle"
+          onClick={() => setShowSidebar(true)}
+          title="Buka Navigasi Ruang Museum"
+        >
+          <span className="toggle-icon">🏛</span>
+          <span className="toggle-label">ZONA</span>
+        </button>
+      )}
+
+      {/* GLOBAL MUSEUM SIDEBAR (Cross-Zone Navigation) */}
+      <GlobalMuseumSidebar
+        isOpen={showSidebar}
+        activeZoneId={activeZoneId}
+        onClose={() => setShowSidebar(false)}
+        onSelectZone={onTeleportZone}
+      />
+
+      {/* TELEPORTATION TRANSITION OVERLAY */}
+      <TeleportTransitionOverlay
+        isVisible={isTeleporting}
+        targetName={teleportTargetName}
       />
 
       {/* 2. CROSSHAIR (Only updates when hover state changes) */}
@@ -764,7 +971,7 @@ export const MuseumUI = React.memo(function MuseumUI({
 
       {/* 10. HELP MODAL */}
       {showHelp && (
-        <HelpModal onClose={() => setShowHelp(false)} />
+        <HelpModal activeZoneId={activeZoneId} onClose={() => setShowHelp(false)} />
       )}
     </>
   )

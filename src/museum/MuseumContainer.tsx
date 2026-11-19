@@ -3,6 +3,7 @@ import { SceneManager } from './core/SceneManager'
 import type { InteractiveTarget } from './core/ObjectManager'
 import { MuseumUI } from './ui/MuseumUI'
 import { SoundManager } from './core/SoundManager'
+import { MUSEUM_ZONES } from './data/historyData'
 import './ui/museum.css'
 
 export function MuseumContainer() {
@@ -10,6 +11,9 @@ export function MuseumContainer() {
   const sceneManagerRef = useRef<SceneManager | null>(null)
 
   const [isStarted, setIsStarted] = useState(false)
+  const [activeZoneId, setActiveZoneId] = useState<string>('zone-1')
+  const [isTeleporting, setIsTeleporting] = useState(false)
+  const [teleportTargetName, setTeleportTargetName] = useState('')
   const [hoveredTarget, setHoveredTarget] = useState<InteractiveTarget | null>(null)
   const [activeExhibitId, setActiveExhibitId] = useState<string | null>(null)
   const [openedSubItemIndex, setOpenedSubItemIndex] = useState(0)
@@ -67,12 +71,45 @@ export function MuseumContainer() {
     }
   }, [])
 
-  // Reset camera position to room center
+  // Reset camera position to active zone spawn point
   const handleResetCamera = useCallback(() => {
     if (sceneManagerRef.current) {
-      sceneManagerRef.current.getCameraController().reset()
+      sceneManagerRef.current.resetCameraToActiveZone()
     }
   }, [])
+
+  // Teleport between museum zones without reloading page
+  const handleTeleportZone = useCallback((targetZoneId: string) => {
+    if (targetZoneId === activeZoneId || isTeleporting) return
+
+    const targetZone = MUSEUM_ZONES.find((z) => z.id === targetZoneId)
+    if (!targetZone || targetZone.status !== 'available') return
+
+    setIsTeleporting(true)
+    setTeleportTargetName(targetZone.name)
+    SoundManager.getInstance().playPaperTurn()
+
+    // Unlock pointer during teleport transition
+    sceneManagerRef.current?.getCameraController().unlock()
+
+    // Smooth transition:
+    // 1. Overlay fades in (dark parchment)
+    // 2. Switch 3D scene at 400ms
+    // 3. Complete fade in at 800ms
+    setTimeout(() => {
+      sceneManagerRef.current?.switchZone(targetZoneId)
+      setActiveZoneId(targetZoneId)
+      setActiveExhibitId(null)
+
+      setTimeout(() => {
+        setIsTeleporting(false)
+        const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0 || window.innerWidth <= 840
+        if (!isTouch) {
+          sceneManagerRef.current?.getCameraController().lock()
+        }
+      }, 400)
+    }, 400)
+  }, [activeZoneId, isTeleporting])
 
   // Touch controls handlers
   const handleJoystickMove = useCallback((x: number, y: number) => {
@@ -108,12 +145,12 @@ export function MuseumContainer() {
   // Click on viewport when unlocked to re-lock (Desktop only)
   const handleViewportClick = useCallback(() => {
     const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0 || window.innerWidth <= 840
-    if (isStarted && !activeExhibitId && sceneManagerRef.current && !isTouch) {
+    if (isStarted && !activeExhibitId && !isTeleporting && sceneManagerRef.current && !isTouch) {
       if (!sceneManagerRef.current.getCameraController().isLocked()) {
         sceneManagerRef.current.getCameraController().lock()
       }
     }
-  }, [isStarted, activeExhibitId])
+  }, [isStarted, activeExhibitId, isTeleporting])
 
   return (
     <div className="museum-viewport" onClick={handleViewportClick}>
@@ -124,11 +161,15 @@ export function MuseumContainer() {
       <MuseumUI
         hoveredTarget={hoveredTarget}
         activeExhibitId={activeExhibitId}
+        activeZoneId={activeZoneId}
+        isTeleporting={isTeleporting}
+        teleportTargetName={teleportTargetName}
         initialSubItemIndex={openedSubItemIndex}
         isStarted={isStarted}
         onStartExploration={handleStartExploration}
         onCloseExhibit={handleCloseExhibit}
         onResetCamera={handleResetCamera}
+        onTeleportZone={handleTeleportZone}
         onJoystickMove={handleJoystickMove}
         onTouchLook={handleTouchLook}
         onInteractButton={handleInteractButton}

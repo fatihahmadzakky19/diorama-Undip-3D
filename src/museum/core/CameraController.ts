@@ -35,7 +35,8 @@ export class CameraController {
   private _hasMoved = true
 
   // Room & obstacle boundaries
-  private roomHalfSize: number
+  private roomHalfX: number
+  private roomHalfZ: number
   private obstacles: ObstacleBox[] = []
 
   // Subtle head bob
@@ -53,7 +54,8 @@ export class CameraController {
   ) {
     this.camera = camera
     this.domElement = domElement
-    this.roomHalfSize = roomSize / 2
+    this.roomHalfX = roomSize / 2
+    this.roomHalfZ = roomSize / 2
     this.obstacles = obstacles
 
     this.controls = new PointerLockControls(this.camera, this.domElement)
@@ -94,6 +96,19 @@ export class CameraController {
 
   public setObstacles(obstacles: ObstacleBox[]): void {
     this.obstacles = obstacles
+  }
+
+  public setRoomBounds(halfX: number, halfZ: number): void {
+    this.roomHalfX = halfX
+    this.roomHalfZ = halfZ
+  }
+
+  public setSpawn(x: number, y: number, z: number, lookAngle = 0): void {
+    this.camera.position.set(x, y, z)
+    this.camera.rotation.set(0, lookAngle, 0)
+    this.velocity.set(0, 0, 0)
+    this.joystickVector.set(0, 0)
+    this._hasMoved = true
   }
 
   public reset(): void {
@@ -260,9 +275,10 @@ export class CameraController {
     }
 
     // 3. Keep within Room Boundaries
-    const limit = this.roomHalfSize - this.playerRadius - 0.2
-    this.camera.position.x = THREE.MathUtils.clamp(this.camera.position.x, -limit, limit)
-    this.camera.position.z = THREE.MathUtils.clamp(this.camera.position.z, -limit, limit)
+    const limitX = this.roomHalfX - this.playerRadius - 0.2
+    const limitZ = this.roomHalfZ - this.playerRadius - 0.2
+    this.camera.position.x = THREE.MathUtils.clamp(this.camera.position.x, -limitX, limitX)
+    this.camera.position.z = THREE.MathUtils.clamp(this.camera.position.z, -limitZ, limitZ)
 
     // 4. Subtle head bobbing when walking
     const currentSpeed = Math.sqrt(this.velocity.x * this.velocity.x + this.velocity.z * this.velocity.z)

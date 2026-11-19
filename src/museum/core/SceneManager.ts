@@ -20,6 +20,9 @@ export class SceneManager {
   private interactionManager: InteractionManager
   private soundManager: SoundManager
 
+  // Active Zone ID
+  private activeZoneId = 'zone-1'
+
   // Clock & animation loop
   private clock = new THREE.Clock()
   private animationFrameId: number | null = null
@@ -68,29 +71,31 @@ export class SceneManager {
 
     container.appendChild(this.renderer.domElement)
 
-    // 4. Initialize Modular Managers
+    // 4. Initialize Modular Managers (Start with Zone 1)
     this.lightingManager = new LightingManager(isTouch)
-    this.scene.add(this.lightingManager.getGroup())
+    this.scene.add(this.lightingManager.getZone1Group())
 
     this.roomBuilder = new RoomBuilder()
-    this.scene.add(this.roomBuilder.getGroup())
+    this.scene.add(this.roomBuilder.getZone1Group())
 
     this.objectManager = new ObjectManager()
-    this.scene.add(this.objectManager.getGroup())
+    this.scene.add(this.objectManager.getZone1Group())
 
     // 5. Camera Controller with collision obstacles
     this.cameraController = new CameraController(
       this.camera,
       this.renderer.domElement,
       this.roomBuilder.roomSize,
-      this.objectManager.getObstacles(),
+      this.objectManager.getZone1Obstacles(),
     )
+    this.cameraController.setRoomBounds(this.roomBuilder.roomSize / 2, this.roomBuilder.roomSize / 2)
+    this.cameraController.setSpawn(0, this.cameraController.eyeHeight, 3.4, 0)
 
     // 6. Interaction Manager
     this.interactionManager = new InteractionManager(
       this.camera,
       this.renderer.domElement,
-      this.objectManager.getInteractiveTargets(),
+      this.objectManager.getZone1Targets(),
       onHoverChange,
       (target) => {
         this.soundManager.playPaperTurn()
@@ -122,7 +127,71 @@ export class SceneManager {
   }
 
   public getInteractiveTargets(): InteractiveTarget[] {
-    return this.objectManager.getInteractiveTargets()
+    return this.activeZoneId === 'zone-2'
+      ? this.objectManager.getZone2Targets()
+      : this.objectManager.getZone1Targets()
+  }
+
+  public getActiveZoneId(): string {
+    return this.activeZoneId
+  }
+
+  public switchZone(zoneId: string): void {
+    if (this.activeZoneId === zoneId) return
+
+    // 1. Detach old zone groups from active scene
+    if (this.activeZoneId === 'zone-1') {
+      this.scene.remove(this.roomBuilder.getZone1Group())
+      this.scene.remove(this.objectManager.getZone1Group())
+      this.scene.remove(this.lightingManager.getZone1Group())
+    } else if (this.activeZoneId === 'zone-2') {
+      this.scene.remove(this.roomBuilder.getZone2Group())
+      this.scene.remove(this.objectManager.getZone2Group())
+      this.scene.remove(this.lightingManager.getZone2Group())
+    }
+
+    this.activeZoneId = zoneId
+
+    // 2. Attach new zone groups & configure boundaries, obstacles, spawn and targets
+    if (zoneId === 'zone-2') {
+      this.scene.add(this.roomBuilder.getZone2Group())
+      this.scene.add(this.objectManager.getZone2Group())
+      this.scene.add(this.lightingManager.getZone2Group())
+
+      this.cameraController.setRoomBounds(
+        this.roomBuilder.zone2Width / 2,
+        this.roomBuilder.zone2Depth / 2,
+      )
+      this.cameraController.setObstacles(this.objectManager.getZone2Obstacles())
+      this.cameraController.setSpawn(0, this.cameraController.eyeHeight, 5.2, 0)
+      this.interactionManager.setTargets(this.objectManager.getZone2Targets())
+    } else {
+      // Zone 1
+      this.scene.add(this.roomBuilder.getZone1Group())
+      this.scene.add(this.objectManager.getZone1Group())
+      this.scene.add(this.lightingManager.getZone1Group())
+
+      this.cameraController.setRoomBounds(
+        this.roomBuilder.roomSize / 2,
+        this.roomBuilder.roomSize / 2,
+      )
+      this.cameraController.setObstacles(this.objectManager.getZone1Obstacles())
+      this.cameraController.setSpawn(0, this.cameraController.eyeHeight, 3.4, 0)
+      this.interactionManager.setTargets(this.objectManager.getZone1Targets())
+    }
+
+    // 3. Clear interaction hover state and request ample render settle frames
+    this.interactionManager.clearHover()
+    this.requestRender(25)
+  }
+
+  public resetCameraToActiveZone(): void {
+    if (this.activeZoneId === 'zone-2') {
+      this.cameraController.setSpawn(0, this.cameraController.eyeHeight, 5.2, 0)
+    } else {
+      this.cameraController.setSpawn(0, this.cameraController.eyeHeight, 3.4, 0)
+    }
+    this.requestRender(10)
   }
 
   public start(): void {

@@ -518,6 +518,16 @@ export class AssetManager {
       this.drawLaboratory(ctx, w, h)
     } else if (key.startsWith('doc_') || key.startsWith('archive_')) {
       this.drawOfficialDocument(ctx, w, h, key)
+    } else if (key.startsWith('z2_img_fac_')) {
+      this.drawZone2FacultyPlate(ctx, w, h, key)
+    } else if (key.startsWith('z2_img_trans_')) {
+      this.drawZone2TransformationPlate(ctx, w, h, key)
+    } else if (key.startsWith('z2_img_res_')) {
+      this.drawZone2ResearchPlate(ctx, w, h, key)
+    } else if (key.startsWith('z2_img_ach_')) {
+      this.drawZone2AchievementPlate(ctx, w, h, key)
+    } else if (key.startsWith('z2_img_')) {
+      this.drawZone2MiniatureView(ctx, w, h, key)
     } else {
       this.drawGenericHeritage(ctx, w, h, key)
     }
@@ -1401,6 +1411,447 @@ export class AssetManager {
     const texture = canvasToTexture(canvas)
     this.textureCache.set('big_history_wall', texture)
     return texture
+  }
+
+  // =========================================================================
+  // ZONE 2 PROCEDURAL DRAWINGS — THE GROWTH OF KNOWLEDGE
+  // =========================================================================
+
+  public getCampusMiniatureGroundTexture(): THREE.CanvasTexture {
+    if (this.textureCache.has('z2_miniature_ground')) {
+      return this.textureCache.get('z2_miniature_ground')!
+    }
+    const { canvas, ctx } = createHelper(1024, 1024)
+    // Warm diorama earth & velvet lawn base
+    ctx.fillStyle = '#343828'
+    ctx.fillRect(0, 0, 1024, 1024)
+
+    // Radial gradient contour
+    const rad = ctx.createRadialGradient(512, 512, 50, 512, 512, 550)
+    rad.addColorStop(0, '#424933')
+    rad.addColorStop(0.7, '#333827')
+    rad.addColorStop(1, '#24271c')
+    ctx.fillStyle = rad
+    ctx.fillRect(0, 0, 1024, 1024)
+
+    // Tembalang Central Avenues
+    ctx.strokeStyle = '#231e17'
+    ctx.lineWidth = 36
+    ctx.beginPath()
+    ctx.moveTo(512, 40)
+    ctx.lineTo(512, 984)
+    ctx.moveTo(80, 512)
+    ctx.lineTo(944, 512)
+    ctx.stroke()
+
+    // Inner Ring Road roundabout
+    ctx.strokeStyle = '#2a241c'
+    ctx.lineWidth = 26
+    ctx.beginPath()
+    ctx.arc(512, 512, 220, 0, Math.PI * 2)
+    ctx.stroke()
+
+    // Waduk Pendidikan Lake
+    ctx.fillStyle = '#1e3236'
+    ctx.beginPath()
+    ctx.ellipse(320, 360, 140, 85, 0.35, 0, Math.PI * 2)
+    ctx.fill()
+    ctx.strokeStyle = '#54757a'
+    ctx.lineWidth = 6
+    ctx.stroke()
+
+    // Paved walkways
+    ctx.strokeStyle = 'rgba(210, 195, 170, 0.28)'
+    ctx.lineWidth = 6
+    for (let i = 0; i < 8; i++) {
+      const angle = (i * Math.PI) / 4
+      ctx.beginPath()
+      ctx.moveTo(512 + Math.cos(angle) * 70, 512 + Math.sin(angle) * 70)
+      ctx.lineTo(512 + Math.cos(angle) * 440, 512 + Math.sin(angle) * 440)
+      ctx.stroke()
+    }
+
+    const texture = canvasToTexture(canvas)
+    this.textureCache.set('z2_miniature_ground', texture)
+    return texture
+  }
+
+  private drawZone2MiniatureView(ctx: CanvasRenderingContext2D, w: number, h: number, key: string): void {
+    // Vintage architectural sketch of Tembalang landmarks
+    ctx.fillStyle = '#261b12'
+    ctx.fillRect(0, 0, w, h)
+
+    // Blueprint grid
+    ctx.strokeStyle = 'rgba(215, 195, 160, 0.12)'
+    ctx.lineWidth = 1
+    for (let x = 0; x < w; x += 32) {
+      ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke()
+    }
+    for (let y = 0; y < h; y += 32) {
+      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke()
+    }
+
+    // Sky / Horizon gradient
+    const sky = ctx.createLinearGradient(0, 0, 0, h * 0.6)
+    sky.addColorStop(0, '#58432f')
+    sky.addColorStop(1, '#a08563')
+    ctx.fillStyle = sky
+    ctx.fillRect(20, 20, w - 40, h * 0.58)
+
+    // Stepped pyramid roof of Widya Puraya
+    const cx = w / 2
+    const cy = h * 0.46
+    ctx.fillStyle = '#78351e' // Terracotta roof
+    ctx.beginPath()
+    ctx.moveTo(cx, cy - 110)
+    ctx.lineTo(cx + 170, cy + 40)
+    ctx.lineTo(cx - 170, cy + 40)
+    ctx.closePath()
+    ctx.fill()
+    ctx.strokeStyle = '#cba268'
+    ctx.lineWidth = 3
+    ctx.stroke()
+
+    // Clock tower spire
+    ctx.fillStyle = '#2a1a0f'
+    ctx.fillRect(cx - 24, cy - 170, 48, 65)
+    ctx.fillStyle = '#ebd6b0'
+    ctx.beginPath()
+    ctx.arc(cx, cy - 138, 14, 0, Math.PI * 2)
+    ctx.fill()
+    ctx.strokeStyle = '#2a1a0f'
+    ctx.lineWidth = 2
+    ctx.stroke()
+
+    // Pediment columns
+    ctx.fillStyle = '#ebe1d1'
+    for (let col = -4; col <= 4; col++) {
+      ctx.fillRect(cx + col * 36 - 6, cy + 40, 12, 60)
+    }
+    ctx.fillStyle = '#422e1e'
+    ctx.fillRect(cx - 180, cy + 100, 360, 30)
+
+    // Heading plaque
+    ctx.fillStyle = '#1c120a'
+    ctx.fillRect(30, h - 85, w - 60, 60)
+    ctx.strokeStyle = '#c59d53'
+    ctx.lineWidth = 2
+    ctx.strokeRect(34, h - 81, w - 68, 52)
+
+    ctx.fillStyle = '#fae1a0'
+    ctx.font = 'bold 15px "Cinzel", serif'
+    ctx.textAlign = 'center'
+    const titleText = key.includes('widya')
+      ? 'GEDUNG REKTORAT WIDYA PURAYA & MENARA JAM'
+      : key.includes('waduk')
+        ? 'WADUK PENDIDIKAN & SISTEM TATA AIR TEMBALANG'
+        : key.includes('rsnd')
+          ? 'RUMAH SAKIT NASIONAL DIPONEGORO (RSND)'
+          : key.includes('teluk_awur')
+            ? 'MARINE SCIENCE TECHNO PARK TELUK AWUR JEPARA'
+            : 'TRANSFORMASI KAWASAN KAMPUS TERPADU TEMBALANG'
+    ctx.fillText(titleText, cx, h - 52)
+    ctx.font = 'italic 12px "EB Garamond", serif'
+    ctx.fillStyle = '#dcd0bc'
+    ctx.fillText('Arsip Masterplan Kampus Terpadu 180 Ha • Universitas Diponegoro', cx, h - 33)
+  }
+
+  private drawZone2FacultyPlate(ctx: CanvasRenderingContext2D, w: number, h: number, key: string): void {
+    const cx = w / 2
+    // Classical academic faculty engraving plate
+    ctx.fillStyle = '#1d150e'
+    ctx.fillRect(0, 0, w, h)
+
+    // Golden ornate inner cartouche
+    ctx.strokeStyle = '#c8a264'
+    ctx.lineWidth = 3
+    ctx.strokeRect(16, 16, w - 32, h - 32)
+    ctx.strokeStyle = '#5a3f25'
+    ctx.lineWidth = 1.5
+    ctx.strokeRect(22, 22, w - 44, h - 44)
+
+    // Central Emblem Medallion
+    const cy = h * 0.40
+    const rad = ctx.createRadialGradient(cx, cy, 20, cx, cy, 140)
+    rad.addColorStop(0, '#f4ecd8')
+    rad.addColorStop(0.85, '#cfba95')
+    rad.addColorStop(1, '#6a4e2e')
+    ctx.fillStyle = rad
+    ctx.beginPath()
+    ctx.arc(cx, cy, 125, 0, Math.PI * 2)
+    ctx.fill()
+    ctx.strokeStyle = '#2a1a0f'
+    ctx.lineWidth = 5
+    ctx.stroke()
+
+    // Emblem Silhouette
+    ctx.fillStyle = '#22150c'
+    ctx.strokeStyle = '#22150c'
+    ctx.lineWidth = 4
+    if (key.includes('hukum')) {
+      // Scales of Justice
+      ctx.fillRect(cx - 5, cy - 65, 10, 130)
+      ctx.fillRect(cx - 65, cy - 45, 130, 8)
+      ctx.beginPath(); ctx.arc(cx - 45, cy + 10, 25, 0, Math.PI); ctx.fill()
+      ctx.beginPath(); ctx.arc(cx + 45, cy + 10, 25, 0, Math.PI); ctx.fill()
+    } else if (key.includes('feb')) {
+      // Caduceus / Economic growth chart & column
+      ctx.fillRect(cx - 60, cy + 40, 120, 14)
+      for (let i = 0; i < 4; i++) ctx.fillRect(cx - 48 + i * 32, cy - 40, 14, 80)
+      ctx.fillRect(cx - 55, cy - 50, 110, 12)
+    } else if (key.includes('teknik')) {
+      // Cogwheel and Caliper
+      ctx.beginPath(); ctx.arc(cx, cy, 50, 0, Math.PI * 2); ctx.stroke()
+      ctx.beginPath(); ctx.arc(cx, cy, 26, 0, Math.PI * 2); ctx.fill()
+      for (let i = 0; i < 8; i++) {
+        const a = (i * Math.PI) / 4
+        ctx.fillRect(cx + Math.cos(a) * 44 - 6, cy + Math.sin(a) * 44 - 6, 12, 12)
+      }
+    } else if (key.includes('kedokteran')) {
+      // Rod of Asclepius & Greek Cross
+      ctx.fillRect(cx - 15, cy - 60, 30, 120)
+      ctx.fillRect(cx - 60, cy - 15, 120, 30)
+      ctx.fillStyle = '#b7282e'
+      ctx.fillRect(cx - 10, cy - 55, 20, 110)
+      ctx.fillRect(cx - 55, cy - 10, 110, 20)
+    } else if (key.includes('fpik')) {
+      // Ocean Waves & Maritime Fish
+      ctx.beginPath()
+      ctx.arc(cx, cy, 40, 0.4, Math.PI - 0.4)
+      ctx.stroke()
+      ctx.beginPath()
+      ctx.ellipse(cx, cy - 10, 48, 22, -0.2, 0, Math.PI * 2)
+      ctx.fill()
+    } else {
+      // Torch of Knowledge and Open Book
+      ctx.fillRect(cx - 8, cy - 55, 16, 85)
+      ctx.beginPath()
+      ctx.arc(cx, cy - 65, 18, 0, Math.PI * 2)
+      ctx.fill()
+      ctx.beginPath()
+      ctx.ellipse(cx - 30, cy + 35, 28, 14, -0.2, 0, Math.PI * 2)
+      ctx.ellipse(cx + 30, cy + 35, 28, 14, 0.2, 0, Math.PI * 2)
+      ctx.fill()
+    }
+
+    // Name Ribbon Banner
+    ctx.fillStyle = '#2a1a10'
+    ctx.fillRect(35, h - 110, w - 70, 75)
+    ctx.strokeStyle = '#c59d53'
+    ctx.lineWidth = 2
+    ctx.strokeRect(38, h - 107, w - 76, 69)
+
+    ctx.fillStyle = '#fae1a0'
+    ctx.font = 'bold 16px "Cinzel", serif'
+    ctx.textAlign = 'center'
+    const nameMap: Record<string, string> = {
+      z2_img_fac_hukum: 'FAKULTAS HUKUM (1957)',
+      z2_img_fac_feb: 'FAKULTAS EKONOMIKA & BISNIS (1957)',
+      z2_img_fac_teknik: 'FAKULTAS TEKNIK (1957)',
+      z2_img_fac_kedokteran: 'FAKULTAS KEDOKTERAN (1961)',
+      z2_img_fac_fpp: 'FAKULTAS PETERNAKAN & PERTANIAN (1964)',
+      z2_img_fac_fib: 'FAKULTAS ILMU BUDAYA (1965)',
+      z2_img_fac_fisip: 'FAKULTAS ILMU SOSIAL & POLITIK (1968)',
+      z2_img_fac_fpik: 'FAKULTAS PERIKANAN & KELAUTAN (1968)',
+      z2_img_fac_fsm: 'FAKULTAS SAINS & MATEMATIKA (1988)',
+      z2_img_fac_fkm: 'FAKULTAS KESEHATAN MASYARAKAT (1993)',
+      z2_img_fac_psikologi: 'FAKULTAS PSIKOLOGI (2007)',
+      z2_img_fac_vokasi: 'SEKOLAH PASCASARJANA & VOKASI',
+    }
+    ctx.fillText(nameMap[key] || 'FAKULTAS UNIVERSITAS DIPONEGORO', cx, h - 74)
+
+    ctx.font = 'italic 12px "EB Garamond", serif'
+    ctx.fillStyle = '#dfd3c0'
+    ctx.fillText('Pilar Keilmuan & Pengabdian Almamater Diponegoro', cx, h - 50)
+  }
+
+  private drawZone2TransformationPlate(ctx: CanvasRenderingContext2D, w: number, h: number, key: string): void {
+    const cx = w / 2
+    ctx.fillStyle = '#251b14'
+    ctx.fillRect(0, 0, w, h)
+
+    // Sepia architectural photograph backdrop
+    const sepia = ctx.createLinearGradient(0, 0, 0, h)
+    sepia.addColorStop(0, '#75583e')
+    sepia.addColorStop(0.7, '#483424')
+    sepia.addColorStop(1, '#271b12')
+    ctx.fillStyle = sepia
+    ctx.fillRect(20, 20, w - 40, h - 100)
+
+    // Architectural vignette framing
+    ctx.strokeStyle = '#c59d53'
+    ctx.lineWidth = 2
+    ctx.strokeRect(26, 26, w - 52, h - 112)
+
+    // Building silhouette illustration
+    ctx.fillStyle = '#18100a'
+    if (key.includes('gris')) {
+      // Colonial ballroom facade with high roof
+      ctx.fillRect(cx - 150, h * 0.35, 300, 110)
+      ctx.beginPath()
+      ctx.moveTo(cx - 170, h * 0.35)
+      ctx.lineTo(cx, h * 0.18)
+      ctx.lineTo(cx + 170, h * 0.35)
+      ctx.fill()
+    } else if (key.includes('pleburan')) {
+      // Classical colonnaded Pleburan hall
+      ctx.fillRect(cx - 180, h * 0.38, 360, 95)
+      for (let i = -5; i <= 5; i++) {
+        ctx.fillStyle = '#f0e6d4'
+        ctx.fillRect(cx + i * 32 - 5, h * 0.38, 10, 80)
+      }
+    } else {
+      // Tembalang campus landscape & lake
+      ctx.fillStyle = '#253538'
+      ctx.beginPath()
+      ctx.ellipse(cx, h * 0.46, 160, 60, 0, 0, Math.PI * 2)
+      ctx.fill()
+      ctx.fillStyle = '#18100a'
+      ctx.fillRect(cx - 80, h * 0.28, 160, 60)
+    }
+
+    // Title plate
+    ctx.fillStyle = '#1b120c'
+    ctx.fillRect(20, h - 75, w - 40, 55)
+    ctx.strokeStyle = '#c59d53'
+    ctx.lineWidth = 1.5
+    ctx.strokeRect(24, h - 71, w - 48, 47)
+
+    ctx.fillStyle = '#fae1a0'
+    ctx.font = 'bold 15px "Cinzel", serif'
+    ctx.textAlign = 'center'
+    const transMap: Record<string, string> = {
+      z2_img_trans_gris: 'AULA GRIS JL. PEMUDA — 1957',
+      z2_img_trans_pleburan: 'KAMPUS PLEBURAN SEMARANG BAWAH',
+      z2_img_trans_blueprint: 'MASTERPLAN TEMBALANG 180 HA (1977)',
+      z2_img_trans_widya_build: 'KONSTRUKSI GEDUNG WIDYA PURAYA (1986)',
+      z2_img_trans_rsnd: 'RUMAH SAKIT NASIONAL DIPONEGORO (2014)',
+      z2_img_trans_eco: 'LANSKAP KAMPUS HIJAU BERKELANJUTAN',
+    }
+    ctx.fillText(transMap[key] || 'DOKUMENTASI TRANSFORMASI KAMPUS', cx, h - 48)
+    ctx.font = 'italic 12px "EB Garamond", serif'
+    ctx.fillStyle = '#dcd0bc'
+    ctx.fillText('Arsip Visual Transformasi Ruang Universitas Diponegoro', cx, h - 30)
+  }
+
+  private drawZone2ResearchPlate(ctx: CanvasRenderingContext2D, w: number, h: number, key: string): void {
+    const cx = w / 2
+    ctx.fillStyle = '#191c20'
+    ctx.fillRect(0, 0, w, h)
+
+    // Deep oceanic / scientific parchment
+    const grad = ctx.createLinearGradient(0, 0, 0, h)
+    grad.addColorStop(0, '#2e3a42')
+    grad.addColorStop(0.7, '#1d272d')
+    grad.addColorStop(1, '#11171c')
+    ctx.fillStyle = grad
+    ctx.fillRect(20, 20, w - 40, h - 95)
+
+    // Scientific cartouche
+    ctx.strokeStyle = '#c59d53'
+    ctx.lineWidth = 2
+    ctx.strokeRect(25, 25, w - 50, h - 105)
+
+    // Research motif
+    ctx.fillStyle = '#c59d53'
+    ctx.strokeStyle = '#fae1a0'
+    ctx.lineWidth = 3
+    if (key.includes('pip') || key.includes('station')) {
+      // Ship / Maritime compass
+      ctx.beginPath(); ctx.arc(cx, h * 0.4, 55, 0, Math.PI * 2); ctx.stroke()
+      ctx.beginPath()
+      ctx.moveTo(cx, h * 0.4 - 70); ctx.lineTo(cx + 14, h * 0.4)
+      ctx.lineTo(cx, h * 0.4 + 70); ctx.lineTo(cx - 14, h * 0.4)
+      ctx.closePath()
+      ctx.fill()
+    } else {
+      // Atom & Microscopic science
+      ctx.beginPath(); ctx.arc(cx, h * 0.4, 20, 0, Math.PI * 2); ctx.fill()
+      ctx.beginPath(); ctx.ellipse(cx, h * 0.4, 75, 25, 0.4, 0, Math.PI * 2); ctx.stroke()
+      ctx.beginPath(); ctx.ellipse(cx, h * 0.4, 75, 25, -0.4, 0, Math.PI * 2); ctx.stroke()
+    }
+
+    // Plate footer
+    ctx.fillStyle = '#111518'
+    ctx.fillRect(20, h - 70, w - 40, 50)
+    ctx.strokeStyle = '#c59d53'
+    ctx.lineWidth = 1.5
+    ctx.strokeRect(24, h - 66, w - 48, 42)
+
+    ctx.fillStyle = '#fae1a0'
+    ctx.font = 'bold 15px "Cinzel", serif'
+    ctx.textAlign = 'center'
+    const resMap: Record<string, string> = {
+      z2_img_res_pip: 'POLA ILMIAH POKOK (PIP) PESISIR (1974)',
+      z2_img_res_station: 'STASIUN RISET LAUT TELUK AWUR JEPARA',
+      z2_img_res_intlab: 'LABORATORIUM SENTRAL TERPADU (ISO 17025)',
+      z2_img_res_journals: 'PUBLIKASI JURNAL SCOPUS Q1 / Q2 UNDIP',
+      z2_img_res_energy: 'INOVASI DESALINISASI & ENERGI BERSIH',
+    }
+    ctx.fillText(resMap[key] || 'RISET & PENGEMBANGAN KEILMUAN', cx, h - 44)
+    ctx.font = 'italic 12px "EB Garamond", serif'
+    ctx.fillStyle = '#c5d5d8'
+    ctx.fillText('Pusat Keunggulan Ilmu Pengetahuan & Riset Bahari Nasional', cx, h - 26)
+  }
+
+  private drawZone2AchievementPlate(ctx: CanvasRenderingContext2D, w: number, h: number, key: string): void {
+    const cx = w / 2
+    ctx.fillStyle = '#221812'
+    ctx.fillRect(0, 0, w, h)
+
+    // Medal of honor parchment
+    const grad = ctx.createRadialGradient(cx, h * 0.4, 20, cx, h * 0.4, 180)
+    grad.addColorStop(0, '#664c33')
+    grad.addColorStop(0.8, '#3d2b1c')
+    grad.addColorStop(1, '#1d130c')
+    ctx.fillStyle = grad
+    ctx.fillRect(20, 20, w - 40, h - 95)
+
+    // Gold filigree border
+    ctx.strokeStyle = '#c59d53'
+    ctx.lineWidth = 2.5
+    ctx.strokeRect(25, 25, w - 50, h - 105)
+
+    // Laurel Wreath
+    ctx.strokeStyle = '#fae1a0'
+    ctx.lineWidth = 4
+    ctx.beginPath()
+    ctx.arc(cx, h * 0.4, 65, 0.6, Math.PI - 0.6)
+    ctx.stroke()
+    ctx.beginPath()
+    ctx.arc(cx, h * 0.4, 65, Math.PI + 0.6, -0.6)
+    ctx.stroke()
+
+    // Central Trophy / Star / Emblem
+    ctx.fillStyle = '#e5be6b'
+    ctx.beginPath()
+    ctx.arc(cx, h * 0.4, 30, 0, Math.PI * 2)
+    ctx.fill()
+    ctx.strokeStyle = '#2a1a0e'
+    ctx.lineWidth = 3
+    ctx.stroke()
+
+    // Title banner
+    ctx.fillStyle = '#170f09'
+    ctx.fillRect(20, h - 70, w - 40, 50)
+    ctx.strokeStyle = '#c59d53'
+    ctx.lineWidth = 1.5
+    ctx.strokeRect(24, h - 66, w - 48, 42)
+
+    ctx.fillStyle = '#fae1a0'
+    ctx.font = 'bold 15px "Cinzel", serif'
+    ctx.textAlign = 'center'
+    const achMap: Record<string, string> = {
+      z2_img_ach_kkn: 'PELOPOR KKN TEMATIK NASIONAL (1971)',
+      z2_img_ach_qs: 'JUARA 1 & 2 QS EMPLOYABILITY INDONESIA',
+      z2_img_ach_robot: 'JUARA MOBIL HEMAT ENERGI & ROBOTIK',
+      z2_img_ach_bionic: 'INOVASI TANGAN BIONIK & KAKI PALSU CBIOM3S',
+      z2_img_ach_disaster: 'TIM TANGGAP DARURAT & BAKTI NUSANTARA',
+    }
+    ctx.fillText(achMap[key] || 'PRESTASI & KONTRIBUSI MASYARAKAT', cx, h - 44)
+    ctx.font = 'italic 12px "EB Garamond", serif'
+    ctx.fillStyle = '#dfd2be'
+    ctx.fillText('Dedikasi Tridharma Perguruan Tinggi Bagi Kemanusiaan', cx, h - 26)
   }
 
   public dispose(): void {

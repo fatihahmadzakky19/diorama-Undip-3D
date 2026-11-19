@@ -23,7 +23,17 @@ export interface HistoryBookPage {
 
 export interface ExhibitData {
   id: string
-  code: 'history' | 'archive' | 'photos' | 'documents' | 'founders'
+  code:
+    | 'history'
+    | 'archive'
+    | 'photos'
+    | 'documents'
+    | 'founders'
+    | 'z2_miniature'
+    | 'z2_faculties'
+    | 'z2_campus_transformation'
+    | 'z2_research'
+    | 'z2_achievements'
   areaName: string
   zoneNumber: number
   title: string
@@ -36,6 +46,76 @@ export interface ExhibitData {
   bookPages?: HistoryBookPage[]
   stats?: { label: string; value: string }[]
 }
+
+export interface MuseumZoneInfo {
+  id: string
+  zoneNumber: number
+  code: string
+  name: string
+  subtitle: string
+  theme: string
+  status: 'available' | 'coming-soon'
+  spawnPos: [number, number, number]
+  spawnRotationY: number
+}
+
+export const MUSEUM_ZONES: MuseumZoneInfo[] = [
+  {
+    id: 'zone-1',
+    zoneNumber: 1,
+    code: 'origin',
+    name: 'Zona 1 — The Origin of Undip',
+    subtitle: 'Kronik Pendirian, Arsip Otentik & Galeri Pimpinan Rektorat 1957',
+    theme: 'Sejarah Awal & Warisan Pendiri',
+    status: 'available',
+    spawnPos: [0, 1.68, 3.4],
+    spawnRotationY: 0,
+  },
+  {
+    id: 'zone-2',
+    zoneNumber: 2,
+    code: 'growth',
+    name: 'Zona 2 — The Growth of Knowledge',
+    subtitle: 'Perkembangan Fakultas, Transformasi Kampus & Riset Kelautan',
+    theme: 'Evolusi Keilmuan & Perluasan Kampus',
+    status: 'available',
+    spawnPos: [0, 1.68, 5.2],
+    spawnRotationY: 0,
+  },
+  {
+    id: 'zone-3',
+    zoneNumber: 3,
+    code: 'heritage',
+    name: 'Zona 3 — The Heritage of Undip',
+    subtitle: 'Koleksi Pusaka, Nilai Kejuangan & Tradisi Almamater',
+    theme: 'Warisan Nilai Budaya Almamater',
+    status: 'coming-soon',
+    spawnPos: [0, 1.68, 0],
+    spawnRotationY: 0,
+  },
+  {
+    id: 'zone-4',
+    zoneNumber: 4,
+    code: 'today',
+    name: 'Zona 4 — Undip Today',
+    subtitle: 'Prestasi Global, PTN-BH Mandiri & World Class University',
+    theme: 'Reputasi Internasional Masa Kini',
+    status: 'coming-soon',
+    spawnPos: [0, 1.68, 0],
+    spawnRotationY: 0,
+  },
+  {
+    id: 'zone-5',
+    zoneNumber: 5,
+    code: 'future',
+    name: 'Zona 5 — Undip Future',
+    subtitle: 'Inovasi Digital, Green Energy & Visi Menuju Indonesia Emas',
+    theme: 'Cetak Biru Masa Depan Almamater',
+    status: 'coming-soon',
+    spawnPos: [0, 1.68, 0],
+    spawnRotationY: 0,
+  },
+]
 
 /**
  * Data Sejarah Resmi Universitas Diponegoro
@@ -628,6 +708,515 @@ export const EXHIBIT_DATA: Record<string, ExhibitData> = {
           'Memperkuat program beasiswa mahasiswa dan kesejahteraan sivitas akademika almamater.',
         ],
         quote: '“Perguruan tinggi harus hadir memberi solusi konkret, menjunjung integritas ilmu, dan menebarkan kemanfaatan nyata bagi peradaban bangsa.”',
+      },
+    ],
+  },
+
+  // =========================================================================
+  // ZONA 2 — THE GROWTH OF KNOWLEDGE
+  // =========================================================================
+
+  z2_miniature: {
+    id: 'z2_miniature',
+    code: 'z2_miniature',
+    zoneNumber: 2,
+    areaName: 'Pusat Ruangan · Meja Vitrine Miniatur Arsitektur Kampus',
+    title: 'Miniatur 3D Transformasi Kawasan Kampus Undip',
+    subtitle: 'Zona 2 — The Growth of Knowledge: Dari Pleburan Menuju Kampus Terpadu Tembalang & Teluk Awur',
+    badgeText: 'Zona 2 — Central 3D Miniature',
+    mainDescription:
+      'Diorama miniatur arsitektur 3D di tengah ruangan ini merepresentasikan lompatan spasial dan fisik Universitas Diponegoro. Dari cikal bakal kampus sewaan di Gedung GRIS Jl. Pemuda (1957) dan Kampus Pleburan, hingga terwujudnya kampus terpadu seluas lebih dari 180 hektar di perbukitan Tembalang serta kampus pesisir kelautan seluas 52 hektar di Teluk Awur, Jepara.',
+    historicalContext:
+      'Gagasan pemindahan kampus dari Pleburan ke perbukitan Tembalang digagas oleh Rektor Prof. Mr. Soedarto, S.H. pada akhir dekade 1970-an karena daya tampung Pleburan sudah tidak mencukupi laju pertumbuhan mahasiswa. Rencana tersebut dilanjutkan dan diresmikan oleh Prof. Dr. Muladi, S.H., menjadikan Tembalang salah satu kawasan kampus hijau terpadu terbesar di Indonesia.',
+    significance:
+      'Miniatur ini memvisualisasikan harmoni antara arsitektur ikonik (Gedung Rektorat Widya Puraya berciri atap limas bertingkat), danau resapan waduk pendidikan, hutan kampus tropis, dan kompleks fakultas modern.',
+    stats: [
+      { label: 'Luas Kampus Tembalang', value: '± 180 Hektar' },
+      { label: 'Perintis Pembebasan', value: 'Prof. Mr. Soedarto, S.H.' },
+      { label: 'Landmark Ikonik', value: 'Gedung Widya Puraya' },
+      { label: 'Kampus Bahari', value: 'Teluk Awur Jepara (52 Ha)' },
+    ],
+    items: [
+      {
+        id: 'z2-mini-widya-puraya',
+        title: '1. Gedung Rektorat Widya Puraya & Menara Jam',
+        subtitle: 'Pusat Administrasi Sentral & Ikon Kemegahan Tembalang',
+        dateOrYear: 'Diresmikan 1989',
+        imageKey: 'z2_img_widya_puraya',
+        description:
+          'Gedung Widya Puraya dengan arsitektur limas piramida bertingkat tiga dan menara jam sentral merupakan landmark paling ikonik di Kampus Tembalang. Gedung ini menaungi rektorat, aula wisuda agung, dan biro administrasi utama.',
+        details: [
+          'Arsitektur mengadopsi falsafah punden berundak dan joglo ksatria Jawa bernuansa megah.',
+          'Dikelilingi pelataran upacara luas, kolam refleksi air mancur, dan jalur pedestrian rindang.',
+          'Menjadi titik pusat poros tata ruang orientasi seluruh klaster fakultas di Tembalang.',
+        ],
+        quote: '“Widya Puraya melambangkan istana ilmu pengetahuan tempat bertemunya dedikasi riset dan keluhuran budi pekerti.”',
+      },
+      {
+        id: 'z2-mini-waduk-pendidikan',
+        title: '2. Waduk Pendidikan & Sistem Tata Air Mandiri',
+        subtitle: 'Konservasi Lingkungan Hidup, Green Campus & Pengendali Air Terpadu',
+        dateOrYear: '2013 – kini',
+        imageKey: 'z2_img_waduk',
+        description:
+          'Waduk buatan terpadu di kawasan barat laut kampus yang dibangun sebagai sarana edukasi hidrologi, resapan air bawah tanah, pencegah banjir limpasan, serta wahana rekreasi ekologis bagi sivitas akademika.',
+        details: [
+          'Kapasitas tampung air ratusan ribu meter kubik untuk menjaga muka air tanah Tembalang.',
+          'Dikelilingi jogging track, hutan pinus kampus, dan pos pengamatan burung liar.',
+          'Mendukung Undip meraih peringkat ke-2 nasional perguruan tinggi hijau berkelanjutan versi UI GreenMetric.',
+        ],
+        quote: '“Menjaga air dan tanah adalah wujud nyata penghormatan universitas kepada kelestarian alam semesta.”',
+      },
+      {
+        id: 'z2-mini-klaster-fakultas',
+        title: '3. Klaster Fakultas Sains, Teknologi, Kedokteran & Soshum',
+        subtitle: 'Zonasi Terencana untuk Kolaborasi Keilmuan Antardisiplin',
+        dateOrYear: '1986 – kini',
+        imageKey: 'z2_img_faculty_cluster',
+        description:
+          'Kampus Tembalang ditata dalam klaster keilmuan yang saling terhubung: klaster teknik & MIPA di sayap timur, klaster agrokompleks & kedokteran di sayap utara, serta klaster sosial humaniora di sayap selatan.',
+        details: [
+          'Setiap fakultas dilengkapi laboratorium khusus, perpustakaan cabang, dan ruang kuliah multimedia.',
+          'Jaringan jalan lingkar kampus (Inner & Outer Ring Road) memudahkan mobilitas transportasi ramah lingkungan.',
+          'Terintegrasi dengan bus kampus gratis (Diponegoro Shuttle Bus) berbahan bakar ramah lingkungan.',
+        ],
+      },
+      {
+        id: 'z2-mini-rsnd',
+        title: '4. Rumah Sakit Nasional Diponegoro (RSND)',
+        subtitle: 'Pusat Pendidikan Kedokteran Terpadu & Rumah Sakit Rujukan Jawa Tengah',
+        dateOrYear: 'Diresmikan 2014',
+        imageKey: 'z2_img_rsnd',
+        description:
+          'Rumah Sakit Pendidikan utama milik Undip tipe B dengan kapasitas lebih dari 300 tempat tidur, dilengkapi fasilitas radioterapi canggih, cath lab jantung, ruang isolasi negatif, dan pusat riset klinis.',
+        details: [
+          'Sarana praktik utama mahasiswa Fakultas Kedokteran, Keperawatan, Gizi, dan Farmasi.',
+          'Berfungsi sebagai rumah sakit tanggap darurat utama pada masa pandemi dan pusat pengabdian kesehatan masyarakat.',
+          'Melayani masyarakat umum dan sivitas akademika dengan sistem digital terintegrasi.',
+        ],
+      },
+      {
+        id: 'z2-mini-teluk-awur',
+        title: '5. Kampus & Marine Science Techno Park Teluk Awur Jepara',
+        subtitle: 'Pusat Keunggulan Eksplorasi Kelautan, Bioteknologi Pesisir & Konservasi',
+        dateOrYear: '1987 – kini',
+        imageKey: 'z2_img_teluk_awur',
+        description:
+          'Kampus tepi pantai seluas 52 hektar di Kabupaten Jepara yang menjadi basis penelitian Fakultas Perikanan dan Ilmu Kelautan, dilengkapi dermaga riset kapal latih, tambak percontohan, dan laboratorium basah oseanografi.',
+        details: [
+          'Pusat implementasi Pola Ilmiah Pokok (PIP) Pengembangan Wilayah Pesisir dan Kelautan.',
+          'Menjadi rujukan nasional riset terumbu karang, mangrove, budidaya udang vaname, dan mikroalga.',
+          'Menghubungkan akademisi Undip dengan nelayan tradisional pesisir pantai utara Jawa.',
+        ],
+      },
+    ],
+  },
+
+  z2_faculties: {
+    id: 'z2_faculties',
+    code: 'z2_faculties',
+    zoneNumber: 2,
+    areaName: 'Sayap Barat · Panel & Galeri Perkembangan Fakultas',
+    title: 'Evolusi & Perkembangan Fakultas Universitas Diponegoro',
+    subtitle: 'Zona 2 — The Growth of Knowledge: Transformasi 4 Fakultas Perintis Menjadi 11 Fakultas & 2 Sekolah',
+    badgeText: 'Zona 2 — Faculty Development',
+    mainDescription:
+      'Area pameran sayap barat mendokumentasikan estafet pemekaran struktur akademik Undip. Bermula dari empat unit pendidikan perintis pada tahun 1957 (Hukum, Ekonomi, Teknik, dan Akademi Tata Praja), Undip secara konsisten menumbuhkan cabang-cabang keilmuan strategis hingga kini menaungi 11 Fakultas, 1 Sekolah Pascasarjana, dan 1 Sekolah Vokasi.',
+    historicalContext:
+      'Pendirian setiap fakultas selalu merespons kebutuhan nyata pembangunan nasional: kebutuhan insinyur sipil dan perkapalan melahirkan Fakultas Teknik; kebutuhan tenaga medis mendorong berdirinya Fakultas Kedokteran bersama RS Dr. Kariadi; dan keunggulan maritim Indonesia melahirkan Fakultas Perikanan dan Ilmu Kelautan.',
+    significance:
+      'Keragaman 11 fakultas dan 2 sekolah ini mencerminkan komitmen Undip dalam merawat keutuhan ilmu pengetahuan dari sains dasar, teknologi terapan, hingga seni dan humaniora.',
+    stats: [
+      { label: 'Fakultas Perintis 1957', value: 'Hukum, Ekonomi, Teknik' },
+      { label: 'Jumlah Fakultas Kini', value: '11 Fakultas Mandiri' },
+      { label: 'Sekolah Khusus', value: 'Pascasarjana & Vokasi' },
+      { label: 'Program Studi', value: '170+ Program Studi' },
+    ],
+    items: [
+      {
+        id: 'z2-fac-hukum',
+        title: '1. Fakultas Hukum (FH) — 1957',
+        subtitle: 'Fakultas Tertua & Kawah Candradimuka Pakar Hukum Nasional',
+        dateOrYear: 'Berdiri 1957',
+        imageKey: 'z2_img_fac_hukum',
+        description:
+          'Fakultas tertua di Undip yang melahirkan tokoh-tokoh hukum terkemuka Republik Indonesia seperti Prof. Mr. Soedarto, Prof. Muladi, Prof. Satjipto Rahardjo (pencetus Hukum Progresif), dan Prof. Barda Nawawi Arief.',
+        details: [
+          'Memiliki reputasi akreditasi internasional FIBAA dan akreditasi Unggul BAN-PT.',
+          'Mencetuskan mazhab "Hukum Progresif" yang mengedepankan keadilan substantif kemanusiaan.',
+          'Pencetak hakim agung, menteri, jaksa, advokat, dan akademisi hukum terkemuka nasional.',
+        ],
+        quote: '“Hukum adalah untuk manusia, bukan manusia untuk hukum.” — Prof. Satjipto Rahardjo, S.H.',
+      },
+      {
+        id: 'z2-fac-feb',
+        title: '2. Fakultas Ekonomika dan Bisnis (FEB) — 1957',
+        subtitle: 'Pusat Kajian Manajemen, Akuntansi, dan Kebijakan Perekonomian',
+        dateOrYear: 'Berdiri 1957',
+        imageKey: 'z2_img_fac_feb',
+        description:
+          'Dirintis sejak era Universitas Semarang, FEB Undip telah meraih akreditasi prestisius internasional AACSB (Association to Advance Collegiate Schools of Business), menempatkannya dalam jajaran sekolah bisnis elit dunia.',
+        details: [
+          'Menyelenggarakan program studi Manajemen, Akuntansi, Ilmu Ekonomi, dan Ekonomi Islam.',
+          'Memiliki laboratorium Bloomberg Financial Terminal dan ruang sidang simulasi bursa efek.',
+          'Mencetak bankir, ekonom pemerintah, wirausahawan, dan pengambil kebijakan fiskal nasional.',
+        ],
+      },
+      {
+        id: 'z2-fac-teknik',
+        title: '3. Fakultas Teknik (FT) — 1957',
+        subtitle: 'Perintis Inovasi Rekayasa Infrastruktur, Kemaritiman & Energi Hijau',
+        dateOrYear: 'Berdiri 1957',
+        imageKey: 'z2_img_fac_teknik',
+        description:
+          'Bermula dari Jurusan Teknik Sipil di Pleburan pada 1957, Fakultas Teknik kini memiliki 12 departemen termasuk Teknik Perkapalan, Geodesi, Arsitektur, Kimia, Mesin, Elektro, Lingkungan, dan Geologi.',
+        details: [
+          'Laboratorium rekayasa perkapalan dan tangki uji tarik model kapal berstandar internasional.',
+          'Pelopor mobil formula listrik mahasiswa dan kapal tanpa awak (autonomous surface vehicle).',
+          'Berperan aktif dalam perancangan infrastruktur jalan tol, jembatan, bendungan, dan pelabuhan nasional.',
+        ],
+      },
+      {
+        id: 'z2-fac-kedokteran',
+        title: '4. Fakultas Kedokteran (FK) — 1961',
+        subtitle: 'Pusat Keunggulan Ilmu Biomedis, Kedokteran Tropis & Keperawatan Terpadu',
+        dateOrYear: 'Berdiri 1961',
+        imageKey: 'z2_img_fac_kedokteran',
+        description:
+          'Diresmikan melalui kerja sama dengan RSUP Dr. Kariadi Semarang, FK Undip berkembang pesat menjadi institusi pendidikan dokter spesialis dan subspesialis terkemuka di tanah air.',
+        details: [
+          'Memiliki jejaring rumah sakit pendidikan: RSUP Dr. Kariadi dan Rumah Sakit Nasional Diponegoro (RSND).',
+          'Pusat riset genetika molekuler, onkologi, penyakit infeksi tropis, dan kesehatan reproduksi.',
+          'Menghasilkan ribuan dokter spesialis yang mengabdi di daerah 3T (Terdepan, Terluar, Tertinggal).',
+        ],
+      },
+      {
+        id: 'z2-fac-fpp',
+        title: '5. Fakultas Peternakan dan Pertanian (FPP) — 1964',
+        subtitle: 'Kedaulatan Pangan, Pemuliaan Ternak Tropis & Agribisnis Berkelanjutan',
+        dateOrYear: 'Berdiri 1964',
+        imageKey: 'z2_img_fac_fpp',
+        description:
+          'Berperan penting dalam riset pemuliaan sapi potong Jawa, unggas lokal, dan teknologi pengolahan hasil panen berbasis kearifan lokal Jawa Tengah.',
+        details: [
+          'Memiliki Teaching Farm dan instalasi kandang modern seluas belasan hektar di Tembalang.',
+          'Mengembangkan pakan fermentasi konsentrat murah untuk meningkatkan bobot ternak rakyat.',
+          'Inovator varietas padi organik tahan hama dan pupuk hayati ramah lingkungan.',
+        ],
+      },
+      {
+        id: 'z2-fac-fib',
+        title: '6. Fakultas Ilmu Budaya (FIB) — 1965',
+        subtitle: 'Pelestari Bahasa, Sastra, Sejarah Nusantara & Arkeologi Maritim',
+        dateOrYear: 'Berdiri 1965',
+        imageKey: 'z2_img_fac_fib',
+        description:
+          'Memayungi kajian sastra Indonesia, Inggris, Jepang, sejarah, ilmu perpustakaan, dan antropologi budaya guna meneguhkan identitas kebangsaan Indonesia.',
+        details: [
+          'Pusat pengkajian naskah kuno (filologi) pesisir dan manuskrip Jawa Pegon.',
+          'Eksplorasi arkeologi pelabuhan kuno di pesisir utara Pulau Jawa.',
+          'Membina sanggar seni gamelan, tari tradisional Diponegoro, dan diplomasi budaya internasional.',
+        ],
+      },
+      {
+        id: 'z2-fac-fisip',
+        title: '7. Fakultas Ilmu Sosial dan Ilmu Politik (FISIP) — 1968',
+        subtitle: 'Kajian Kebijakan Publik, Tata Kelola Pemerintahan & Komunikasi Strategis',
+        dateOrYear: 'Berdiri 1968',
+        imageKey: 'z2_img_fac_fisip',
+        description:
+          'Berasal dari Akademi Tata Praja 1957, FISIP Undip membina kader pemimpin birokrasi, diplomat luar negeri, akademisi politik, dan profesional media massa.',
+        details: [
+          'Menyelenggarakan program Administrasi Publik, Ilmu Komunikasi, Hubungan Internasional, dan Pemerintahan.',
+          'Laboratorium audio-visual penyiaran dan media center komunikasi modern.',
+          'Rujukan analisis kebijakan pemilu, otonomi daerah, dan studi diplomasi regional Asia Tenggara.',
+        ],
+      },
+      {
+        id: 'z2-fac-fpik',
+        title: '8. Fakultas Perikanan dan Ilmu Kelautan (FPIK) — 1968/1994',
+        subtitle: 'Ujung Tombak Pola Ilmiah Pokok Bahari & Bioteknologi Kelautan',
+        dateOrYear: '1968 / 1994',
+        imageKey: 'z2_img_fac_fpik',
+        description:
+          'Menjadi tulang punggung Pola Ilmiah Pokok (PIP) Undip dalam mengelola potensi kemaritiman Indonesia melalui riset oseanografi, budidaya perairan, dan teknologi hasil perikanan.',
+        details: [
+          'Mengelola Stasiun Riset Maritim Teluk Awur seluas 52 Ha di Kabupaten Jepara.',
+          'Memiliki armada kapal latih riset KM Diponegoro untuk ekspedisi oseanografi laut dalam.',
+          'Pionir formulasi kosmetik dan farmasi berbahan baku senyawa aktif rumput laut dan alga mikro.',
+        ],
+      },
+      {
+        id: 'z2-fac-fsm',
+        title: '9. Fakultas Sains dan Matematika (FSM) — 1988/1993',
+        subtitle: 'Fondasi Sains Murni, Komputasi Cerdas & Rekayasa Nanoteknologi',
+        dateOrYear: '1988 / 1993',
+        imageKey: 'z2_img_fac_fsm',
+        description:
+          'Mengembangkan riset sains fundamental (Matematika, Fisika, Kimia, Biologi, Statistika, Informatika) sebagai tulang punggung penemuan teknologi masa depan.',
+        details: [
+          'Pusat Riset Plasma & Nanoteknologi (Center for Plasma Research) berpaten internasional.',
+          'Mengembangkan aplikasi kecerdasan buatan (AI), data science, dan komputasi awan berkecepatan tinggi.',
+          'Penghasil publikasi jurnal internasional terindeks Scopus terbanyak di lingkungan Undip.',
+        ],
+      },
+      {
+        id: 'z2-fac-fkm',
+        title: '10. Fakultas Kesehatan Masyarakat (FKM) — 1993/2001',
+        subtitle: 'Pencegahan Penyakit, Promosi Kesehatan & Epidemiologi Tropis',
+        dateOrYear: '1993 / 2001',
+        imageKey: 'z2_img_fac_fkm',
+        description:
+          'Berfokus pada promotif dan preventif kesehatan masyarakat, kesehatan lingkungan kerja, dan manajemen rumah sakit.',
+        details: [
+          'Laboratorium surveilans epidemiologi penyakit tular vektor (DBD, malaria, leptospirosis).',
+          'Aktif merumuskan pedoman gizi seimbang untuk penanganan stunting di wilayah pedesaan.',
+          'Pusat kajian Keselamatan dan Kesehatan Kerja (K3) pada sektor industri manufaktur dan maritim.',
+        ],
+      },
+      {
+        id: 'z2-fac-psikologi',
+        title: '11. Fakultas Psikologi — 2007',
+        subtitle: 'Pengembangan Potensi Manusia, Psikometri & Kesehatan Mental Komunitas',
+        dateOrYear: 'Berdiri 2007',
+        imageKey: 'z2_img_fac_psikologi',
+        description:
+          'Mempelajari dinamika kepribadian, asesmen psikologis klinis, psikologi industri organisasi, dan pendampingan trauma healing pascabencana.',
+        details: [
+          'Pusat layanan psikologi terpadu bagi mahasiswa dan masyarakat umum.',
+          'Inovasi alat ukur psikometri adaptif berbasis komputer untuk seleksi sumber daya manusia.',
+          'Program pendampingan kesehatan mental sekolah ramah anak dan inklusi disabilitas.',
+        ],
+      },
+      {
+        id: 'z2-fac-pasca-vokasi',
+        title: '12. Sekolah Pascasarjana & Sekolah Vokasi',
+        subtitle: 'Pendidikan Interdisiplin & Penguatan Keterampilan Industri Terapan',
+        dateOrYear: '1999 & 2016',
+        imageKey: 'z2_img_fac_vokasi',
+        description:
+          'Sekolah Pascasarjana mengelola studi multidisiplin seperti Ilmu Lingkungan dan Energi, sedangkan Sekolah Vokasi menyelenggarakan sarjana terapan (D4) link-and-match dengan industri manufaktur dan jasa.',
+        details: [
+          'Sekolah Vokasi memiliki Teaching Factory modern kerja sama dengan industri multinasional.',
+          'Sekolah Pascasarjana membidani riset disertasi lintas ilmu berorientasi solusi strategis bangsa.',
+          'Tingkat keterserapan lulusan vokasi mencapai 90% sebelum upacara wisuda.',
+        ],
+      },
+    ],
+  },
+
+  z2_campus_transformation: {
+    id: 'z2_campus_transformation',
+    code: 'z2_campus_transformation',
+    zoneNumber: 2,
+    areaName: 'Dinding Utara · Galeri Transformasi Kampus dari Masa ke Masa',
+    title: 'Dokumentasi Transformasi Infrastruktur & Lanskap Kampus',
+    subtitle: 'Zona 2 — The Growth of Knowledge: Dari GRIS Jl. Pemuda, Pleburan Hingga Megaproyek Tembalang',
+    badgeText: 'Zona 2 — Campus Transformation',
+    mainDescription:
+      'Dinding pameran utara menyajikan foto-foto komparatif metamorfosis fisik Universitas Diponegoro selama lebih dari enam dekade. Penataan ruang kampus merefleksikan dinamika pertambahan mahasiswa dan visi jangka panjang untuk mewujudkan kawasan riset terintegrasi berwawasan lingkungan.',
+    historicalContext:
+      'Sebelum terpusat di Tembalang, aktivitas perkuliahan terpencar di puluhan lokasi di Kota Semarang: Gedung GRIS di Jalan Pemuda, Kampus Pleburan di Jl. Hayam Wuruk, Jl. Imam Bardjo, hingga Jl. Dr. Soetomo. Integrasi fisik ke Tembalang pada dekade 1980-an hingga 2000-an menyatukan seluruh fakultas ke dalam satu ekosistem akademik yang solid.',
+    significance:
+      'Transformasi kampus dari fasilitas darurat menjadi salah satu kota kampus terindah di Asia Tenggara membuktikan ketangguhan dedikasi para pimpinan dan sivitas akademika Undip.',
+    stats: [
+      { label: 'Era Perintisan', value: 'GRIS & Pleburan (1957)' },
+      { label: 'Masterplan Tembalang', value: '180 Hektar (1977)' },
+      { label: 'Relokasi Penuh', value: 'Tahun 1990-an — 2010' },
+      { label: 'Status Kawasan', value: 'Kota Kampus Berkelanjutan' },
+    ],
+    items: [
+      {
+        id: 'z2-trans-gris',
+        title: '1. Gedung GRIS Jl. Pemuda (1957) — Titik Awal',
+        subtitle: 'Gedung Rakyat Indonesia Semarang, Tempat Kuliah Perdana 142 Mahasiswa',
+        dateOrYear: '1957',
+        imageKey: 'z2_img_trans_gris',
+        description:
+          'Foto arsip memperlihatkan aula GRIS Jl. Pemuda yang dipinjamkan oleh Pemerintah Kotapraja Semarang. Di ruangan beratap genteng tinggi inilah mahasiswa pertama menyimak orasi Mr. Imam Bardjo dengan penerangan lampu gantung klasik.',
+      },
+      {
+        id: 'z2-trans-pleburan',
+        title: '2. Kampus Pleburan Masa Keemasan (1960–1980-an)',
+        subtitle: 'Kompleks Gedung Kolonial Tropis di Semarang Bawah',
+        dateOrYear: '1960-an',
+        imageKey: 'z2_img_trans_pleburan',
+        description:
+          'Kampus Pleburan dengan ciri khas gedung putih berdaun jendela krepyak kayu dan halaman rumput luas menjadi saksi tumbuhnya fakultas-fakultas awal sebelum kepindahan ke Tembalang.',
+      },
+      {
+        id: 'z2-trans-blueprint-tembalang',
+        title: '3. Cetak Biru & Pembebasan Lahan Tembalang (1977)',
+        subtitle: 'Visi Berani Rektor Soedarto Membuka Perbukitan Selatan Semarang',
+        dateOrYear: '1977',
+        imageKey: 'z2_img_trans_blueprint',
+        description:
+          'Peta masterplan rancangan awal pembebasan lahan perbukitan Tembalang seluas 180 hektar. Saat itu kawasan Tembalang masih berupa tegalan tandus dan perkebunan karet yang sepi.',
+      },
+      {
+        id: 'z2-trans-widya-puraya-build',
+        title: '4. Konstruksi Gedung Widya Puraya (1986–1989)',
+        subtitle: 'Pembangunan Megastruktur Limas dan Menara Jam Sentral',
+        dateOrYear: '1986 – 1989',
+        imageKey: 'z2_img_trans_widya_build',
+        description:
+          'Dokumentasi langka proses pengecoran beton bertulang atap limas bertingkat Gedung Widya Puraya yang dikerjakan oleh para insinyur alumni Fakultas Teknik Undip.',
+      },
+      {
+        id: 'z2-trans-rsnd-inauguration',
+        title: '5. Pembangunan Rumah Sakit Nasional Diponegoro (2010–2014)',
+        subtitle: 'Pusat Riset Kesehatan & Pelayanan Medis Paripurna',
+        dateOrYear: '2014',
+        imageKey: 'z2_img_trans_rsnd',
+        description:
+          'Pembangunan gedung rumah sakit pendidikan modern 8 lantai di kawasan barat Kampus Tembalang yang memperkuat kapasitas riset kedokteran dan layanan rujukan medis di Jawa Tengah.',
+      },
+      {
+        id: 'z2-trans-green-eco',
+        title: '6. Lanskap Kampus Hijau & Danau Resapan Edukasi',
+        subtitle: 'Integrasi Hutan Kampus Tropis, Jalur Sepeda, dan Energi Surya',
+        dateOrYear: 'Era Modern',
+        imageKey: 'z2_img_trans_eco',
+        description:
+          'Panorama udara Kampus Tembalang masa kini yang dikelilingi pepohonan rimbun, waduk air edukasi, dan instalasi panel surya atap gedung kuliah.',
+      },
+    ],
+  },
+
+  z2_research: {
+    id: 'z2_research',
+    code: 'z2_research',
+    zoneNumber: 2,
+    areaName: 'Sayap Timur · Ruang Arsip Akademik & Riset Keilmuan',
+    title: 'Pengembangan Pendidikan, Riset Kelautan & Laboratorium Unggulan',
+    subtitle: 'Zona 2 — The Growth of Knowledge: Pola Ilmiah Pokok Pesisir (Coastal Eco-Development) & Inovasi Sains',
+    badgeText: 'Zona 2 — Research & Education',
+    mainDescription:
+      'Sayap timur museum menampilkan rekam jejak riset dan pengembangan keilmuan Universitas Diponegoro. Sebagai perguruan tinggi berwawasan maritim, Undip menetapkan Pola Ilmiah Pokok (PIP) bertema "Pengembangan Wilayah Pesisir dan Lautan" (Coastal Region Eco-Development) yang menjadi rujukan riset kemaritiman tropis nasional.',
+    historicalContext:
+      'Sejak ditetapkan pada tahun 1974, Pola Ilmiah Pokok memandu kolaborasi antarfakultas: Fakultas Teknik meneliti konstruksi pelabuhan dan gelombang laut; FPIK meneliti ekosistem mangrove dan perikanan tangkap; Fakultas Hukum merumuskan hukum laut dan batas maritim; sedangkan FEB mengkaji ekonomi maritim dan kesejahteraan nelayan.',
+    significance:
+      'Kiprah riset ini diperkuat dengan fasilitas laboratorium sentral terpadu berstandar internasional, stasiun riset Teluk Awur, serta puluhan jurnal ilmiah terakreditasi internasional yang mempublikasikan ribuan karya ilmiah sivitas akademika setiap tahunnya.',
+    stats: [
+      { label: 'Pola Ilmiah Pokok', value: 'Coastal Region Eco-Development' },
+      { label: 'Stasiun Riset Laut', value: 'Teluk Awur Jepara (52 Ha)' },
+      { label: 'Laboratorium Sentral', value: 'Integrated Lab Tembalang' },
+      { label: 'Publikasi Ilmiah', value: 'Ribuan Artikel Scopus/WOS' },
+    ],
+    items: [
+      {
+        id: 'z2-res-pip-charter',
+        title: '1. Piagam Pola Ilmiah Pokok (PIP) Pengembangan Pesisir — 1974',
+        subtitle: 'Landasan Filosofis Riset Kemaritiman Universitas Diponegoro',
+        dateOrYear: '1974',
+        imageKey: 'z2_img_res_pip',
+        description:
+          'Naskah penetapan Pola Ilmiah Pokok yang mengarahkan tridharma perguruan tinggi Undip untuk menggali potensi, mengonservasi, dan menyejahterakan masyarakat wilayah pesisir nusantara.',
+      },
+      {
+        id: 'z2-res-marine-station',
+        title: '2. Stasiun Oseanografi & Konservasi Terumbu Karang Teluk Awur',
+        subtitle: 'Laboratorium Basah Eksplorasi Hayati Laut Dangkal & Pesisir',
+        dateOrYear: '1987 – kini',
+        imageKey: 'z2_img_res_station',
+        description:
+          'Fasilitas riset tepi pantai di Jepara yang menjadi laboratorium alam bagi peneliti dunia dalam mempelajari pemulihan terumbu karang (coral transplantation), ekologi lamun, dan pemetaan dinamika arus laut Jawa.',
+      },
+      {
+        id: 'z2-res-integrated-lab',
+        title: '3. Laboratorium Terpadu & Clean Room Sentral Tembalang',
+        subtitle: 'Peralatan Spektroskopi, Mikroskopi Elektron & Analisis Kimia Presisi',
+        dateOrYear: '2015 – kini',
+        imageKey: 'z2_img_res_intlab',
+        description:
+          'Gedung laboratorium modern berstandar ISO 17025 yang dilengkapi instrumen uji mutakhir (SEM, TEM, XRD, HPLC, GC-MS) untuk mendukung penelitian sains dasar, rekayasa material maju, dan formulasi obat.',
+      },
+      {
+        id: 'z2-res-scopus-journals',
+        title: '4. Galeri Jurnal Ilmiah Bereputasi Internasional (Scopus Q1/Q2)',
+        subtitle: 'Diseminasi Pengetahuan Global Karya Dosen dan Peneliti Undip',
+        dateOrYear: 'Koleksi Publikasi',
+        imageKey: 'z2_img_res_journals',
+        description:
+          'Pameran jurnal-jurnal ilmiah kebanggaan Undip yang terindeks bereputasi dunia, seperti Bulletin of Chemical Reaction Engineering & Catalysis (BCREC) dan Journal of Coastal Development.',
+      },
+      {
+        id: 'z2-res-clean-energy',
+        title: '5. Inovasi Desalinisasi Air Laut & Pembangkit Energi Ramah Lingkungan',
+        subtitle: 'Teknologi Tepat Guna untuk Masyarakat Pulau Terpencil',
+        dateOrYear: 'Inovasi Terapan',
+        imageKey: 'z2_img_res_energy',
+        description:
+          'Alat destilasi air laut bertenaga surya dan turbin angin pesisir skala mikro karya periset teknik Undip yang telah dioperasikan di pulau-pulau kecil di Kepulauan Karimunjawa.',
+      },
+    ],
+  },
+
+  z2_achievements: {
+    id: 'z2_achievements',
+    code: 'z2_achievements',
+    zoneNumber: 2,
+    areaName: 'Dinding Selatan · Galeri Prestasi & Pengabdian Masyarakat',
+    title: 'Prestasi Akademik, Inovasi Mahasiswa & Pelopor KKN Pengabdian Masyarakat',
+    subtitle: 'Zona 2 — The Growth of Knowledge: Dari KKN Perintis Desa Hingga Rekor Employability Dunia',
+    badgeText: 'Zona 2 — Achievements & Contribution',
+    mainDescription:
+      'Dinding pameran selatan mempersembahkan bukti nyata kontribusi Universitas Diponegoro bagi bangsa dan dunia. Sejak era 1970-an, Undip telah menjadi pionir program Kuliah Kerja Nyata (KKN) mahasiswa di perdesaan, sekaligus menorehkan prestasi gemilang dalam kompetisi inovasi teknologi, keberlanjutan kampus, dan rekor daya serap lulusan.',
+    historicalContext:
+      'Semangat kepahlawanan Pangeran Diponegoro menjiwai setiap mahasiswa Undip untuk tidak sekadar unggul di ruang kuliah, melainkan turun langsung ke masyarakat membawa solusi atas persoalan riil di desa-desa nelayan, pegunungan, dan perkotaan.',
+    significance:
+      'Prestasi ini membuktikan mutu lulusan Undip yang adaptif, berkarakter tangguh, dan memiliki daya saing tinggi di kancah industri global.',
+    stats: [
+      { label: 'Pelopor KKN Tematik', value: 'Sejak Dekade 1970-an' },
+      { label: 'Employability Ranking', value: 'Juara #1 & #2 di Indonesia (QS)' },
+      { label: 'Prestasi Robotik', value: 'Juara Nasional & Internasional' },
+      { label: 'Predikat Green Campus', value: 'Peringkat 2 Nasional' },
+    ],
+    items: [
+      {
+        id: 'z2-ach-kkn-pioneer',
+        title: '1. Pelopor Kuliah Kerja Nyata (KKN) Tematik Nasional',
+        subtitle: 'Pengabdian Mahasiswa Menembus Ribuan Desa di Jawa Tengah & Nusantara',
+        dateOrYear: '1971 – kini',
+        imageKey: 'z2_img_ach_kkn',
+        description:
+          'Undip merupakan salah satu dari tiga perguruan tinggi perintis program KKN di Indonesia bersama UGM dan Unhas. Ribuan mahasiswa setiap tahun diterjunkan ke desa untuk pemberdayaan UMKM, sanitasi lingkungan, dan edukasi hukum.',
+      },
+      {
+        id: 'z2-ach-qs-employability',
+        title: '2. Peringkat Tertinggi Lulusan Cepat Mendapat Kerja (QS GER)',
+        subtitle: 'Keterserapan Alumni Undip di Dunia Kerja Tingkat Nasional & Asia',
+        dateOrYear: '2020 – 2024',
+        imageKey: 'z2_img_ach_qs',
+        description:
+          'Lembaga pemeringkatan dunia Quacquarelli Symonds menempatkan Undip di peringkat #1 dan #2 nasional dalam kategori Graduate Employability Rankings, membuktikan tingginya kepercayaan industri terhadap lulusan Undip.',
+      },
+      {
+        id: 'z2-ach-robotic-eco',
+        title: '3. Inovasi Mobil Hemat Energi & Robotik Bawah Air Diponegoro',
+        subtitle: 'Juara Shell Eco-Marathon Asia & Kontes Robot Bawah Air Nasional',
+        dateOrYear: '2016 – kini',
+        imageKey: 'z2_img_ach_robot',
+        description:
+          'Kendaraan prototipe hemat energi bertenaga listrik dan etanol karya tim mahasiswa Fakultas Teknik yang mencetak rekor efisiensi jarak tempuh ratusan kilometer per kilowatt-hour di sirkuit internasional.',
+      },
+      {
+        id: 'z2-ach-bionic-hand',
+        title: '4. Tangan Bionik & Kaki Palsu Robotik untuk Disabilitas',
+        subtitle: 'Pusat Riset Biomekatronika CBIOM3S Undip Berpenghargaan Nasional',
+        dateOrYear: '2018 – kini',
+        imageKey: 'z2_img_ach_bionic',
+        description:
+          'Inovasi tangan palsu prostetik bionik dengan sensor mioelektrik sensor otot yang dijual dengan harga terjangkau bagi para penyandang disabilitas dan korban kecelakaan kerja di seluruh Indonesia.',
+      },
+      {
+        id: 'z2-ach-disaster-relief',
+        title: '5. Tim Medis Darurat & Tanggap Bencana Diponegoro (Disaster Relief)',
+        subtitle: 'Bakti Kemanusiaan Dokter, Relawan, dan Logistik Cepat Tanggap',
+        dateOrYear: 'Bakti Kemanusiaan',
+        imageKey: 'z2_img_ach_disaster',
+        description:
+          'Tim tanggap darurat sivitas akademika Undip yang secara konsisten terjun dalam penanganan medis darurat bencana gempa bumi, banjir lahar, dan tsunami di berbagai penjuru nusantara.',
       },
     ],
   },
