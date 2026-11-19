@@ -3,7 +3,7 @@ import { SceneManager } from './core/SceneManager'
 import type { InteractiveTarget } from './core/ObjectManager'
 import { MuseumUI } from './ui/MuseumUI'
 import { SoundManager } from './core/SoundManager'
-import { MUSEUM_ZONES } from './data/historyData'
+import type { MuseumBook } from './data/historyData'
 import './ui/museum.css'
 
 export function MuseumContainer() {
@@ -11,22 +11,23 @@ export function MuseumContainer() {
   const sceneManagerRef = useRef<SceneManager | null>(null)
 
   const [isStarted, setIsStarted] = useState(false)
-  const [activeZoneId, setActiveZoneId] = useState<string>('zone-1')
-  const [isTeleporting, setIsTeleporting] = useState(false)
-  const [teleportTargetName, setTeleportTargetName] = useState('')
   const [hoveredTarget, setHoveredTarget] = useState<InteractiveTarget | null>(null)
   const [activeExhibitId, setActiveExhibitId] = useState<string | null>(null)
+  const [activeBook, setActiveBook] = useState<MuseumBook | null>(null)
   const [openedSubItemIndex, setOpenedSubItemIndex] = useState(0)
 
   const activeExhibitIdRef = useRef<string | null>(null)
+  const activeBookRef = useRef<MuseumBook | null>(null)
 
   // Keep interaction callback in sync & pause WebGL rendering while modal is open
   useEffect(() => {
     activeExhibitIdRef.current = activeExhibitId
-    sceneManagerRef.current?.setModalOpen(Boolean(activeExhibitId))
-  }, [activeExhibitId])
+    activeBookRef.current = activeBook
+    const isModalOpen = Boolean(activeExhibitId || activeBook)
+    sceneManagerRef.current?.setModalOpen(isModalOpen)
+  }, [activeExhibitId, activeBook])
 
-  // Initialize pure Three.js SceneManager
+  // Initialize Three.js SceneManager
   useEffect(() => {
     if (!containerRef.current) return
 
@@ -36,8 +37,23 @@ export function MuseumContainer() {
         setHoveredTarget(target)
       },
       (target) => {
-        if (!activeExhibitIdRef.current) {
+        if (!activeExhibitIdRef.current && !activeBookRef.current) {
           sceneManager.getCameraController().unlock()
+
+          // If target is an interactive book on a shelf
+          if (target.bookData) {
+            setActiveBook(target.bookData)
+            return
+          }
+
+          // If target is a bookcase banner
+          if (target.id.startsWith('bookshelf_')) {
+            const shelfNum = target.id.replace('bookshelf_', '')
+            sceneManager.focusOnBookshelf(`shelf_z${shelfNum}`)
+            return
+          }
+
+          // If target is a physical exhibit
           setOpenedSubItemIndex(target.subItemIndex ?? 0)
           setActiveExhibitId(target.id)
         }
@@ -56,60 +72,50 @@ export function MuseumContainer() {
   const handleStartExploration = useCallback(() => {
     setIsStarted(true)
     SoundManager.getInstance().startAmbient()
-    const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0 || window.innerWidth <= 840
+    const isTouch =
+      'ontouchstart' in window || navigator.maxTouchPoints > 0 || window.innerWidth <= 840
     if (sceneManagerRef.current && !isTouch) {
       sceneManagerRef.current.getCameraController().lock()
     }
   }, [])
 
-  // Close exhibit modal and resume exploration
-  const handleCloseExhibit = useCallback(() => {
+  // Close exhibit / book modal and resume exploration
+  const handleCloseModal = useCallback(() => {
     setActiveExhibitId(null)
-    const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0 || window.innerWidth <= 840
+    setActiveBook(null)
+    const isTouch =
+      'ontouchstart' in window || navigator.maxTouchPoints > 0 || window.innerWidth <= 840
     if (sceneManagerRef.current && !isTouch) {
       sceneManagerRef.current.getCameraController().lock()
     }
   }, [])
 
-  // Reset camera position to active zone spawn point
+  // Reset camera position to room entrance
   const handleResetCamera = useCallback(() => {
     if (sceneManagerRef.current) {
       sceneManagerRef.current.resetCameraToActiveZone()
     }
   }, [])
 
-  // Teleport between museum zones without reloading page
-  const handleTeleportZone = useCallback((targetZoneId: string) => {
-    if (targetZoneId === activeZoneId || isTeleporting) return
+  // Focus camera on physical exhibit
+  const handleFocusExhibit = useCallback((exhibitId: string) => {
+    if (sceneManagerRef.current) {
+      sceneManagerRef.current.focusOnExhibit(exhibitId)
+    }
+  }, [])
 
-    const targetZone = MUSEUM_ZONES.find((z) => z.id === targetZoneId)
-    if (!targetZone || targetZone.status !== 'available') return
+  // Focus camera on bookshelf category
+  const handleFocusBookshelf = useCallback((shelfId: string) => {
+    if (sceneManagerRef.current) {
+      sceneManagerRef.current.focusOnBookshelf(shelfId)
+    }
+  }, [])
 
-    setIsTeleporting(true)
-    setTeleportTargetName(targetZone.name)
-    SoundManager.getInstance().playPaperTurn()
-
-    // Unlock pointer during teleport transition
+  // Open a specific book directly from sidebar
+  const handleOpenBook = useCallback((book: MuseumBook) => {
     sceneManagerRef.current?.getCameraController().unlock()
-
-    // Smooth transition:
-    // 1. Overlay fades in (dark parchment)
-    // 2. Switch 3D scene at 400ms
-    // 3. Complete fade in at 800ms
-    setTimeout(() => {
-      sceneManagerRef.current?.switchZone(targetZoneId)
-      setActiveZoneId(targetZoneId)
-      setActiveExhibitId(null)
-
-      setTimeout(() => {
-        setIsTeleporting(false)
-        const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0 || window.innerWidth <= 840
-        if (!isTouch) {
-          sceneManagerRef.current?.getCameraController().lock()
-        }
-      }, 400)
-    }, 400)
-  }, [activeZoneId, isTeleporting])
+    setActiveBook(book)
+  }, [])
 
   // Touch controls handlers
   const handleJoystickMove = useCallback((x: number, y: number) => {
@@ -125,51 +131,39 @@ export function MuseumContainer() {
   }, [])
 
   const handleInteractButton = useCallback(() => {
-    if (sceneManagerRef.current) {
-      sceneManagerRef.current.interactCurrentTarget()
+    if (hoveredTarget && sceneManagerRef.current) {
+      sceneManagerRef.current.getCameraController().unlock()
+      if (hoveredTarget.bookData) {
+        setActiveBook(hoveredTarget.bookData)
+      } else {
+        setOpenedSubItemIndex(hoveredTarget.subItemIndex ?? 0)
+        setActiveExhibitId(hoveredTarget.id)
+      }
     }
-  }, [])
+  }, [hoveredTarget])
 
   const handleTurnBookPage = useCallback(() => {
-    if (sceneManagerRef.current) {
-      sceneManagerRef.current.triggerBookPageTurn()
-    }
+    sceneManagerRef.current?.triggerBookPageTurn()
   }, [])
 
   const handleSensitivityChange = useCallback((val: number) => {
-    if (sceneManagerRef.current) {
-      sceneManagerRef.current.setLookSensitivity(val)
-    }
+    sceneManagerRef.current?.setLookSensitivity(val)
   }, [])
 
-  // Click on viewport when unlocked to re-lock (Desktop only)
-  const handleViewportClick = useCallback(() => {
-    const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0 || window.innerWidth <= 840
-    if (isStarted && !activeExhibitId && !isTeleporting && sceneManagerRef.current && !isTouch) {
-      if (!sceneManagerRef.current.getCameraController().isLocked()) {
-        sceneManagerRef.current.getCameraController().lock()
-      }
-    }
-  }, [isStarted, activeExhibitId, isTeleporting])
-
   return (
-    <div className="museum-viewport" onClick={handleViewportClick}>
-      {/* Three.js Canvas Mount */}
-      <div ref={containerRef} className="museum-canvas-container" />
-
-      {/* HTML / CSS Minimalist Vintage UI Layer */}
+    <div className="museum-viewport" ref={containerRef}>
       <MuseumUI
         hoveredTarget={hoveredTarget}
         activeExhibitId={activeExhibitId}
-        activeZoneId={activeZoneId}
-        isTeleporting={isTeleporting}
-        teleportTargetName={teleportTargetName}
+        activeBook={activeBook}
         initialSubItemIndex={openedSubItemIndex}
         isStarted={isStarted}
         onStartExploration={handleStartExploration}
-        onCloseExhibit={handleCloseExhibit}
+        onCloseModal={handleCloseModal}
         onResetCamera={handleResetCamera}
-        onTeleportZone={handleTeleportZone}
+        onFocusExhibit={handleFocusExhibit}
+        onFocusBookshelf={handleFocusBookshelf}
+        onOpenBook={handleOpenBook}
         onJoystickMove={handleJoystickMove}
         onTouchLook={handleTouchLook}
         onInteractButton={handleInteractButton}

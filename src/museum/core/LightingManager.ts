@@ -1,229 +1,144 @@
 import * as THREE from 'three'
 
 /**
- * LightingManager — Soft, warm-white museum illumination.
- * A restrained ambient base plus focused spotlights for each collection.
- * Shadow casting is limited to the two most important fixtures and removed
- * entirely on touch devices to keep smartphones smooth.
+ * LightingManager — Soft, warm-white vintage museum illumination.
+ * Dedicated lighting architecture for "The Archive Room":
+ * - Ambient & hemispheric base for uniform, artifact-safe lighting
+ * - Dual grand chandeliers illuminating the room along the center axis
+ * - Focused spotlights highlighting the 5 Physical Exhibits and 5 Bookshelves
+ * - Soft sconces casting warm accent lighting along the walls
  */
 export class LightingManager {
   private group: THREE.Group
-  private zone1Group: THREE.Group
-  private zone2Group: THREE.Group
   private lights: THREE.Light[] = []
   private isMobile: boolean
 
   constructor(isMobile = false) {
     this.isMobile = isMobile
-    this.zone1Group = new THREE.Group()
-    this.zone1Group.name = 'Zone1LightingGroup'
-    this.setupZone1Lighting()
-
-    this.zone2Group = new THREE.Group()
-    this.zone2Group.name = 'Zone2LightingGroup'
-    this.setupZone2Lighting()
-
-    // Backwards compatibility: default group is zone1Group
-    this.group = this.zone1Group
+    this.group = new THREE.Group()
+    this.group.name = 'SingleArchiveRoomLightingGroup'
+    this.setupSingleRoomLighting()
   }
 
   public getGroup(): THREE.Group {
     return this.group
   }
 
+  // Backwards compatibility helpers
   public getZone1Group(): THREE.Group {
-    return this.zone1Group
+    return this.group
   }
 
   public getZone2Group(): THREE.Group {
-    return this.zone2Group
+    return this.group
   }
 
-  private setupZone1Lighting(): void {
-    // 1. Soft ambient base
-    const ambient = new THREE.AmbientLight(0xfff6ea, 0.82)
-    this.zone1Group.add(ambient)
+  private setupSingleRoomLighting(): void {
+    // 1. Soft Warm Ambient Base
+    const ambient = new THREE.AmbientLight(0xfff5e6, 0.88)
+    this.group.add(ambient)
     this.lights.push(ambient)
 
-    // 2. Gentle bounce
-    const hemi = new THREE.HemisphereLight(0xfff8ef, 0x2b1c12, 0.58)
-    hemi.position.set(0, 5, 0)
-    this.zone1Group.add(hemi)
+    // 2. Gentle Hemispheric Bounce (Ivory ceiling / dark walnut floor)
+    const hemi = new THREE.HemisphereLight(0xfffaee, 0x241810, 0.62)
+    hemi.position.set(0, 5.2, 0)
+    this.group.add(hemi)
     this.lights.push(hemi)
 
-    // 3. Central chandelier
-    const chandelier = new THREE.PointLight(0xfff3e1, 2.3, 20, 1.7)
-    chandelier.position.set(0, 4.35, 0)
-    chandelier.castShadow = !this.isMobile
-    chandelier.shadow.mapSize.set(1024, 1024)
-    chandelier.shadow.bias = -0.0015
-    chandelier.shadow.camera.near = 0.5
-    chandelier.shadow.camera.far = 20
-    this.zone1Group.add(chandelier)
-    this.lights.push(chandelier)
+    // 3. Dual Grand Chandeliers along center axis (Z = -3.8 and Z = +3.8)
+    const createChandelierLight = (x: number, y: number, z: number) => {
+      const chandelierLight = new THREE.PointLight(0xfff0dc, 2.4, 22, 1.6)
+      chandelierLight.position.set(x, y, z)
+      chandelierLight.castShadow = !this.isMobile
+      if (chandelierLight.castShadow) {
+        chandelierLight.shadow.mapSize.set(1024, 1024)
+        chandelierLight.shadow.bias = -0.0015
+        chandelierLight.shadow.camera.near = 0.5
+        chandelierLight.shadow.camera.far = 22
+      }
+      this.group.add(chandelierLight)
+      this.lights.push(chandelierLight)
 
-    // Low fill
-    const fill = new THREE.PointLight(0xffeed6, 0.75, 14, 1.8)
-    fill.position.set(0, 2.7, 0)
-    this.zone1Group.add(fill)
-    this.lights.push(fill)
+      // Soft lower fill
+      const fill = new THREE.PointLight(0xffeed6, 0.8, 14, 1.8)
+      fill.position.set(x, y - 1.5, z)
+      this.group.add(fill)
+      this.lights.push(fill)
+    }
 
-    // 4. Wall sconces
-    const sconces = [
-      new THREE.Vector3(-6.6, 2.8, -3),
-      new THREE.Vector3(-6.6, 2.8, 3),
-      new THREE.Vector3(6.6, 2.8, -3),
-      new THREE.Vector3(6.6, 2.8, 3),
-      new THREE.Vector3(-3.5, 2.8, -6.6),
-      new THREE.Vector3(3.5, 2.8, -6.6),
-      new THREE.Vector3(-3.5, 2.8, 6.6),
-      new THREE.Vector3(3.5, 2.8, 6.6),
+    createChandelierLight(0, 4.4, -3.8)
+    createChandelierLight(0, 4.4, 3.8)
+
+    // 4. Wall Sconces Accent Points
+    const sconcePositions = [
+      new THREE.Vector3(-9.6, 2.4, -3.5),
+      new THREE.Vector3(-9.6, 2.4, 3.5),
+      new THREE.Vector3(9.6, 2.4, -2.1),
+      new THREE.Vector3(9.6, 2.4, 2.1),
     ]
-    sconces.forEach((pos) => {
-      const lamp = new THREE.PointLight(0xffe9c6, 0.55, 5.5, 2)
+    sconcePositions.forEach((pos) => {
+      const lamp = new THREE.PointLight(0xffe8c2, 0.55, 6.0, 2)
       lamp.position.copy(pos)
-      this.zone1Group.add(lamp)
+      this.group.add(lamp)
       this.lights.push(lamp)
     })
 
-    // 5. Collection spotlights
-    const spot = (
+    // 5. Targeted Collection Spotlights
+    const createSpot = (
       pos: [number, number, number],
       target: [number, number, number],
       intensity: number,
       angle: number,
       shadow = false,
     ) => {
-      const light = new THREE.SpotLight(0xfff5e6, intensity, 14, angle, 0.62, 1.5)
-      light.position.set(...pos)
+      const spot = new THREE.SpotLight(0xfff6eb, intensity, 16, angle, 0.55, 1.4)
+      spot.position.set(...pos)
       const aim = new THREE.Object3D()
       aim.position.set(...target)
-      this.zone1Group.add(aim)
-      light.target = aim
-      light.castShadow = shadow && !this.isMobile
-      if (light.castShadow) {
-        light.shadow.mapSize.set(512, 512)
-        light.shadow.bias = -0.002
+      this.group.add(aim)
+      spot.target = aim
+      spot.castShadow = shadow && !this.isMobile
+      if (spot.castShadow) {
+        spot.shadow.mapSize.set(512, 512)
+        spot.shadow.bias = -0.002
       }
-      this.zone1Group.add(light)
-      this.lights.push(light)
+      this.group.add(spot)
+      this.lights.push(spot)
     }
 
-    spot([-3.5, 4.5, -0.6], [-4.9, 1.05, -0.6], 3.0, Math.PI / 5.2, true)
-    spot([-5.1, 4.5, 2.6], [-6.55, 1.45, 2.6], 2.2, Math.PI / 5)
-    if (!this.isMobile) {
-      spot([-4.4, 4.5, -0.6], [-7.08, 2.35, -0.6], 1.9, Math.PI / 5)
-    }
-    spot([-2.2, 4.5, -4.6], [-2.2, 2.1, -7.08], 2.5, Math.PI / 4.2)
-    spot([2.2, 4.5, -4.6], [2.2, 2.1, -7.08], 2.5, Math.PI / 4.2)
-    spot([-2.3, 4.5, 4.6], [-2.3, 2.1, 7.08], 2.5, Math.PI / 4.2, true)
-    spot([2.3, 4.5, 4.6], [2.3, 2.1, 7.08], 2.5, Math.PI / 4.2)
-    spot([3.4, 4.5, 0], [4.9, 1.0, 0], 2.6, Math.PI / 5)
-    if (!this.isMobile) {
-      spot([4.9, 4.5, 0], [7.08, 2.35, 0], 2.1, Math.PI / 5)
-    }
-  }
+    // A. Center: 3D Campus Miniature Vitrine
+    createSpot([0, 4.9, 0], [0, 0.9, 0], 3.6, Math.PI / 4.2, true)
+    createSpot([-1.2, 4.6, 0], [0, 0.9, 0], 2.0, Math.PI / 4.5)
+    createSpot([1.2, 4.6, 0], [0, 0.9, 0], 2.0, Math.PI / 4.5)
 
-  private setupZone2Lighting(): void {
-    // 1. Soft warm ambient base
-    const ambient = new THREE.AmbientLight(0xfff6ea, 0.85)
-    this.zone2Group.add(ambient)
-    this.lights.push(ambient)
+    // B. West Wall: History Lectern & Grand Wall Display
+    createSpot([-6.0, 4.6, 0], [-7.6, 1.2, 0], 3.2, Math.PI / 4.5, true)
+    createSpot([-7.0, 4.6, 0], [-9.8, 2.4, 0], 2.2, Math.PI / 4.0)
 
-    // 2. Gentle bounce
-    const hemi = new THREE.HemisphereLight(0xfff8ef, 0x2b1c12, 0.6)
-    hemi.position.set(0, 5, 0)
-    this.zone2Group.add(hemi)
-    this.lights.push(hemi)
+    // C. South-West Wall: 5 Founders Gallery
+    createSpot([-6.8, 4.6, 5.5], [-6.8, 2.0, 7.8], 2.8, Math.PI / 4.2)
 
-    // 3. Dual Chandeliers for 18m rectangular hall
-    const chanL = new THREE.PointLight(0xfff3e1, 1.9, 18, 1.7)
-    chanL.position.set(-4.5, 4.35, 0)
-    chanL.castShadow = !this.isMobile
-    if (chanL.castShadow) {
-      chanL.shadow.mapSize.set(512, 512)
-      chanL.shadow.bias = -0.0015
-    }
-    this.zone2Group.add(chanL)
-    this.lights.push(chanL)
+    // D. South Wall: 13 Directorate & Rectorate Gallery (2 balanced spots for wide coverage)
+    createSpot([-0.8, 4.6, 5.5], [-0.8, 2.0, 7.8], 2.8, Math.PI / 4.2)
+    createSpot([3.6, 4.6, 5.5], [3.6, 2.0, 7.8], 2.8, Math.PI / 4.2)
 
-    const chanR = new THREE.PointLight(0xfff3e1, 1.9, 18, 1.7)
-    chanR.position.set(4.5, 4.35, 0)
-    this.zone2Group.add(chanR)
-    this.lights.push(chanR)
+    // E. North Wall: Early Campus Photo Gallery
+    createSpot([-1.6, 4.6, -5.5], [-1.6, 2.0, -7.8], 2.8, Math.PI / 4.2)
+    createSpot([1.6, 4.6, -5.5], [1.6, 2.0, -7.8], 2.8, Math.PI / 4.2)
 
-    // Low fills
-    const fillL = new THREE.PointLight(0xffeed6, 0.65, 14, 1.8)
-    fillL.position.set(-4.5, 2.7, 0)
-    this.zone2Group.add(fillL)
-    this.lights.push(fillL)
+    // F. East Wall: The 3 Historical Bookcases (Rak 01, Rak 02, Rak 03)
+    createSpot([7.5, 4.6, -4.5], [9.7, 1.6, -4.5], 2.6, Math.PI / 4.5)
+    createSpot([7.5, 4.6, 0], [9.7, 1.6, 0], 2.6, Math.PI / 4.5)
+    createSpot([7.5, 4.6, 4.5], [9.7, 1.6, 4.5], 2.6, Math.PI / 4.5)
 
-    const fillR = new THREE.PointLight(0xffeed6, 0.65, 14, 1.8)
-    fillR.position.set(4.5, 2.7, 0)
-    this.zone2Group.add(fillR)
-    this.lights.push(fillR)
-
-    // 4. Wall sconces along perimeter
-    const sconcesZ2 = [
-      new THREE.Vector3(-8.8, 2.8, -3.2),
-      new THREE.Vector3(-8.8, 2.8, 3.2),
-      new THREE.Vector3(8.8, 2.8, -3.2),
-      new THREE.Vector3(8.8, 2.8, 3.2),
-      new THREE.Vector3(-4.5, 2.8, -6.8),
-      new THREE.Vector3(4.5, 2.8, -6.8),
-      new THREE.Vector3(-4.5, 2.8, 6.8),
-      new THREE.Vector3(4.5, 2.8, 6.8),
-    ]
-    sconcesZ2.forEach((pos) => {
-      const lamp = new THREE.PointLight(0xffe9c6, 0.55, 5.5, 2)
-      lamp.position.copy(pos)
-      this.zone2Group.add(lamp)
-      this.lights.push(lamp)
-    })
-
-    // 5. Focused spotlights for Zone 2 exhibits
-    const spotZ2 = (
-      pos: [number, number, number],
-      target: [number, number, number],
-      intensity: number,
-      angle: number,
-      shadow = false,
-    ) => {
-      const light = new THREE.SpotLight(0xfff5e6, intensity, 16, angle, 0.6, 1.5)
-      light.position.set(...pos)
-      const aim = new THREE.Object3D()
-      aim.position.set(...target)
-      this.zone2Group.add(aim)
-      light.target = aim
-      light.castShadow = shadow && !this.isMobile
-      if (light.castShadow) {
-        light.shadow.mapSize.set(512, 512)
-        light.shadow.bias = -0.002
-      }
-      this.zone2Group.add(light)
-      this.lights.push(light)
-    }
-
-    // Central Miniature Table (Hero shadow-caster)
-    spotZ2([0, 4.6, 0], [0, 0.95, 0], 3.4, Math.PI / 4.5, true)
-    // Area A: Faculty Development West Wall
-    spotZ2([-6.5, 4.5, -2.4], [-8.85, 2.2, -2.4], 2.4, Math.PI / 4.2)
-    spotZ2([-6.5, 4.5, 2.4], [-8.85, 2.2, 2.4], 2.4, Math.PI / 4.2)
-    // Area B: Campus Transformation North Wall
-    spotZ2([-3.6, 4.5, -4.8], [-3.6, 2.2, -7.05], 2.5, Math.PI / 4.2)
-    spotZ2([3.6, 4.5, -4.8], [3.6, 2.2, -7.05], 2.5, Math.PI / 4.2)
-    // Area C: Education & Research Showcase East Wall
-    spotZ2([6.5, 4.5, -2.4], [8.85, 2.2, -2.4], 2.4, Math.PI / 4.2)
-    spotZ2([6.5, 4.5, 2.4], [8.85, 2.2, 2.4], 2.4, Math.PI / 4.2)
-    // Area D: Academic Achievements & Community South Wall
-    spotZ2([-3.6, 4.5, 4.8], [-3.6, 2.2, 7.05], 2.5, Math.PI / 4.2)
-    spotZ2([3.6, 4.5, 4.8], [3.6, 2.2, 7.05], 2.5, Math.PI / 4.2)
+    // G. North Flanks: Rak 04 and Rak 05
+    createSpot([-7.8, 4.6, -5.5], [-7.8, 1.6, -7.7], 2.6, Math.PI / 4.5)
+    createSpot([7.8, 4.6, -5.5], [7.8, 1.6, -7.7], 2.6, Math.PI / 4.5)
   }
 
   public dispose(): void {
-    this.lights.forEach((light) => {
-      if (light.parent) light.parent.remove(light)
-      light.dispose()
+    this.lights.forEach((l) => {
+      l.dispose()
     })
     this.lights = []
   }

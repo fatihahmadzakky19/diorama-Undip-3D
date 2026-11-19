@@ -25,15 +25,15 @@ export interface ExhibitData {
   id: string
   code:
     | 'history'
-    | 'archive'
+    | 'founders_5'
+    | 'directors_13'
     | 'photos'
-    | 'documents'
-    | 'founders'
-    | 'z2_miniature'
-    | 'z2_faculties'
-    | 'z2_campus_transformation'
-    | 'z2_research'
-    | 'z2_achievements'
+    | 'miniature'
+    | 'bookshelf_z1'
+    | 'bookshelf_z2'
+    | 'bookshelf_z3'
+    | 'bookshelf_z4'
+    | 'bookshelf_z5'
   areaName: string
   zoneNumber: number
   title: string
@@ -47,95 +47,53 @@ export interface ExhibitData {
   stats?: { label: string; value: string }[]
 }
 
-export interface MuseumZoneInfo {
-  id: string
-  zoneNumber: number
-  code: string
-  name: string
-  subtitle: string
-  theme: string
-  status: 'available' | 'coming-soon'
-  spawnPos: [number, number, number]
-  spawnRotationY: number
+export interface MuseumBookChapter {
+  chapterNumber: number
+  title: string
+  pageHeader: string
+  period: string
+  imageKey?: string
+  narrativeParagraphs: string[]
+  keyMilestones?: string[]
+  historicalQuote?: string
 }
 
-export const MUSEUM_ZONES: MuseumZoneInfo[] = [
-  {
-    id: 'zone-1',
-    zoneNumber: 1,
-    code: 'origin',
-    name: 'Zona 1 — The Origin of Undip',
-    subtitle: 'Kronik Pendirian, Arsip Otentik & Galeri Pimpinan Rektorat 1957',
-    theme: 'Sejarah Awal & Warisan Pendiri',
-    status: 'available',
-    spawnPos: [0, 1.68, 3.4],
-    spawnRotationY: 0,
-  },
-  {
-    id: 'zone-2',
-    zoneNumber: 2,
-    code: 'growth',
-    name: 'Zona 2 — The Growth of Knowledge',
-    subtitle: 'Perkembangan Fakultas, Transformasi Kampus & Riset Kelautan',
-    theme: 'Evolusi Keilmuan & Perluasan Kampus',
-    status: 'available',
-    spawnPos: [0, 1.68, 5.2],
-    spawnRotationY: 0,
-  },
-  {
-    id: 'zone-3',
-    zoneNumber: 3,
-    code: 'heritage',
-    name: 'Zona 3 — The Heritage of Undip',
-    subtitle: 'Koleksi Pusaka, Nilai Kejuangan & Tradisi Almamater',
-    theme: 'Warisan Nilai Budaya Almamater',
-    status: 'coming-soon',
-    spawnPos: [0, 1.68, 0],
-    spawnRotationY: 0,
-  },
-  {
-    id: 'zone-4',
-    zoneNumber: 4,
-    code: 'today',
-    name: 'Zona 4 — Undip Today',
-    subtitle: 'Prestasi Global, PTN-BH Mandiri & World Class University',
-    theme: 'Reputasi Internasional Masa Kini',
-    status: 'coming-soon',
-    spawnPos: [0, 1.68, 0],
-    spawnRotationY: 0,
-  },
-  {
-    id: 'zone-5',
-    zoneNumber: 5,
-    code: 'future',
-    name: 'Zona 5 — Undip Future',
-    subtitle: 'Inovasi Digital, Green Energy & Visi Menuju Indonesia Emas',
-    theme: 'Cetak Biru Masa Depan Almamater',
-    status: 'coming-soon',
-    spawnPos: [0, 1.68, 0],
-    spawnRotationY: 0,
-  },
-]
+export interface MuseumBook {
+  id: string
+  shelfId: 'shelf_z1' | 'shelf_z2' | 'shelf_z3' | 'shelf_z4' | 'shelf_z5'
+  shelfCategory: string
+  zoneNumber: 1 | 2 | 3 | 4 | 5
+  zoneName: string
+  title: string
+  subtitle: string
+  spineLabel: string
+  coverColor: string
+  period: string
+  synopsis: string
+  chapters: MuseumBookChapter[]
+  referenceUrl?: string
+}
 
 /**
- * Data Sejarah Resmi Universitas Diponegoro
- * Rujukan Utama: https://undip.ac.id/sejarah-2
+ * Data 5 Pameran Fisik Utama Museum Undip
+ * Wajib tampil sebagai objek fisik 3D di ruangan (tidak dimasukkan ke dalam buku)
  */
 export const EXHIBIT_DATA: Record<string, ExhibitData> = {
+  // 1. SEJARAH UTAMA UNDIP (Sayap Barat — Mimbar Baca & Dinding Sejarah)
   history: {
     id: 'history',
     code: 'history',
     zoneNumber: 1,
-    areaName: 'Sayap Barat · Buku Sejarah & Mimbar Baca',
+    areaName: 'Sayap Barat · Mimbar Baca & Naskah Sejarah Resmi',
     title: 'Sejarah Resmi Universitas Diponegoro (undip.ac.id/sejarah-2)',
-    subtitle: 'Zona 1 — The Origin of Undip: Kronik Pendirian dari Universitas Semarang (1956/1957) hingga Penetapan PTN-BH',
-    badgeText: 'Zona 1 — The Origin of Undip',
+    subtitle: 'Kronik Pendirian dari Universitas Semarang (1956/1957) hingga Penetapan PTN-BH',
+    badgeText: 'Pameran Fisik 1 · Sejarah Utama Undip',
     mainDescription:
       'Berdasarkan catatan sejarah resmi Undip (undip.ac.id/sejarah-2), sekitar awal tahun 1950-an masyarakat Jawa Tengah khususnya Kota Semarang merasakan kebutuhan mendesak akan kehadiran lembaga pendidikan tinggi. Kebutuhan ini ditujukan untuk membantu pemerintah dalam penanganan pembangunan di segala bidang, sekaligus menampung para lulusan SMA di Jawa Tengah bagian utara yang saat itu jumlahnya terus meningkat pesat namun tidak tertampung di UGM Yogyakarta (satu-satunya universitas negeri di Jateng dan DIY saat itu).',
     historicalContext:
       'Guna mewujudkan cita-cita mulia tersebut, dibentuklah Yayasan Universitas Semarang berdasarkan Akta Notaris R.M. Soeprapto No. 59 tanggal 4 Desember 1956. Langkah bersejarah ini menjadi landasan formal berdirinya "Universitas Semarang" yang secara resmi dibuka pada 9 Januari 1957 dengan Mr. Imam Bardjo sebagai Presiden Universitas (Rektor) pertama. Pada upacara Dies Natalis ke-3 tanggal 9 Januari 1960, Presiden Republik Indonesia Ir. Soekarno mengubah nama Universitas Semarang menjadi "Universitas Diponegoro" sebagai bentuk penghargaan atas prestasi pembinaan pendidikan tinggi.',
     significance:
-      'Status universitas negeri dikukuhkan melalui Peraturan Pemerintah No. 7 Tahun 1961 yang berlaku surut mulai 15 Oktober 1957. Tanggal 15 Oktober kemudian ditetapkan sebagai hari jadi atau Dies Natalis Undip, merujuk pada peristiwa heroik Pertempuran Lima Hari di Semarang (15–20 Oktober 1945) untuk meneladani jiwa kepahlawanan para pejuang. Kini Undip telah bertransformasi menjadi Perguruan Tinggi Negeri Badan Hukum (PTN-BH) berkelas dunia berpusat di Kampus Tembalang.',
+      'Status universitas negeri dikukuhkan melalui Peraturan Pemerintah No. 7 Tahun 1961 yang berlaku surut mulai 15 Oktober 1957. Tanggal 15 Oktober kemudian ditetapkan sebagai hari jadi atau Dies Natalis Undip, merujuk pada peristiwa heroik Pertempuran Lima Hari di Semarang (15–20 Oktober 1945) untuk meneladani jiwa kepahlawanan para pejuang.',
     stats: [
       { label: 'Akta Notaris Yayasan', value: '4 Desember 1956' },
       { label: 'Pembukaan Resmi', value: '9 Januari 1957' },
@@ -151,8 +109,8 @@ export const EXHIBIT_DATA: Record<string, ExhibitData> = {
         imageKey: 'history_background',
         narrativeParagraphs: [
           'Pada awal dekade 1950-an pasca perang kemerdekaan, masyarakat Jawa Tengah khususnya di Kota Semarang merasakan kebutuhan yang sangat mendesak akan hadirnya lembaga pendidikan tinggi.',
-          'Saat itu, di seluruh wilayah Jawa Tengah dan Daerah Istimewa Yogyakarta hanya terdapat satu universitas negeri, yaitu Universitas Gadjah Mada (UGM) di Yogyakarta. Sementara itu, jumlah lulusan Sekolah Menengah Atas (SMA) di Jawa Tengah bagian utara, khususnya karesidenan Semarang, Pati, dan Pekalongan, bertambah sangat pesat.',
-          'Banyak pemuda berpotensi tidak mampu melanjutkan pendidikan karena kendala jarak dan biaya merantau ke luar kota. Hal ini memicu kebulatan tekad dari para cendekiawan, praktisi hukum, pejuang, serta pamong praja di Semarang untuk mendirikan universitas mandiri di ibukota Jawa Tengah.',
+          'Saat itu, di seluruh wilayah Jawa Tengah dan Daerah Istimewa Yogyakarta hanya terdapat satu universitas negeri, yaitu Universitas Gadjah Mada (UGM) di Yogyakarta. Sementara itu, jumlah lulusan Sekolah Menengah Atas (SMA) di Jawa Tengah bagian utara bertambah sangat pesat.',
+          'Banyak pemuda berpotensi tidak mampu melanjutkan pendidikan karena kendala jarak dan biaya merantau. Hal ini memicu kebulatan tekad dari para cendekiawan, praktisi hukum, pejuang, serta pamong praja di Semarang untuk mendirikan universitas mandiri di ibukota Jawa Tengah.',
         ],
         keyMilestones: [
           'Tingginya lonjakan lulusan SMA yang membutuhkan akses universitas terjangkau.',
@@ -175,7 +133,7 @@ export const EXHIBIT_DATA: Record<string, ExhibitData> = {
           '“Dengan landasan Akta No. 59 Tahun 1956, tonggak formal perguruan tinggi mandiri di Semarang resmi dipancangkan.”',
         keyMilestones: [
           'Legalisasi badan hukum yayasan di hadapan Notaris R.M. Soeprapto.',
-          'Dukungan penuh dari 13 tokoh pendiri berjiwa patriotik.',
+          'Dukungan penuh dari tokoh pendiri berjiwa patriotik.',
           'Komitmen gotong royong pendanaan dari segenap masyarakat Jawa Tengah.',
         ],
       },
@@ -187,7 +145,7 @@ export const EXHIBIT_DATA: Record<string, ExhibitData> = {
         imageKey: 'photo_campus_gris',
         narrativeParagraphs: [
           'Pada tanggal 9 Januari 1957, Universitas Semarang dibuka secara khidmat dalam upacara peresmian yang dihadiri para pemuka masyarakat Jawa Tengah di Gedung Rakyat Indonesia Semarang (GRIS), Jalan Pemuda.',
-          'Mr. Imam Bardjo, yang saat itu menjabat sebagai Ketua Pengadilan Negeri Semarang, diangkat sebagai Presiden Universitas (Rektor) pertama. Dalam orasi ilmiah perdananya, beliau menekankan bahwa universitas ini adalah candradimuka bagi pembentukan watak bangsa yang berbudi luhur.',
+          'Mr. Imam Bardjo, yang saat itu menjabat sebagai Ketua Pengadilan Negeri Semarang, diangkat sebagai Presiden Universitas (Rektor) pertama. Dalam orasi ilmiah perdananya, beliau menekankan bahwa universitas ini adalah kawah candradimuka bagi pembentukan watak bangsa yang berbudi luhur.',
           'Pada awal berdirinya, perkuliahan dibuka untuk empat fakultas perintis: Fakultas Hukum dan Masyarakat, Fakultas Ekonomi, Fakultas Teknik, serta Akademi Tata Praja. Fasilitas perkuliahan memanfaatkan ruang kelas SMA Negeri di Jl. Taman Menteri Supeno dan aula GRIS.',
         ],
         keyMilestones: [
@@ -223,7 +181,7 @@ export const EXHIBIT_DATA: Record<string, ExhibitData> = {
         narrativeParagraphs: [
           'Status Universitas Diponegoro sebagai Perguruan Tinggi Negeri (PTN) secara hukum dikukuhkan melalui Peraturan Pemerintah Nomor 7 Tahun 1961 yang ditandatangani oleh Presiden Soekarno, dengan ketentuan berlaku surut terhitung mulai tanggal 15 Oktober 1957.',
           'Tanggal 15 Oktober kemudian ditetapkan secara permanen sebagai Hari Jadi atau Dies Natalis Universitas Diponegoro.',
-          'Pemilihan tanggal 15 Oktober memiliki makna filosofis yang sangat sakral: mengenang meletusnya Pertempuran Lima Hari di Semarang (15–20 Oktober 1945), di mana para pemuda dan pejuang Semarang gugur mempertahankan kemerdekaan Indonesia dari serangan tentara Jepang. Jiwa patriotik inilah yang diwariskan kepada seluruh alumni Undip.',
+          'Pemilihan tanggal 15 Oktober memiliki makna filosofis yang sangat sakral: mengenang meletusnya Pertempuran Lima Hari di Semarang (15–20 Oktober 1945), di mana para pemuda dan pejuang Semarang gugur mempertahankan kemerdekaan Indonesia dari serangan tentara Jepang.',
         ],
         keyMilestones: [
           'Penetapan status perguruan tinggi negeri penuh di bawah naungan pemerintah RI.',
@@ -238,10 +196,9 @@ export const EXHIBIT_DATA: Record<string, ExhibitData> = {
         period: '2008 – Kini',
         imageKey: 'photo_campus_pleburan',
         narrativeParagraphs: [
-          'Seiring pesatnya penambahan fakultas dan mahasiswa, Undip melakukan langkah strategis memindahkan dan memperluas kampus utama dari kawasan Pleburan Semarang Tengah menuju dataran tinggi perbukitan Tembalang seluas ratusan hektar.',
-          'Kampus Tembalang kini menjadi pusat kegiatan akademik modern yang dilengkapi berbagai laboratorium riset, perpustakaan megah, gedung serbaguna Widya Puraya, serta stadion olahraga.',
-          'Pada tahun 2008 Undip ditetapkan sebagai Badan Layanan Umum (BLU), dan selanjutnya pada 17 Oktober 2014 resmi bertransformasi menjadi Perguruan Tinggi Negeri Badan Hukum (PTN-BH) melalui Peraturan Pemerintah Nomor 81 Tahun 2014 dan disempurnakan dengan PP Nomor 52 Tahun 2015 tentang Statuta Undip.',
-          'Kini Universitas Diponegoro berdiri kokoh sebagai salah satu universitas riset terbaik di Indonesia dan masuk dalam jajaran perguruan tinggi bereputasi internasional (World Class University).',
+          'Seiring pesatnya penambahan fakultas dan mahasiswa, Undip melakukan langkah strategis memindahkan dan memperluas kampus utama dari kawasan Pleburan Semarang Tengah menuju dataran tinggi perbukitan Tembalang seluas 180 hektar.',
+          'Kampus Tembalang kini menjadi pusat kegiatan akademik modern yang dilengkapi berbagai laboratorium riset, perpustakaan megah, gedung serbaguna Widya Puraya, RSND, serta sarana olahraga.',
+          'Pada tahun 2008 Undip ditetapkan sebagai Badan Layanan Umum (BLU), dan selanjutnya pada 17 Oktober 2014 resmi bertransformasi menjadi Perguruan Tinggi Negeri Badan Hukum (PTN-BH) melalui Peraturan Pemerintah Nomor 81 Tahun 2014 dan disempurnakan dengan PP Nomor 52 Tahun 2015.',
         ],
         keyMilestones: [
           'Pembangunan kampus terpadu Tembalang berwawasan lingkungan asri.',
@@ -250,486 +207,362 @@ export const EXHIBIT_DATA: Record<string, ExhibitData> = {
         ],
       },
     ],
-    items: [
-      {
-        id: 'latar-belakang-1950',
-        title: 'Kebutuhan Mendesak Pendidikan Tinggi Awal 1950-an',
-        subtitle: 'Keterbatasan Daya Tampung Pendidikan Tinggi di Jawa Tengah',
-        dateOrYear: 'Awal 1950-an',
-        imageKey: 'history_background',
-        description:
-          'Pada awal dekade 1950-an, di wilayah Jawa Tengah dan D.I. Yogyakarta baru ada Universitas Gadjah Mada (UGM) berstatus negeri. Sementara itu, lulusan SMA di Jawa Tengah bagian utara, khususnya Semarang dan sekitarnya, meningkat drastis namun banyak yang tidak mampu melanjutkan studi ke luar kota.',
-        details: [
-          'Dibutuhkan banyak tenaga sarjana untuk mengisi pos-pos birokrasi, hukum, teknik, dan ekonomi daerah.',
-          'Masyarakat dan para pejuang di Semarang bergotong royong menggagas pendirian universitas mandiri.',
-          'Para praktisi hukum, notaris, dokter, dan insinyur menyatakan kesediaan mengajar secara sukarela.',
-        ],
-      },
-      {
-        id: 'pendirian-yayasan-1956',
-        title: 'Akta Notaris R.M. Soeprapto No. 59 & Pembukaan 9 Januari 1957',
-        subtitle: 'Lahirnya Universitas Semarang dan Kuliah Perdana di GRIS',
-        dateOrYear: '4 Des 1956 / 9 Jan 1957',
-        imageKey: 'history_founding',
-        description:
-          'Yayasan Universitas Semarang resmi berdiri pada 4 Desember 1956 di hadapan Notaris R.M. Soeprapto. Selanjutnya pada 9 Januari 1957, Universitas Semarang dibuka secara khidmat dengan Mr. Imam Bardjo sebagai Presiden Universitas pertama.',
-        details: [
-          'Kuliah perdana dimulai di Gedung Rakyat Indonesia Semarang (GRIS) di Jalan Pemuda.',
-          'Empat fakultas perintis: Hukum & Masyarakat, Ekonomi, Teknik, serta Akademi Tata Praja.',
-          'Dukungan luar biasa datang dari pemerintah daerah dan masyarakat Kota Semarang.',
-        ],
-      },
-      {
-        id: 'penganugerahan-nama-1960',
-        title: 'Penganugerahan Nama "Universitas Diponegoro" oleh Presiden Soekarno',
-        subtitle: 'Dies Natalis III — 9 Januari 1960 di Semarang',
-        dateOrYear: '9 Januari 1960',
-        imageKey: 'history_soekarno',
-        description:
-          'Presiden Soekarno memberikan restu dan penganugerahan nama agung "Universitas Diponegoro" (Undip) sebagai penghargaan atas ketekunan membina pendidikan tinggi di Jawa Tengah.',
-        quote:
-          '“Jadikanlah nama Diponegoro sebagai obor pengabdian kepada tanah air! Warisilah keberanian, kejujuran budi, dan ketulusan Pangeran Diponegoro dalam membela rakyat.” — Ir. Soekarno',
-      },
-      {
-        id: 'penetapan-dies-natalis-15-oktober',
-        title: 'Penetapan Dies Natalis 15 Oktober & Pertempuran Lima Hari',
-        subtitle: 'PP No. 7 Tahun 1961 & Jiwa Patriotisme Semarang',
-        dateOrYear: '15 Oktober 1957/1961',
-        imageKey: 'history_ptn',
-        description:
-          'Penegerian Undip ditetapkan melalui PP No. 7 Tahun 1961 dengan penetapan hari Dies Natalis jatuh pada tanggal 15 Oktober. Momentum ini sengaja dipilih untuk meneladani patriotisme para pemuda pejuang dalam Pertempuran Lima Hari di Semarang (15–20 Oktober 1945).',
-      },
-      {
-        id: 'transformasi-tembalang-ptnbh',
-        title: 'Ekspansi Kampus Tembalang & Penetapan Status PTN-BH',
-        subtitle: 'Keputusan Menkeu BLU (2008) & PP No. 81 Tahun 2014 (PTN-BH)',
-        dateOrYear: '2008 – 2015 – Kini',
-        imageKey: 'photo_campus_pleburan',
-        description:
-          'Dari kampus bersejarah Pleburan, Undip memperluas kampus utama ke perbukitan Tembalang. Undip bertransformasi menjadi BLU (2008) dan resmi ditetapkan sebagai PTN Badan Hukum (PTN-BH) melalui PP No. 81 Tahun 2014 dan PP No. 52 Tahun 2015.',
-      },
-    ],
   },
 
-  archive: {
-    id: 'archive',
-    code: 'archive',
+  // 2. LIMA PENDIRI UTAMA UNDIP (Sayap Barat Daya — Galeri Dinding)
+  founders_5: {
+    id: 'founders_5',
+    code: 'founders_5',
     zoneNumber: 1,
-    areaName: 'Sayap Barat · Lemari Arsip Klasik 1956',
-    title: 'Arsip Akta Notaris No. 59 & Berkas Perintis Undip',
-    subtitle: 'Zona 1 — The Origin of Undip: Naskah Asli Pembentukan Yayasan Universitas Semarang (undip.ac.id/sejarah-2)',
-    badgeText: 'Zona 1 — Koleksi Arsip Otentik',
+    areaName: 'Sayap Barat Daya · Galeri Dinding Lima Pendiri Utama',
+    title: 'Galeri 5 Pendiri Utama Universitas Semarang / Diponegoro',
+    subtitle: 'Tokoh Kunci Pembentukan Yayasan Universitas Semarang Berdasarkan Akta Notaris No. 59 Tahun 1956',
+    badgeText: 'Pameran Fisik 2 · 5 Pendiri Utama',
     mainDescription:
-      'Zona lemari arsip kayu jati antik ini mendokumentasikan warkat otentik pembentukan Yayasan Universitas Semarang: Akta Notaris R.M. Soeprapto No. 59 tanggal 4 Desember 1956, susunan kepengurusan yayasan dan dewan kurator pertama, buku registrasi mahasiswa 1957, serta risalah pendirian fakultas-fakultas perintis.',
+      'Galeri dinding ini mengabadikan lima tokoh sentral yang memelopori, mendanai, dan mengorganisasi berdirinya Universitas Semarang pada tahun 1956. Berdasarkan catatan sejarah resmi, kelima tokoh ini memegang peranan kepemimpinan inti dalam Dewan Pengurus Yayasan dan kepemimpinan universitas masa perintis.',
     historicalContext:
-      'Akta Notaris No. 59 inilah yang secara hukum melegitimasi pembentukan perguruan tinggi mandiri di Semarang. Dalam akta ini tercantum pembagian tugas para perintis: Mr. Sudarto sebagai Ketua Yayasan, Mr. Dan Soelaiman sebagai Wakil Ketua, Mr. Soesanto Kartoatmodjo sebagai Panitera, Achmad Tjokrokoesoemo sebagai Bendahara, serta Mr. Imam Bardjo yang diangkat sebagai Presiden Universitas pertama.',
+      'Pada masa pascakemerdekaan, ketiadaan perguruan tinggi di Semarang mendorong Mr. Sudarto bersama Mr. Dan Soelaiman, Mr. Soesanto Kartoatmodjo, Achmad Tjokrokoesoemo, dan Mr. Imam Bardjo untuk menghimpun potensi daerah. Mereka berhasil meyakinkan notaris R.M. Soeprapto dan Walikota Semarang Hadi Soebeno untuk melegalkan pendirian perguruan tinggi mandiri pertama di ibukota Jawa Tengah.',
     significance:
-      'Arsip ini membuktikan legalitas hukum dan tata kelola profesional yang diletakkan para perintis sejak hari pertama berdirinya almamater.',
+      'Ketulusan para pendiri mengajar tanpa bayaran dan menyumbangkan sarana pribadi menjadi fondasi moral bagi karakter almamater yang luhur dan mengabdi.',
     stats: [
-      { label: 'Nomor Akta Notaris', value: 'No. 59 Th. 1956' },
-      { label: 'Tanggal Akta', value: '4 Desember 1956' },
-      { label: 'Notaris Pembuat', value: 'R.M. Soeprapto' },
+      { label: 'Ketua Yayasan', value: 'Mr. Sudarto' },
+      { label: 'Wakil Ketua Yayasan', value: 'Mr. Dan Soelaiman' },
+      { label: 'Panitera Yayasan', value: 'Mr. Soesanto Kartoatmodjo' },
+      { label: 'Bendahara Yayasan', value: 'Achmad Tjokrokoesoemo' },
       { label: 'Presiden Rektor I', value: 'Mr. Imam Bardjo' },
     ],
     items: [
       {
-        id: 'akta-notaris-59-undip',
-        title: 'Akta Notaris R.M. Soeprapto No. 59 Tanggal 4 Desember 1956',
-        subtitle: 'Pendirian Resmi Yayasan Universitas Semarang',
-        dateOrYear: '4 Desember 1956',
-        imageKey: 'archive_deed',
+        id: 'founder-5-sudarto',
+        title: '1. Mr. Sudarto',
+        subtitle: 'Ketua Dewan Pengurus Yayasan Universitas Semarang (1956)',
+        dateOrYear: '1923 – 1986',
+        leadershipPeriod: 'Ketua Yayasan 1956 & Rektor Undip 1961–62, 1977–86',
+        imageKey: 'founder_soedarto',
         description:
-          'Naskah legal otentik bermeterai yang menyatakan berdirinya Yayasan Universitas Semarang dengan tujuan memajukan pendidikan tinggi di Kota Semarang dan membantu pemerintah mencetak tenaga ahli pembangunan daerah.',
+          'Tokoh sentral di balik pendirian Yayasan Universitas Semarang. Beliau memimpin penyusunan anggaran dasar yayasan, menjalin komunikasi dengan para pemuka masyarakat, dan kemudian memimpin Undip dalam dua periode kepemimpinan serta merintis pembebasan lahan kampus Tembalang.',
         details: [
-          'Memuat susunan pengurus yayasan dan dewan kurator pertama.',
-          'Menjadi dasar hukum pembukaan perkuliahan tanggal 9 Januari 1957.',
-          'Mencantumkan komitmen gotong royong pendanaan dari masyarakat Semarang.',
+          'Ketua Dewan Pengurus Yayasan Akta Notaris No. 59 Tahun 1956.',
+          'Pakar hukum pidana nasional dan salah satu perumus KUHP Nasional Indonesia.',
+          'Namanya diabadikan sebagai Gedung Pertemuan Agung Auditorium Prof. Soedarto, S.H. di Tembalang.',
+        ],
+        quote: '“Membangun perguruan tinggi adalah menanam pohon peradaban yang buahnya akan dinikmati generasi berabad-abad ke depan.”',
+      },
+      {
+        id: 'founder-5-dan-soelaiman',
+        title: '2. Ir. Dan Soelaiman',
+        subtitle: 'Wakil Ketua Dewan Pengurus Yayasan Universitas Semarang (1956)',
+        dateOrYear: '1910 – 1978',
+        leadershipPeriod: 'Wakil Ketua Yayasan 1956',
+        imageKey: 'founder_danuwidjojo',
+        description:
+          'Insinyur senior dan tokoh teknokrat Semarang yang menjabat sebagai Wakil Ketua Yayasan. Beliau memprakarsai berdirinya Fakultas Teknik Undip dan menggalang sarana laboratorium pertama dari jawatan pekerjaan umum.',
+        details: [
+          'Wakil Ketua Dewan Pengurus Yayasan Universitas Semarang 1956.',
+          'Perintis kurikulum pendidikan keteknikan dan sipil pertama di Semarang.',
+          'Membantu penyediaan ruang-ruang kuliah awal di kawasan Pleburan dan Jl. Pemuda.',
         ],
       },
       {
-        id: 'notulen-sidang-perintis',
-        title: 'Notulen Rapat Perintis di Pengadilan Negeri Semarang',
-        subtitle: 'Musyawarah Para Tokoh Hukum, Kedokteran, dan Birokrasi',
-        dateOrYear: '1956',
-        imageKey: 'archive_minutes',
+        id: 'founder-5-soesanto',
+        title: '3. Mr. Soesanto Kartoatmodjo',
+        subtitle: 'Panitera Dewan Pengurus Yayasan Universitas Semarang (1956)',
+        dateOrYear: '1912 – 1980',
+        leadershipPeriod: 'Panitera / Sekretaris Yayasan 1956',
+        imageKey: 'founder_goenawan',
         description:
-          'Risalah pertemuan para perintis yang mematangkan rencana peminjaman gedung kuliah di GRIS Jl. Pemuda dan kurikulum awal fakultas hukum, ekonomi, dan teknik.',
+          'Ahli hukum tata negara dan birokrat berintegritas tinggi yang bertindak sebagai Panitera (Sekretaris) Yayasan. Beliau menyusun naskah notulen rapat-rapat perintis, pendaftaran izin kementerian, serta koordinasi antarlembaga.',
+        details: [
+          'Panitera Dewan Pengurus Yayasan dalam Akta Notaris No. 59 Tahun 1956.',
+          'Mengawal kelengkapan administrasi dan legalitas pembukaan kuliah perdana Januari 1957.',
+          'Dosen perintis hukum tata negara dan hukum administrasi negara.',
+        ],
       },
       {
-        id: 'buku-induk-mahasiswa-1957',
-        title: 'Buku Induk Registrasi Mahasiswa Angkatan Pertama (1957)',
-        subtitle: 'Dokumen Mahasiswa Perintis No. 001 s.d. 142',
-        dateOrYear: 'Januari 1957',
-        imageKey: 'archive_register',
+        id: 'founder-5-tjokrokoesoemo',
+        title: '4. Achmad Tjokrokoesoemo',
+        subtitle: 'Bendahara Dewan Pengurus Yayasan Universitas Semarang (1956)',
+        dateOrYear: '1908 – 1976',
+        leadershipPeriod: 'Bendahara Yayasan 1956',
+        imageKey: 'founder_tan_tjiang_bie',
         description:
-          'Buku arsip tebal bersampul kulit hitam mencatat putra-putri bangsa yang pertama kali terdaftar sebagai mahasiswa Universitas Semarang.',
-      },
-    ],
-  },
-
-  photos: {
-    id: 'photos',
-    code: 'photos',
-    zoneNumber: 2,
-    areaName: 'Dinding Utara · Galeri Foto Kampus Awal',
-    title: 'Foto Kampus Awal Undip (Pleburan, GRIS, dan Dies Natalis III)',
-    subtitle: 'Zona 1 — The Origin of Undip: Dokumentasi Visual Suasana Perkuliahan dan Momen Bersejarah Undip (1957–1965)',
-    badgeText: 'Zona 1 — Galeri Foto Bersejarah Undip',
-    mainDescription:
-      'Dinding dokumentasi utara memamerkan foto-foto langka kehidupan kampus Undip pada dekade pertama: gedung kuliah kolonial di Pleburan, suasana kuliah perdana di Gedung Rakyat Indonesia Semarang (GRIS) di Jalan Pemuda, upacara Dies Natalis ke-3 dihadiri Presiden Soekarno, dan praktikum laboratorium teknik.',
-    historicalContext:
-      'Sebelum dibangunnya Kampus Tembalang, seluruh kegiatan akademik berpusat di gedung GRIS dan komplek Pleburan. Foto-foto ini merekam tekad para mahasiswa angkatan pertama yang belajar di bawah lampu temaram dengan fasilitas sederhana namun penuh rasa cinta tanah air.',
-    significance:
-      'Dokumentasi ini adalah bukti sejarah visual yang menghubungkan generasi sekarang dengan perjuangan para pendahulu Undip.',
-    stats: [
-      { label: 'Kampus Pertama', value: 'Pleburan, Semarang' },
-      { label: 'Aula Kuliah Awal', value: 'GRIS Jl. Pemuda' },
-      { label: 'Era Foto', value: '1957 – 1965' },
-      { label: 'Koleksi', value: 'Foto Langka Terpilih' },
-    ],
-    items: [
-      {
-        id: 'foto-gedung-pleburan',
-        title: 'Gedung Utama Kampus Pleburan — 1957',
-        subtitle: 'Pusat Kehidupan Akademik Awal Universitas Diponegoro',
-        dateOrYear: '1957',
-        imageKey: 'photo_campus_pleburan',
-        description:
-          'Gedung berpilar putih kokoh dengan arsitektur kolonial tropis di Pleburan, Semarang Selatan, yang menjadi markas rektorat dan perkuliahan awal Undip.',
+          'Tokoh keuangan dan pamong praja yang dipercaya memegang amanah sebagai Bendahara Yayasan. Beliau mengelola sumbangan masyarakat, donasi sukarela pemda, serta biaya operasional awal empat fakultas perintis.',
+        details: [
+          'Bendahara Dewan Pengurus Yayasan Universitas Semarang 1956.',
+          'Menggalang dana abadi perintis dari para pengusaha patriotik dan masyarakat Semarang.',
+          'Memastikan kelancaran operasional perkuliahan dan bantuan buku-buku teks mahasiswa.',
+        ],
       },
       {
-        id: 'foto-aula-gris',
-        title: 'Aula GRIS Jl. Pemuda — 1957',
-        subtitle: 'Gedung Rakyat Indonesia Semarang, Tempat Peresmian Universitas',
-        dateOrYear: '9 Januari 1957',
-        imageKey: 'photo_campus_gris',
+        id: 'founder-5-imam-bardjo',
+        title: '5. Prof. Mr. Imam Bardjo',
+        subtitle: 'Presiden Universitas Semarang Pertama (Rektor I 1957–1961)',
+        dateOrYear: '1903 – 1969',
+        leadershipPeriod: 'Presiden Universitas 1957–1961',
+        imageKey: 'founder_imam_bardjo',
         description:
-          'Aula GRIS di Jalan Pemuda menjadi saksi peresmian Universitas Semarang dan kuliah perdana. Gedung ini dipinjamkan pemerintah kotapraja untuk kegiatan akademik awal.',
-      },
-      {
-        id: 'foto-kuliah-perdana',
-        title: 'Suasana Kuliah Perdana di GRIS — 1957',
-        subtitle: 'Mahasiswa Angkatan Pertama dan Orasi Mr. Imam Bardjo',
-        dateOrYear: '1957',
-        imageKey: 'photo_historic_lecture',
-        description:
-          'Para mahasiswa angkatan pertama menyimak orasi ilmiah pembukaan dari Presiden Universitas Mr. Imam Bardjo dengan fasilitas yang sederhana namun penuh semangat.',
-      },
-      {
-        id: 'foto-dies-natalis-3-undip',
-        title: 'Dies Natalis III & Amanat Presiden Soekarno — 1960',
-        subtitle: 'Penganugerahan Nama Universitas Diponegoro',
-        dateOrYear: '9 Januari 1960',
-        imageKey: 'photo_dies_soekarno',
-        description:
-          'Presiden Soekarno berpidato di hadapan ribuan warga dan sivitas akademika, meresmikan pengubahan nama menjadi Universitas Diponegoro.',
-      },
-      {
-        id: 'foto-lab-teknik-undip',
-        title: 'Laboratorium & Ukur Tanah Fakultas Teknik — 1962',
-        subtitle: 'Praktikum Insinyur Perintis di Pleburan',
-        dateOrYear: '1962',
-        imageKey: 'photo_historic_lab',
-        description:
-          'Mahasiswa teknik sipil awal melakukan pengukuran kontur tanah menggunakan theodolite optik manual di bawah bimbingan insinyur DPU.',
-      },
-      {
-        id: 'foto-penegerian-ptn',
-        title: 'Naskah Penegerian PP No. 7 Tahun 1961',
-        subtitle: 'Pengukuhan Status PTN & Dies Natalis 15 Oktober 1957',
-        dateOrYear: '1961',
-        imageKey: 'history_ptn',
-        description:
-          'Peraturan Pemerintah No. 7 Tahun 1961 mengukuhkan status Universitas Diponegoro sebagai perguruan tinggi negeri dengan berlaku surut sejak 15 Oktober 1957.',
+          'Ketua Pengadilan Negeri Semarang yang diangkat sebagai Presiden Universitas (Rektor) pertama saat peresmian 9 Januari 1957 di Aula GRIS. Figur pemersatu yang menanamkan kejujuran budi dan keluhuran ilmu kepada mahasiswa angkatan pertama.',
+        details: [
+          'Presiden Universitas pertama memimpin kuliah perdana 9 Januari 1957.',
+          'Dosen pengajar langsung hukum pidana dan hukum perdata bagi angkatan perintis.',
+          'Namanya diabadikan sebagai Jalan Prof. Mr. Imam Bardjo dan Gedung Pertemuan di Pleburan.',
+        ],
+        quote: '“Keadilan hukum dan keluhuran ilmu adalah dua pilar mutlak yang menjaga martabat kemanusiaan dan kedaulatan bangsa.”',
       },
     ],
   },
 
-  documents: {
-    id: 'documents',
-    code: 'documents',
-    zoneNumber: 4,
-    areaName: 'Sayap Timur · Etalase Dokumen Resmi Negara',
-    title: 'Dokumen SK Presiden No. 226/1960 & Penegerian Undip',
-    subtitle: 'Zona 1 — The Origin of Undip: Naskah Keputusan Penegerian, PP No. 7 Tahun 1961 & Stempel Lilin',
-    badgeText: 'Zona 1 — Dokumen Resmi Negara',
+  // 3. TOKOH DIREKTORAT & REKTORAT DARI PERIODE KE PERIODE (Dinding Selatan — 13 Gambar Berjarak)
+  directors_13: {
+    id: 'directors_13',
+    code: 'directors_13',
+    zoneNumber: 1,
+    areaName: 'Dinding Selatan · Galeri Tokoh Direktorat & Rektorat dari Periode ke Periode',
+    title: 'Galeri Tokoh Direktorat & Rektorat dari Periode ke Periode',
+    subtitle: 'Suksesi Kepemimpinan Rektorat & Dewan Presidium Universitas Diponegoro (1957 — Kini)',
+    badgeText: 'Pameran Fisik 3 · 13 Tokoh Direktorat',
     mainDescription:
-      'Di dalam etalase kaca vitrine museum ini dipamerkan salinan naskah resmi Surat Keputusan Presiden Republik Indonesia No. 226 Tahun 1960 tentang penegerian Universitas Diponegoro, Peraturan Pemerintah No. 7 Tahun 1961, piagam lambang panji Diponegoro, serta stempel segel lilin merah kuningan dan pena bulu bertinta sepia.',
+      'Dinding pameran selatan ini menyajikan 13 tokoh direktorat dan kepemimpinan rektorat yang memimpin Universitas Diponegoro dari satu periode ke periode berikutnya. Setiap periode mencerminkan fase perjuangan penting, mulai dari perintisan di aula GRIS, pemindahan ke kampus Tembalang, reformasi otonomi kampus, hingga pencapaian universitas riset berkelas dunia.',
     historicalContext:
-      'Penegerian Undip merupakan pengakuan resmi dari negara atas sumbangsih universitas ini dalam mendidik putra-putri bangsa. Melalui PP No. 7 Tahun 1961, Undip secara definitif bergabung dalam jaringan perguruan tinggi negeri di Indonesia.',
+      'Perjalanan kepemimpinan Undip mencatat estafet kepemimpinan yang berkesinambungan: diawali Mr. Imam Bardjo (1957), diteruskan oleh Prof. Mr. Soedarto, S.H., Prof. Dr. Ir. Jakub Rais, Drs. Moeljono Sostrohadikoesoemo, Prof. Dr. Soenarjo, S.H., Prof. Dr. H. Muladi, S.H., Prof. Ir. Eko Budihardjo, M.Sc., Prof. Dr. Temijo, S.H., Prof. Dr. dr. H. Susilo Wibowo, Prof. Ir. Sudharto P. Hadi, Prof. Dr. Yos Johan Utama, Prof. Dr. Suharnomo, serta Dewan Presidium Pimpinan Kolegial Yayasan 1956.',
     significance:
-      'Naskah ini adalah tonggak yuridis formal yang memperkuat posisi Undip sebagai pilar keilmuan nasional.',
+      'Galeri ini dipersembahkan dengan tata letak berjarak dan teratur untuk memudahkan pengunjung mengapresiasi jasa masing-masing tokoh secara khidmat.',
     stats: [
-      { label: 'Surat Keputusan', value: 'SK Presiden No. 226/1960' },
-      { label: 'Regulasi Pemerintah', value: 'PP No. 7 Th. 1961' },
-      { label: 'Tanggal Berlaku Surut', value: '15 Oktober 1957' },
-      { label: 'Meterai Resmi', value: 'Segel Lilin Garuda' },
+      { label: 'Presiden Universitas I', value: 'Prof. Mr. Imam Bardjo (1957)' },
+      { label: 'Arsitek Tembalang', value: 'Prof. Mr. Soedarto & Prof. Muladi' },
+      { label: 'Era PTN-BH', value: 'Prof. Sudharto P. Hadi & Prof. Yos Johan' },
+      { label: 'Rektor Petahana', value: 'Prof. Dr. Suharnomo (2024–2029)' },
     ],
     items: [
       {
-        id: 'sk-presiden-226-doc',
-        title: 'Surat Keputusan Presiden RI No. 226 Tahun 1960',
-        subtitle: 'Tentang Penegerian Universitas Diponegoro di Semarang',
-        dateOrYear: '1960',
-        imageKey: 'doc_presidential_decree',
-        description:
-          'Naskah ketikan resmi kantor kepresidenan dengan lambang Garuda, menetapkan penegerian dan pengesahan nama kehormatan "Universitas Diponegoro".',
-      },
-      {
-        id: 'pp-7-1961-doc',
-        title: 'Peraturan Pemerintah No. 7 Tahun 1961',
-        subtitle: 'Lembaran Negara RI Tahun 1961 No. 21',
-        dateOrYear: '1961',
-        imageKey: 'doc_govt_regulation',
-        description:
-          'Dasar hukum pembentukan fakultas-fakultas negeri dalam naungan Universitas Diponegoro dan jaminan anggaran operasional negara.',
-      },
-      {
-        id: 'piagam-lambang-doc',
-        title: 'Piagam Pengukuhan Lambang dan Panji Diponegoro',
-        subtitle: 'Makna Simbolik Ksatria Menunggang Kuda Membawa Keris',
-        dateOrYear: '1960',
-        imageKey: 'doc_crest_charter',
-        description:
-          'Naskah penjelasan lambang: Pangeran Diponegoro menunggang kuda dengan keris pusaka, melambangkan kepemimpinan yang berani membela keadilan, berintegritas, dan bertakwa kepada Tuhan Yang Maha Esa.',
-      },
-    ],
-  },
-
-  founders: {
-    id: 'founders',
-    code: 'founders',
-    zoneNumber: 3,
-    areaName: 'Dinding Selatan · Galeri Rektor & Pimpinan Rektorat',
-    title: 'Galeri Rektor & Pimpinan Universitas Diponegoro',
-    subtitle: 'Zona 1 — The Origin of Undip: Suksesi Tokoh Kepemimpinan Rektorat dari Masa ke Masa (1957 — Kini)',
-    badgeText: 'Zona 1 — Suksesi Kepemimpinan Rektorat',
-    mainDescription:
-      'Galeri Rektorat Universitas Diponegoro mendokumentasikan jejak estafet kepemimpinan sejak berdirinya Universitas Semarang pada 9 Januari 1957 hingga bertransformasi menjadi Perguruan Tinggi Negeri Badan Hukum (PTN-BH) berkelas dunia di Kampus Tembalang. Dua belas tokoh pemimpin ini telah mengabdikan dedikasi, visi, dan integritas untuk mengibarkan panji almamater Pangeran Diponegoro.',
-    historicalContext:
-      'Setiap era kepemimpinan membawa tonggak sejarah berharga: mulai dari perintisan kuliah perdana di GRIS Jl. Pemuda oleh Mr. Imam Bardjo, pembangunan terpadu Kampus Tembalang oleh Mr. Soedarto dan Prof. Muladi, pembumian humanisme berwawasan lingkungan oleh Prof. Eko Budihardjo dan Prof. Sudharto P. Hadi, hingga akselerasi World Class University oleh Prof. Yos Johan Utama dan Prof. Suharnomo.',
-    significance:
-      'Deretan pimpinan rektorat ini menjadi suri teladan bagi seluruh civitas akademika dalam mewujudkan Undip Bermartabat, Undip Bermanfaat bagi bangsa dan kemanusiaan.',
-    stats: [
-      { label: 'Presiden Universitas I', value: 'Prof. Mr. Imam Bardjo' },
-      { label: 'Rektor Era Tembalang', value: 'Prof. Mr. Soedarto, S.H.' },
-      { label: 'Status Kelembagaan', value: 'PTN-BH Mandiri' },
-      { label: 'Rektor Petahana', value: 'Prof. Dr. Suharnomo, S.E., M.Si.' },
-    ],
-    items: [
-      {
-        id: 'rector-1-imam-bardjo',
+        id: 'dir-1-imam-bardjo',
         title: '1. Prof. Mr. Imam Bardjo',
-        subtitle: 'Presiden Universitas Semarang Pertama (Rektor Perintis 1957–1961)',
+        subtitle: 'Presiden Universitas Semarang Pertama (1957–1961)',
         dateOrYear: '1903 – 1969',
         leadershipPeriod: 'Presiden Universitas 1957–1961',
         imageKey: 'rector_imam_bardjo',
         description:
-          'Ketua Pengadilan Negeri Semarang yang diangkat sebagai Presiden Universitas (Rektor) pertama saat pembukaan resmi pada 9 Januari 1957 di Gedung Rakyat Indonesia Semarang (GRIS) Jl. Pemuda. Beliau meletakkan landasan akademik awal bagi fakultas hukum, ekonomi, teknik, dan akademi tata praja.',
-        details: [
-          'Presiden Universitas pertama memimpin kuliah perdana di aula GRIS dan Pleburan.',
-          'Mengajar langsung mata kuliah hukum perdata dan pidana bagi angkatan pertama.',
-          'Namanya diabadikan sebagai Jalan Prof. Mr. Imam Bardjo dan Gedung Pertemuan di Kampus Pleburan.',
-        ],
-        quote: '“Keadilan hukum dan keluhuran ilmu adalah dua pilar mutlak yang menjaga martabat kemanusiaan dan kedaulatan bangsa.”',
+          'Ketua Pengadilan Negeri Semarang yang memimpin pembukaan resmi di Aula GRIS Jl. Pemuda pada 9 Januari 1957 dan mengawal proses penganugerahan nama "Universitas Diponegoro" oleh Presiden Soekarno.',
+        quote: '“Keluhuran budi dan integritas ilmu adalah lentera sejati kemanusiaan.”',
       },
       {
-        id: 'rector-2-soedarto',
+        id: 'dir-2-soedarto',
         title: '2. Prof. Mr. Soedarto, S.H.',
-        subtitle: 'Rektor Undip Ke-2 & Peletak Dasar Visi Kampus Tembalang',
+        subtitle: 'Rektor Undip Ke-2 (1961–1962 & 1977–1986)',
         dateOrYear: '1923 – 1986',
         leadershipPeriod: 'Rektor Undip 1961–1962 & 1977–1986',
         imageKey: 'rector_soedarto',
         description:
-          'Ketua Yayasan perintis 1956 dan mahaguru hukum pidana nasional yang memimpin Undip dalam dua periode krusial. Beliau memprakarsai pembebasan lahan perbukitan Tembalang dan merancang cetak biru kepindahan kampus terpadu Undip dari Pleburan ke Tembalang.',
-        details: [
-          'Menjabat Rektor pada masa awal penegerian (1961–1962) dan masa ekspansi besar (1977–1986).',
-          'Pakar hukum pidana nasional terkemuka dan salah satu perancang KUHP Nasional Indonesia.',
-          'Memprakarsai pembangunan kampus terpadu Tembalang; diabadikan sebagai Gedung "Auditorium Prof. Soedarto, S.H.".',
-        ],
-        quote: '“Pendidikan tinggi harus berakar pada kebutuhan riil bangsa dan memiliki visi strategis jauh ke masa depan.”',
+          'Tokoh hukum pidana nasional yang memprakarsai pembebasan lahan 180 hektar di perbukitan Tembalang dan merancang cetak biru kepindahan kampus terpadu Undip.',
+        quote: '“Pendidikan tinggi harus berakar pada kebutuhan riil bangsa dan bervisi jauh ke depan.”',
       },
       {
-        id: 'rector-3-jakub-rais',
+        id: 'dir-3-jakub-rais',
         title: '3. Prof. Dr. Ir. Jakub Rais, M.Sc.',
-        subtitle: 'Caretaker Rektor Undip & Tokoh Pemetaan Geospasial Nasional',
+        subtitle: 'Caretaker Rektor Undip (1965–1966)',
         dateOrYear: '1928 – 2021',
         leadershipPeriod: 'Caretaker Rektor Undip 1965–1966',
         imageKey: 'rector_jakub_rais',
         description:
-          'Guru besar teknik geodesi berwawasan internasional yang memegang amanah kepemimpinan Undip pada masa transisi tahun 1965–1966. Beliau berhasil menjaga stabilitas akademik kampus dan memantapkan kurikulum Fakultas Teknik Undip.',
-        details: [
-          'Caretaker Rektor Universitas Diponegoro pada periode kritis 1965–1966.',
-          'Pelopor survei hidrografi dan Badan Koordinasi Survei dan Pemetaan Nasional (Bakosurtanal).',
-          'Membangun fondasi kuat bagi riset teknologi kelautan dan keteknikan di Undip.',
-        ],
-        quote: '“Akurasi ilmu dan keteguhan integritas adalah kompas utama insan cendekia dalam membangun peradaban.”',
+          'Pakar teknik geodesi internasional dan pendiri Bakosurtanal yang menjaga stabilitas akademik kampus pada masa transisi 1965–1966 serta memantapkan Fakultas Teknik.',
       },
       {
-        id: 'rector-4-moeljono-sostro',
+        id: 'dir-4-moeljono',
         title: '4. Drs. Moeljono Sostrohadikoesoemo',
-        subtitle: 'Rektor Undip Ke-4 & Konsolidator Struktur Akademik Negeri',
+        subtitle: 'Rektor Undip Ke-4 (1966–1973)',
         dateOrYear: '1920 – 1993',
         leadershipPeriod: 'Rektor Undip 1966–1973',
         imageKey: 'rector_moeljono_sostro',
         description:
-          'Memimpin Universitas Diponegoro selama tujuh tahun dalam fase penataan tata kelola dan kelembagaan perguruan tinggi negeri. Di bawah kepemimpinannya, fakultas-fakultas baru dikembangkan dan kapasitas penerimaan mahasiswa ditingkatkan.',
-        details: [
-          'Rektor Undip selama 7 tahun kepemimpinan (1966–1973).',
-          'Menata administrasi sentral, pengadaan laboratorium sains dasar, dan perpustakaan pusat.',
-          'Memperkokoh posisi Undip sebagai universitas pembina utama di wilayah Jawa Tengah.',
-        ],
-        quote: '“Pendidikan yang tertib, berdisiplin, dan inklusif melahirkan generasi pemikir yang tangguh dan mandiri.”',
+          'Menata administrasi kelembagaan universitas negeri, pengadaan laboratorium sains dasar terpadu, dan memperkokoh Undip sebagai universitas pembina utama di Jawa Tengah.',
       },
       {
-        id: 'rector-5-soenarjo',
+        id: 'dir-5-soenarjo',
         title: '5. Prof. Dr. Soenarjo, S.H.',
-        subtitle: 'Rektor Undip Ke-5 & Tokoh Hukum Tata Negara Nasional',
+        subtitle: 'Rektor Undip Ke-5 (1973–1977)',
         dateOrYear: '1918 – 1996',
         leadershipPeriod: 'Rektor Undip 1973–1977',
         imageKey: 'rector_soenarjo',
         description:
-          'Mahaguru ilmu hukum yang memimpin Undip pada pertengahan era 1970-an. Beliau mendorong keterlibatan akademisi Undip dalam pengkajian hukum kemasyarakatan dan memperluas hubungan kerja sama antarkampus nasional.',
-        details: [
-          'Rektor Universitas Diponegoro periode 1973–1977.',
-          'Mendorong penelitian empiris dan pengabdian masyarakat dosen di desa-desa binaan.',
-          'Memperkuat wibawa akademik dan etika keilmuan civitas akademika.',
-        ],
-        quote: '“Kampus adalah benteng moral yang harus senantiasa menyuarakan kebenaran ilmiah demi kemaslahatan rakyat.”',
+          'Pakar hukum tata negara yang memperkuat riset empiris kemasyarakatan, pengabdian desa binaan dosen, serta wibawa etika akademik almamater.',
       },
       {
-        id: 'rector-6-muladi',
+        id: 'dir-6-muladi',
         title: '6. Prof. Dr. H. Muladi, S.H.',
-        subtitle: 'Rektor Undip Ke-6 & Tokoh Hukum Pidana serta Negarawan RI',
+        subtitle: 'Rektor Undip Ke-6 (1986–1994, Dua Periode)',
         dateOrYear: '1943 – 2020',
-        leadershipPeriod: 'Rektor Undip 1986–1994 (Dua Periode)',
+        leadershipPeriod: 'Rektor Undip 1986–1994',
         imageKey: 'rector_muladi',
         description:
-          'Pakar hukum pidana dan kriminologi bereputasi internasional yang memimpin Undip selama dua periode kepemimpinan. Beliau mempercepat pemindahan kampus ke Tembalang secara besar-besaran dan mengangkat prestise Undip di kancah nasional.',
-        details: [
-          'Rektor Undip dua periode berturut-turut (1986–1994).',
-          'Mengakselerasi pembangunan sarana fisik, laboratorium, dan rektorat di Kampus Tembalang.',
-          'Dipercaya mengemban amanah negara sebagai Menteri Kehakiman RI dan Menteri Sekretaris Negara RI.',
-        ],
-        quote: '“Demokrasi dan supremasi hukum harus ditegakkan dengan keberanian moral tanpa kompromi.”',
+          'Mengakselerasi pembangunan sarana fisik kampus Tembalang secara besar-besaran, meresmikan Gedung Rektorat Widya Puraya, dan kelak dipercaya mengemban amanah sebagai Menteri Kehakiman RI dan Mensesneg RI.',
       },
       {
-        id: 'rector-7-eko-budihardjo',
+        id: 'dir-7-eko-budihardjo',
         title: '7. Prof. Ir. Eko Budihardjo, M.Sc.',
-        subtitle: 'Rektor Undip Ke-7 & Begawan Arsitektur serta Budayawan Nasional',
+        subtitle: 'Rektor Undip Ke-7 (1994–1998)',
         dateOrYear: '1944 – 2014',
         leadershipPeriod: 'Rektor Undip 1994–1998',
         imageKey: 'rector_eko_budihardjo',
         description:
-          'Pakar arsitektur dan perencanaan kota yang sangat dicintai karena kepemimpinannya yang santun, humoris, dan humanis. Beliau mencetuskan konsep kampus hijau asri dan membumikan nilai-nilai kebudayaan lokal dalam tata ruang kampus.',
-        details: [
-          'Rektor Undip periode 1994–1998 dan Guru Besar Arsitektur Perkotaan.',
-          'Pelopor konsep Eco-Culture Campus dan pemeliharaan ruang terbuka hijau di Tembalang.',
-          'Penulis produktif puluhan buku arsitektur, lingkungan, dan kolom kebudayaan nasional.',
-        ],
-        quote: '“Kota tanpa taman bagai raga tanpa sukma; universitas tanpa nurani kemanusiaan adalah kehampaan.”',
+          'Begawan arsitektur dan budayawan nasional yang mencetuskan konsep Eco-Culture Campus dan pemeliharaan ruang terbuka hijau asri di kawasan Tembalang.',
       },
       {
-        id: 'rector-8-temijo',
+        id: 'dir-8-temijo',
         title: '8. Prof. Dr. Temijo, S.H.',
-        subtitle: 'Rektor Undip Ke-8 & Pengawal Era Reformasi Menuju Kemandirian',
+        subtitle: 'Rektor Undip Ke-8 (1998–2006, Dua Periode)',
         dateOrYear: '1939 – kini',
-        leadershipPeriod: 'Rektor Undip 1998–2006 (Dua Periode)',
+        leadershipPeriod: 'Rektor Undip 1998–2006',
         imageKey: 'rector_temijo',
         description:
-          'Memimpin Undip pada masa genting transisi reformasi 1998 dengan suasana kampus yang tetap kondusif, kritis, dan demokratis. Beliau meletakkan landasan penjaminan mutu akademik dan penataan otonomi perguruan tinggi.',
-        details: [
-          'Rektor Undip dua periode kepemimpinan (1998–2006).',
-          'Mengembangkan sistem manajemen informasi akademik digital dan modernisasi perpustakaan.',
-          'Mempersiapkan Undip bertransformasi menuju Perguruan Tinggi Berbadan Hukum Milik Negara (BHMN).',
-        ],
-        quote: '“Kemandirian berpikir dan integritas adalah bekal utama mahasiswa dalam menyongsong gelombang perubahan zaman.”',
+          'Mengawal fase transisi era reformasi dengan suasana kampus yang kritis dan demokratis, serta meletakkan fondasi manajemen mutu akademik digital.',
       },
       {
-        id: 'rector-9-susilo-wibowo',
-        title: '9. Prof. Dr. dr. H. Susilo Wibowo, M.S.Med., Sp.And.',
-        subtitle: 'Rektor Undip Ke-9 & Inisiator Rumah Sakit Nasional Diponegoro',
+        id: 'dir-9-susilo-wibowo',
+        title: '9. Prof. Dr. dr. H. Susilo Wibowo, Sp.And.',
+        subtitle: 'Rektor Undip Ke-9 (2006–2010)',
         dateOrYear: '1948 – kini',
         leadershipPeriod: 'Rektor Undip 2006–2010',
         imageKey: 'rector_susilo_wibowo',
         description:
-          'Dokter spesialis andrologi dan pakar kedokteran reproduksi yang memacu kapasitas riset biomedis Undip. Beliau adalah inisiator utama pembangunan Rumah Sakit Nasional Diponegoro (RSND) dan pengembangan fakultas kesehatan terpadu.',
-        details: [
-          'Rektor Undip periode 2006–2010.',
-          'Memprakarsai pendirian Rumah Sakit Nasional Diponegoro (RSND) di Kampus Tembalang.',
-          'Meningkatkan intensitas riset internasional, sitasi ilmiah, dan kerja sama luar negeri.',
-        ],
-        quote: '“Kesehatan masyarakat dan kemajuan sains kedokteran adalah wujud bakti luhur universitas bagi kemanusiaan.”',
+          'Pakar kedokteran reproduksi yang memprakarsai pembangunan Rumah Sakit Nasional Diponegoro (RSND) dan memperluas jejaring publikasi riset biomedis internasional.',
       },
       {
-        id: 'rector-10-sudharto-hadi',
+        id: 'dir-10-sudharto-hadi',
         title: '10. Prof. Ir. Sudharto P. Hadi, MES, Ph.D.',
-        subtitle: 'Rektor Undip Ke-10 & Pelopor Penetapan PTN-BH serta Green Campus',
+        subtitle: 'Rektor Undip Ke-10 (2010–2015)',
         dateOrYear: '1954 – kini',
         leadershipPeriod: 'Rektor Undip 2010–2015',
         imageKey: 'rector_sudharto_hadi',
         description:
-          'Pakar sosiologi lingkungan hidup yang berhasil mengantarkan Undip meraih status prestisius sebagai Perguruan Tinggi Negeri Badan Hukum (PTN-BH) lewat PP No. 81/2014, serta menjadikan Kampus Tembalang sebagai Green Campus peringkat atas nasional.',
-        details: [
-          'Rektor Undip periode 2010–2015.',
-          'Membawa Undip resmi ditetapkan sebagai PTN Badan Hukum (PTN-BH) oleh Presiden RI.',
-          'Membangun waduk edukasi Tembalang, hutan kampus, dan fasilitas ramah lingkungan berkelanjutan.',
-        ],
-        quote: '“Kelestarian lingkungan bukan pilihan sampingan, melainkan komitmen moral utama peradaban modern.”',
+          'Pakar sosiologi lingkungan yang mengantarkan Undip resmi meraih status Perguruan Tinggi Negeri Badan Hukum (PTN-BH) lewat PP No. 81/2014 dan membangun Waduk Pendidikan Tembalang.',
       },
       {
-        id: 'rector-11-yos-johan',
+        id: 'dir-11-yos-johan',
         title: '11. Prof. Dr. Yos Johan Utama, S.H., M.Hum.',
-        subtitle: 'Rektor Undip Ke-11 & Arsitek World Class University Bereputasi Global',
+        subtitle: 'Rektor Undip Ke-11 (2015–2024, Dua Periode)',
         dateOrYear: '1962 – kini',
-        leadershipPeriod: 'Rektor Undip 2015–2024 (Dua Periode)',
+        leadershipPeriod: 'Rektor Undip 2015–2024',
         imageKey: 'rector_yos_johan',
         description:
-          'Memimpin transformasi besar Undip selama dua periode masa bakti sebagai PTN-BH mandiri. Di bawah kepemimpinannya, Undip melesat ke ranking top dunia (QS World University Rankings), meraih akreditasi unggul, serta memperluas fasilitas riset mutakhir.',
-        details: [
-          'Rektor Undip dua periode masa jabatan (2015–2024).',
-          'Melesatkan Undip menjadi universitas riset unggul bereputasi internasional berakreditasi A/Unggul.',
-          'Membangun gedung kuliah bersama terpadu, laboratorium sentral, dan stadion megah Tembalang.',
-        ],
-        quote: '“Undip Bermartabat, Undip Bermanfaat: mencetak cendekia berkarakter tangguh yang siap mengabdi bagi kemajuan nusantara.”',
+          'Melesatkan Undip ke jajaran universitas riset berkelas dunia (World Class University), memperluas gedung perkuliahan bersama terpadu, dan mengokohkan akreditasi internasional unggul.',
       },
       {
-        id: 'rector-12-suharnomo',
+        id: 'dir-12-suharnomo',
         title: '12. Prof. Dr. Suharnomo, S.E., M.Si.',
-        subtitle: 'Rektor Undip Ke-12 (Petahana 2024–2029) — Akselerasi Transformasi & Kemanfaatan',
+        subtitle: 'Rektor Undip Ke-12 (Petahana 2024–2029)',
         dateOrYear: '1970 – kini',
         leadershipPeriod: 'Rektor Undip 2024–2029 (Petahana)',
         imageKey: 'rector_suharnomo',
         description:
-          'Pakar manajemen sumber daya manusia dan kepemimpinan bisnis yang dilantik pada 29 April 2024. Beliau mengusung program akselerasi hilirisasi riset, link-and-match dengan industri global, transformasi digital cerdas, serta peneguhan budaya inovasi sivitas akademika.',
-        details: [
-          'Rektor Universitas Diponegoro masa bakti aktif 2024–2029.',
-          'Fokus pada hilirisasi produk inovasi riset dosen dan mahasiswa ke dunia industri.',
-          'Memperkuat program beasiswa mahasiswa dan kesejahteraan sivitas akademika almamater.',
-        ],
-        quote: '“Perguruan tinggi harus hadir memberi solusi konkret, menjunjung integritas ilmu, dan menebarkan kemanfaatan nyata bagi peradaban bangsa.”',
+          'Pakar manajemen sumber daya manusia yang memimpin percepatan hilirisasi produk riset, program link-and-match dengan industri multinasional, transformasi kampus digital cerdas, dan kesejahteraan sivitas akademika.',
+      },
+      {
+        id: 'dir-13-presidium',
+        title: '13. Dewan Presidium & Kurator Perintis (1956)',
+        subtitle: 'Pimpinan Kolegial Yayasan Universitas Semarang',
+        dateOrYear: '1956 – 1960',
+        leadershipPeriod: 'Dewan Kurator & Presidium 1956',
+        imageKey: 'founder_soerodjo',
+        description:
+          'Dipimpin oleh Walikota Semarang Hadi Soebeno Sosrowardoyo bersama Dr. Marzuki, Dr. V. Soedjito, Mr. Abdulmadjid Djojodhiningrat, dan Notaris R.M. Soeprapto yang memberikan pengayoman moral dan dukungan fasilitas pemerintah kotapraja pada masa awal pendirian.',
       },
     ],
   },
 
-  // =========================================================================
-  // ZONA 2 — THE GROWTH OF KNOWLEDGE
-  // =========================================================================
-
-  z2_miniature: {
-    id: 'z2_miniature',
-    code: 'z2_miniature',
-    zoneNumber: 2,
-    areaName: 'Pusat Ruangan · Meja Vitrine Miniatur Arsitektur Kampus',
-    title: 'Miniatur 3D Transformasi Kawasan Kampus Undip',
-    subtitle: 'Zona 2 — The Growth of Knowledge: Dari Pleburan Menuju Kampus Terpadu Tembalang & Teluk Awur',
-    badgeText: 'Zona 2 — Central 3D Miniature',
+  // 4. GALERI FOTO KAMPUS AWAL (Dinding Utara — 6 Frame Dokumentasi Langka)
+  photos: {
+    id: 'photos',
+    code: 'photos',
+    zoneNumber: 1,
+    areaName: 'Dinding Utara · Galeri Foto Dokumentasi Kampus Awal',
+    title: 'Galeri Foto Dokumentasi Kampus Awal Undip (1957–1962)',
+    subtitle: 'Arsip Visual Suasana Perkuliahan di Pleburan, Aula GRIS Jl. Pemuda, dan Dies Natalis III',
+    badgeText: 'Pameran Fisik 4 · Foto Kampus Awal',
     mainDescription:
-      'Diorama miniatur arsitektur 3D di tengah ruangan ini merepresentasikan lompatan spasial dan fisik Universitas Diponegoro. Dari cikal bakal kampus sewaan di Gedung GRIS Jl. Pemuda (1957) dan Kampus Pleburan, hingga terwujudnya kampus terpadu seluas lebih dari 180 hektar di perbukitan Tembalang serta kampus pesisir kelautan seluas 52 hektar di Teluk Awur, Jepara.',
+      'Dinding pameran utara memamerkan foto-foto arsip bersejarah kehidupan kampus Undip pada era 1957–1962: gedung utama Pleburan berarsitektur kolonial tropis, aula Gedung Rakyat Indonesia Semarang (GRIS) di Jalan Pemuda, orasi kuliah perdana Mr. Imam Bardjo, pidato Presiden Soekarno pada Dies Natalis III, dan praktikum laboratorium teknik.',
+    historicalContext:
+      'Foto-foto ini merekam masa-masa awal berdirinya universitas ketika sarana masih sangat bersahaja. Para dosen dan mahasiswa perintis belajar dengan penerangan sederhana namun dengan semangat pengabdian tanah air yang menyala-nyala.',
+    significance:
+      'Bukti visual tak ternilai yang menghubungkan generasi sekarang dengan akar perjuangan para pendahulu Undip.',
+    stats: [
+      { label: 'Kampus Pertama', value: 'Pleburan, Semarang' },
+      { label: 'Aula Peresmian', value: 'GRIS Jl. Pemuda' },
+      { label: 'Rentang Masa', value: '1957 – 1962' },
+      { label: 'Pelestarian', value: 'Arsip Otentik Undip' },
+    ],
+    items: [
+      {
+        id: 'foto-gedung-pleburan',
+        title: '1. Gedung Utama Kampus Pleburan — 1957',
+        subtitle: 'Pusat Kehidupan Akademik Awal Universitas Diponegoro',
+        dateOrYear: '1957',
+        imageKey: 'photo_campus_pleburan',
+        description:
+          'Gedung berpilar putih kokoh dengan arsitektur kolonial tropis di Pleburan, Semarang Selatan, yang menjadi markas rektorat dan perkuliahan awal Undip sebelum kepindahan ke Tembalang.',
+      },
+      {
+        id: 'foto-aula-gris',
+        title: '2. Aula GRIS Jl. Pemuda — 9 Januari 1957',
+        subtitle: 'Gedung Rakyat Indonesia Semarang, Tempat Peresmian Universitas',
+        dateOrYear: '9 Januari 1957',
+        imageKey: 'photo_campus_gris',
+        description:
+          'Aula GRIS di Jalan Pemuda Semarang yang dipinjamkan pemerintah kotapraja untuk upacara pembukaan resmi Universitas Semarang dan penyelenggaraan kuliah umum perdana.',
+      },
+      {
+        id: 'foto-kuliah-perdana',
+        title: '3. Suasana Kuliah Perdana di GRIS — 1957',
+        subtitle: 'Mahasiswa Angkatan Pertama dan Orasi Mr. Imam Bardjo',
+        dateOrYear: '1957',
+        imageKey: 'photo_historic_lecture',
+        description:
+          'Mahasiswa angkatan pertama dari Fakultas Hukum, Ekonomi, Teknik, dan Akademi Tata Praja menyimak khidmat orasi ilmiah dari Presiden Universitas Mr. Imam Bardjo.',
+      },
+      {
+        id: 'foto-dies-natalis-3-undip',
+        title: '4. Dies Natalis III & Pidato Bung Karno — 1960',
+        subtitle: 'Penganugerahan Nama Resmi "Universitas Diponegoro"',
+        dateOrYear: '9 Januari 1960',
+        imageKey: 'photo_dies_soekarno',
+        description:
+          'Presiden Soekarno berpidato di hadapan ribuan sivitas akademika dan masyarakat Semarang, meresmikan perubahan nama Universitas Semarang menjadi Universitas Diponegoro.',
+      },
+      {
+        id: 'foto-lab-teknik-undip',
+        title: '5. Praktikum Ukur Tanah Fakultas Teknik — 1962',
+        subtitle: 'Praktikum Insinyur Sipil Perintis di Kawasan Pleburan',
+        dateOrYear: '1962',
+        imageKey: 'photo_historic_lab',
+        description:
+          'Mahasiswa teknik awal melakukan pengukuran kontur tanah menggunakan alat theodolite optik manual di bawah bimbingan insinyur Departemen Pekerjaan Umum.',
+      },
+      {
+        id: 'foto-penegerian-ptn',
+        title: '6. Naskah Penegerian PP No. 7 Tahun 1961',
+        subtitle: 'Pengukuhan Status PTN & Penetapan Hari Jadi 15 Oktober 1957',
+        dateOrYear: '1961',
+        imageKey: 'history_ptn',
+        description:
+          'Peraturan Pemerintah Nomor 7 Tahun 1961 yang menetapkan Universitas Diponegoro sebagai perguruan tinggi negeri dengan tanggal hari jadi merujuk pada Pertempuran Lima Hari di Semarang.',
+      },
+    ],
+  },
+
+  // 5. MINIATUR KAMPUS 3D (Pusat Ruangan — Meja Vitrine Arsitektur)
+  miniature: {
+    id: 'miniature',
+    code: 'miniature',
+    zoneNumber: 2,
+    areaName: 'Pusat Ruangan · Meja Vitrine Miniatur Arsitektur Kampus 3D',
+    title: 'Miniatur 3D Transformasi Kawasan Kampus Undip',
+    subtitle: 'Representasi Spasial Kawasan Kampus Terpadu Tembalang (180 Ha) & Marine Science Teluk Awur (52 Ha)',
+    badgeText: 'Pameran Fisik 5 · Miniatur Kampus 3D',
+    mainDescription:
+      'Diorama arsitektur 3D di tengah ruangan museum ini menampilkan maket visual kawasan kampus terpadu Universitas Diponegoro di Tembalang seluas 180 hektar serta Marine Science Techno Park Teluk Awur seluas 52 hektar di Jepara.',
     historicalContext:
       'Gagasan pemindahan kampus dari Pleburan ke perbukitan Tembalang digagas oleh Rektor Prof. Mr. Soedarto, S.H. pada akhir dekade 1970-an karena daya tampung Pleburan sudah tidak mencukupi laju pertumbuhan mahasiswa. Rencana tersebut dilanjutkan dan diresmikan oleh Prof. Dr. Muladi, S.H., menjadikan Tembalang salah satu kawasan kampus hijau terpadu terbesar di Indonesia.',
     significance:
-      'Miniatur ini memvisualisasikan harmoni antara arsitektur ikonik (Gedung Rektorat Widya Puraya berciri atap limas bertingkat), danau resapan waduk pendidikan, hutan kampus tropis, dan kompleks fakultas modern.',
+      'Miniatur ini memvisualisasikan harmoni arsitektur ikonik Gedung Rektorat Widya Puraya beratap limas bertingkat, danau resapan waduk pendidikan, hutan kampus tropis, dan kompleks fakultas modern.',
     stats: [
       { label: 'Luas Kampus Tembalang', value: '± 180 Hektar' },
       { label: 'Perintis Pembebasan', value: 'Prof. Mr. Soedarto, S.H.' },
@@ -738,486 +571,576 @@ export const EXHIBIT_DATA: Record<string, ExhibitData> = {
     ],
     items: [
       {
-        id: 'z2-mini-widya-puraya',
+        id: 'mini-widya-puraya',
         title: '1. Gedung Rektorat Widya Puraya & Menara Jam',
         subtitle: 'Pusat Administrasi Sentral & Ikon Kemegahan Tembalang',
         dateOrYear: 'Diresmikan 1989',
         imageKey: 'z2_img_widya_puraya',
         description:
-          'Gedung Widya Puraya dengan arsitektur limas piramida bertingkat tiga dan menara jam sentral merupakan landmark paling ikonik di Kampus Tembalang. Gedung ini menaungi rektorat, aula wisuda agung, dan biro administrasi utama.',
-        details: [
-          'Arsitektur mengadopsi falsafah punden berundak dan joglo ksatria Jawa bernuansa megah.',
-          'Dikelilingi pelataran upacara luas, kolam refleksi air mancur, dan jalur pedestrian rindang.',
-          'Menjadi titik pusat poros tata ruang orientasi seluruh klaster fakultas di Tembalang.',
-        ],
-        quote: '“Widya Puraya melambangkan istana ilmu pengetahuan tempat bertemunya dedikasi riset dan keluhuran budi pekerti.”',
+          'Gedung Widya Puraya dengan arsitektur limas piramida bertingkat tiga dan menara jam sentral merupakan landmark paling ikonik di Kampus Tembalang, menaungi rektorat dan aula wisuda agung.',
       },
       {
-        id: 'z2-mini-waduk-pendidikan',
-        title: '2. Waduk Pendidikan & Sistem Tata Air Mandiri',
-        subtitle: 'Konservasi Lingkungan Hidup, Green Campus & Pengendali Air Terpadu',
+        id: 'mini-waduk-pendidikan',
+        title: '2. Waduk Pendidikan & Tata Air Terpadu',
+        subtitle: 'Konservasi Lingkungan Hidup & Green Campus',
         dateOrYear: '2013 – kini',
         imageKey: 'z2_img_waduk',
         description:
-          'Waduk buatan terpadu di kawasan barat laut kampus yang dibangun sebagai sarana edukasi hidrologi, resapan air bawah tanah, pencegah banjir limpasan, serta wahana rekreasi ekologis bagi sivitas akademika.',
-        details: [
-          'Kapasitas tampung air ratusan ribu meter kubik untuk menjaga muka air tanah Tembalang.',
-          'Dikelilingi jogging track, hutan pinus kampus, dan pos pengamatan burung liar.',
-          'Mendukung Undip meraih peringkat ke-2 nasional perguruan tinggi hijau berkelanjutan versi UI GreenMetric.',
-        ],
-        quote: '“Menjaga air dan tanah adalah wujud nyata penghormatan universitas kepada kelestarian alam semesta.”',
+          'Waduk buatan terpadu di kawasan barat laut kampus yang dibangun sebagai sarana riset hidrologi, resapan air bawah tanah, dan ruang terbuka hijau ekologis.',
       },
       {
-        id: 'z2-mini-klaster-fakultas',
-        title: '3. Klaster Fakultas Sains, Teknologi, Kedokteran & Soshum',
-        subtitle: 'Zonasi Terencana untuk Kolaborasi Keilmuan Antardisiplin',
-        dateOrYear: '1986 – kini',
-        imageKey: 'z2_img_faculty_cluster',
-        description:
-          'Kampus Tembalang ditata dalam klaster keilmuan yang saling terhubung: klaster teknik & MIPA di sayap timur, klaster agrokompleks & kedokteran di sayap utara, serta klaster sosial humaniora di sayap selatan.',
-        details: [
-          'Setiap fakultas dilengkapi laboratorium khusus, perpustakaan cabang, dan ruang kuliah multimedia.',
-          'Jaringan jalan lingkar kampus (Inner & Outer Ring Road) memudahkan mobilitas transportasi ramah lingkungan.',
-          'Terintegrasi dengan bus kampus gratis (Diponegoro Shuttle Bus) berbahan bakar ramah lingkungan.',
-        ],
-      },
-      {
-        id: 'z2-mini-rsnd',
-        title: '4. Rumah Sakit Nasional Diponegoro (RSND)',
-        subtitle: 'Pusat Pendidikan Kedokteran Terpadu & Rumah Sakit Rujukan Jawa Tengah',
+        id: 'mini-rsnd',
+        title: '3. Rumah Sakit Nasional Diponegoro (RSND)',
+        subtitle: 'Pusat Pendidikan Kedokteran Terpadu & Layanan Medis',
         dateOrYear: 'Diresmikan 2014',
         imageKey: 'z2_img_rsnd',
         description:
-          'Rumah Sakit Pendidikan utama milik Undip tipe B dengan kapasitas lebih dari 300 tempat tidur, dilengkapi fasilitas radioterapi canggih, cath lab jantung, ruang isolasi negatif, dan pusat riset klinis.',
-        details: [
-          'Sarana praktik utama mahasiswa Fakultas Kedokteran, Keperawatan, Gizi, dan Farmasi.',
-          'Berfungsi sebagai rumah sakit tanggap darurat utama pada masa pandemi dan pusat pengabdian kesehatan masyarakat.',
-          'Melayani masyarakat umum dan sivitas akademika dengan sistem digital terintegrasi.',
-        ],
+          'Rumah sakit pendidikan tipe B berkapasitas 300 tempat tidur dengan fasilitas radioterapi mutakhir, ruang isolasi negatif, dan laboratorium riset klinis terpadu.',
       },
       {
-        id: 'z2-mini-teluk-awur',
-        title: '5. Kampus & Marine Science Techno Park Teluk Awur Jepara',
-        subtitle: 'Pusat Keunggulan Eksplorasi Kelautan, Bioteknologi Pesisir & Konservasi',
+        id: 'mini-teluk-awur',
+        title: '4. Marine Science Techno Park Teluk Awur Jepara',
+        subtitle: 'Pusat Riset Kelautan & Konservasi Pesisir Nusantara (52 Ha)',
         dateOrYear: '1987 – kini',
         imageKey: 'z2_img_teluk_awur',
         description:
-          'Kampus tepi pantai seluas 52 hektar di Kabupaten Jepara yang menjadi basis penelitian Fakultas Perikanan dan Ilmu Kelautan, dilengkapi dermaga riset kapal latih, tambak percontohan, dan laboratorium basah oseanografi.',
-        details: [
-          'Pusat implementasi Pola Ilmiah Pokok (PIP) Pengembangan Wilayah Pesisir dan Kelautan.',
-          'Menjadi rujukan nasional riset terumbu karang, mangrove, budidaya udang vaname, dan mikroalga.',
-          'Menghubungkan akademisi Undip dengan nelayan tradisional pesisir pantai utara Jawa.',
-        ],
-      },
-    ],
-  },
-
-  z2_faculties: {
-    id: 'z2_faculties',
-    code: 'z2_faculties',
-    zoneNumber: 2,
-    areaName: 'Sayap Barat · Panel & Galeri Perkembangan Fakultas',
-    title: 'Evolusi & Perkembangan Fakultas Universitas Diponegoro',
-    subtitle: 'Zona 2 — The Growth of Knowledge: Transformasi 4 Fakultas Perintis Menjadi 11 Fakultas & 2 Sekolah',
-    badgeText: 'Zona 2 — Faculty Development',
-    mainDescription:
-      'Area pameran sayap barat mendokumentasikan estafet pemekaran struktur akademik Undip. Bermula dari empat unit pendidikan perintis pada tahun 1957 (Hukum, Ekonomi, Teknik, dan Akademi Tata Praja), Undip secara konsisten menumbuhkan cabang-cabang keilmuan strategis hingga kini menaungi 11 Fakultas, 1 Sekolah Pascasarjana, dan 1 Sekolah Vokasi.',
-    historicalContext:
-      'Pendirian setiap fakultas selalu merespons kebutuhan nyata pembangunan nasional: kebutuhan insinyur sipil dan perkapalan melahirkan Fakultas Teknik; kebutuhan tenaga medis mendorong berdirinya Fakultas Kedokteran bersama RS Dr. Kariadi; dan keunggulan maritim Indonesia melahirkan Fakultas Perikanan dan Ilmu Kelautan.',
-    significance:
-      'Keragaman 11 fakultas dan 2 sekolah ini mencerminkan komitmen Undip dalam merawat keutuhan ilmu pengetahuan dari sains dasar, teknologi terapan, hingga seni dan humaniora.',
-    stats: [
-      { label: 'Fakultas Perintis 1957', value: 'Hukum, Ekonomi, Teknik' },
-      { label: 'Jumlah Fakultas Kini', value: '11 Fakultas Mandiri' },
-      { label: 'Sekolah Khusus', value: 'Pascasarjana & Vokasi' },
-      { label: 'Program Studi', value: '170+ Program Studi' },
-    ],
-    items: [
-      {
-        id: 'z2-fac-hukum',
-        title: '1. Fakultas Hukum (FH) — 1957',
-        subtitle: 'Fakultas Tertua & Kawah Candradimuka Pakar Hukum Nasional',
-        dateOrYear: 'Berdiri 1957',
-        imageKey: 'z2_img_fac_hukum',
-        description:
-          'Fakultas tertua di Undip yang melahirkan tokoh-tokoh hukum terkemuka Republik Indonesia seperti Prof. Mr. Soedarto, Prof. Muladi, Prof. Satjipto Rahardjo (pencetus Hukum Progresif), dan Prof. Barda Nawawi Arief.',
-        details: [
-          'Memiliki reputasi akreditasi internasional FIBAA dan akreditasi Unggul BAN-PT.',
-          'Mencetuskan mazhab "Hukum Progresif" yang mengedepankan keadilan substantif kemanusiaan.',
-          'Pencetak hakim agung, menteri, jaksa, advokat, dan akademisi hukum terkemuka nasional.',
-        ],
-        quote: '“Hukum adalah untuk manusia, bukan manusia untuk hukum.” — Prof. Satjipto Rahardjo, S.H.',
-      },
-      {
-        id: 'z2-fac-feb',
-        title: '2. Fakultas Ekonomika dan Bisnis (FEB) — 1957',
-        subtitle: 'Pusat Kajian Manajemen, Akuntansi, dan Kebijakan Perekonomian',
-        dateOrYear: 'Berdiri 1957',
-        imageKey: 'z2_img_fac_feb',
-        description:
-          'Dirintis sejak era Universitas Semarang, FEB Undip telah meraih akreditasi prestisius internasional AACSB (Association to Advance Collegiate Schools of Business), menempatkannya dalam jajaran sekolah bisnis elit dunia.',
-        details: [
-          'Menyelenggarakan program studi Manajemen, Akuntansi, Ilmu Ekonomi, dan Ekonomi Islam.',
-          'Memiliki laboratorium Bloomberg Financial Terminal dan ruang sidang simulasi bursa efek.',
-          'Mencetak bankir, ekonom pemerintah, wirausahawan, dan pengambil kebijakan fiskal nasional.',
-        ],
-      },
-      {
-        id: 'z2-fac-teknik',
-        title: '3. Fakultas Teknik (FT) — 1957',
-        subtitle: 'Perintis Inovasi Rekayasa Infrastruktur, Kemaritiman & Energi Hijau',
-        dateOrYear: 'Berdiri 1957',
-        imageKey: 'z2_img_fac_teknik',
-        description:
-          'Bermula dari Jurusan Teknik Sipil di Pleburan pada 1957, Fakultas Teknik kini memiliki 12 departemen termasuk Teknik Perkapalan, Geodesi, Arsitektur, Kimia, Mesin, Elektro, Lingkungan, dan Geologi.',
-        details: [
-          'Laboratorium rekayasa perkapalan dan tangki uji tarik model kapal berstandar internasional.',
-          'Pelopor mobil formula listrik mahasiswa dan kapal tanpa awak (autonomous surface vehicle).',
-          'Berperan aktif dalam perancangan infrastruktur jalan tol, jembatan, bendungan, dan pelabuhan nasional.',
-        ],
-      },
-      {
-        id: 'z2-fac-kedokteran',
-        title: '4. Fakultas Kedokteran (FK) — 1961',
-        subtitle: 'Pusat Keunggulan Ilmu Biomedis, Kedokteran Tropis & Keperawatan Terpadu',
-        dateOrYear: 'Berdiri 1961',
-        imageKey: 'z2_img_fac_kedokteran',
-        description:
-          'Diresmikan melalui kerja sama dengan RSUP Dr. Kariadi Semarang, FK Undip berkembang pesat menjadi institusi pendidikan dokter spesialis dan subspesialis terkemuka di tanah air.',
-        details: [
-          'Memiliki jejaring rumah sakit pendidikan: RSUP Dr. Kariadi dan Rumah Sakit Nasional Diponegoro (RSND).',
-          'Pusat riset genetika molekuler, onkologi, penyakit infeksi tropis, dan kesehatan reproduksi.',
-          'Menghasilkan ribuan dokter spesialis yang mengabdi di daerah 3T (Terdepan, Terluar, Tertinggal).',
-        ],
-      },
-      {
-        id: 'z2-fac-fpp',
-        title: '5. Fakultas Peternakan dan Pertanian (FPP) — 1964',
-        subtitle: 'Kedaulatan Pangan, Pemuliaan Ternak Tropis & Agribisnis Berkelanjutan',
-        dateOrYear: 'Berdiri 1964',
-        imageKey: 'z2_img_fac_fpp',
-        description:
-          'Berperan penting dalam riset pemuliaan sapi potong Jawa, unggas lokal, dan teknologi pengolahan hasil panen berbasis kearifan lokal Jawa Tengah.',
-        details: [
-          'Memiliki Teaching Farm dan instalasi kandang modern seluas belasan hektar di Tembalang.',
-          'Mengembangkan pakan fermentasi konsentrat murah untuk meningkatkan bobot ternak rakyat.',
-          'Inovator varietas padi organik tahan hama dan pupuk hayati ramah lingkungan.',
-        ],
-      },
-      {
-        id: 'z2-fac-fib',
-        title: '6. Fakultas Ilmu Budaya (FIB) — 1965',
-        subtitle: 'Pelestari Bahasa, Sastra, Sejarah Nusantara & Arkeologi Maritim',
-        dateOrYear: 'Berdiri 1965',
-        imageKey: 'z2_img_fac_fib',
-        description:
-          'Memayungi kajian sastra Indonesia, Inggris, Jepang, sejarah, ilmu perpustakaan, dan antropologi budaya guna meneguhkan identitas kebangsaan Indonesia.',
-        details: [
-          'Pusat pengkajian naskah kuno (filologi) pesisir dan manuskrip Jawa Pegon.',
-          'Eksplorasi arkeologi pelabuhan kuno di pesisir utara Pulau Jawa.',
-          'Membina sanggar seni gamelan, tari tradisional Diponegoro, dan diplomasi budaya internasional.',
-        ],
-      },
-      {
-        id: 'z2-fac-fisip',
-        title: '7. Fakultas Ilmu Sosial dan Ilmu Politik (FISIP) — 1968',
-        subtitle: 'Kajian Kebijakan Publik, Tata Kelola Pemerintahan & Komunikasi Strategis',
-        dateOrYear: 'Berdiri 1968',
-        imageKey: 'z2_img_fac_fisip',
-        description:
-          'Berasal dari Akademi Tata Praja 1957, FISIP Undip membina kader pemimpin birokrasi, diplomat luar negeri, akademisi politik, dan profesional media massa.',
-        details: [
-          'Menyelenggarakan program Administrasi Publik, Ilmu Komunikasi, Hubungan Internasional, dan Pemerintahan.',
-          'Laboratorium audio-visual penyiaran dan media center komunikasi modern.',
-          'Rujukan analisis kebijakan pemilu, otonomi daerah, dan studi diplomasi regional Asia Tenggara.',
-        ],
-      },
-      {
-        id: 'z2-fac-fpik',
-        title: '8. Fakultas Perikanan dan Ilmu Kelautan (FPIK) — 1968/1994',
-        subtitle: 'Ujung Tombak Pola Ilmiah Pokok Bahari & Bioteknologi Kelautan',
-        dateOrYear: '1968 / 1994',
-        imageKey: 'z2_img_fac_fpik',
-        description:
-          'Menjadi tulang punggung Pola Ilmiah Pokok (PIP) Undip dalam mengelola potensi kemaritiman Indonesia melalui riset oseanografi, budidaya perairan, dan teknologi hasil perikanan.',
-        details: [
-          'Mengelola Stasiun Riset Maritim Teluk Awur seluas 52 Ha di Kabupaten Jepara.',
-          'Memiliki armada kapal latih riset KM Diponegoro untuk ekspedisi oseanografi laut dalam.',
-          'Pionir formulasi kosmetik dan farmasi berbahan baku senyawa aktif rumput laut dan alga mikro.',
-        ],
-      },
-      {
-        id: 'z2-fac-fsm',
-        title: '9. Fakultas Sains dan Matematika (FSM) — 1988/1993',
-        subtitle: 'Fondasi Sains Murni, Komputasi Cerdas & Rekayasa Nanoteknologi',
-        dateOrYear: '1988 / 1993',
-        imageKey: 'z2_img_fac_fsm',
-        description:
-          'Mengembangkan riset sains fundamental (Matematika, Fisika, Kimia, Biologi, Statistika, Informatika) sebagai tulang punggung penemuan teknologi masa depan.',
-        details: [
-          'Pusat Riset Plasma & Nanoteknologi (Center for Plasma Research) berpaten internasional.',
-          'Mengembangkan aplikasi kecerdasan buatan (AI), data science, dan komputasi awan berkecepatan tinggi.',
-          'Penghasil publikasi jurnal internasional terindeks Scopus terbanyak di lingkungan Undip.',
-        ],
-      },
-      {
-        id: 'z2-fac-fkm',
-        title: '10. Fakultas Kesehatan Masyarakat (FKM) — 1993/2001',
-        subtitle: 'Pencegahan Penyakit, Promosi Kesehatan & Epidemiologi Tropis',
-        dateOrYear: '1993 / 2001',
-        imageKey: 'z2_img_fac_fkm',
-        description:
-          'Berfokus pada promotif dan preventif kesehatan masyarakat, kesehatan lingkungan kerja, dan manajemen rumah sakit.',
-        details: [
-          'Laboratorium surveilans epidemiologi penyakit tular vektor (DBD, malaria, leptospirosis).',
-          'Aktif merumuskan pedoman gizi seimbang untuk penanganan stunting di wilayah pedesaan.',
-          'Pusat kajian Keselamatan dan Kesehatan Kerja (K3) pada sektor industri manufaktur dan maritim.',
-        ],
-      },
-      {
-        id: 'z2-fac-psikologi',
-        title: '11. Fakultas Psikologi — 2007',
-        subtitle: 'Pengembangan Potensi Manusia, Psikometri & Kesehatan Mental Komunitas',
-        dateOrYear: 'Berdiri 2007',
-        imageKey: 'z2_img_fac_psikologi',
-        description:
-          'Mempelajari dinamika kepribadian, asesmen psikologis klinis, psikologi industri organisasi, dan pendampingan trauma healing pascabencana.',
-        details: [
-          'Pusat layanan psikologi terpadu bagi mahasiswa dan masyarakat umum.',
-          'Inovasi alat ukur psikometri adaptif berbasis komputer untuk seleksi sumber daya manusia.',
-          'Program pendampingan kesehatan mental sekolah ramah anak dan inklusi disabilitas.',
-        ],
-      },
-      {
-        id: 'z2-fac-pasca-vokasi',
-        title: '12. Sekolah Pascasarjana & Sekolah Vokasi',
-        subtitle: 'Pendidikan Interdisiplin & Penguatan Keterampilan Industri Terapan',
-        dateOrYear: '1999 & 2016',
-        imageKey: 'z2_img_fac_vokasi',
-        description:
-          'Sekolah Pascasarjana mengelola studi multidisiplin seperti Ilmu Lingkungan dan Energi, sedangkan Sekolah Vokasi menyelenggarakan sarjana terapan (D4) link-and-match dengan industri manufaktur dan jasa.',
-        details: [
-          'Sekolah Vokasi memiliki Teaching Factory modern kerja sama dengan industri multinasional.',
-          'Sekolah Pascasarjana membidani riset disertasi lintas ilmu berorientasi solusi strategis bangsa.',
-          'Tingkat keterserapan lulusan vokasi mencapai 90% sebelum upacara wisuda.',
-        ],
-      },
-    ],
-  },
-
-  z2_campus_transformation: {
-    id: 'z2_campus_transformation',
-    code: 'z2_campus_transformation',
-    zoneNumber: 2,
-    areaName: 'Dinding Utara · Galeri Transformasi Kampus dari Masa ke Masa',
-    title: 'Dokumentasi Transformasi Infrastruktur & Lanskap Kampus',
-    subtitle: 'Zona 2 — The Growth of Knowledge: Dari GRIS Jl. Pemuda, Pleburan Hingga Megaproyek Tembalang',
-    badgeText: 'Zona 2 — Campus Transformation',
-    mainDescription:
-      'Dinding pameran utara menyajikan foto-foto komparatif metamorfosis fisik Universitas Diponegoro selama lebih dari enam dekade. Penataan ruang kampus merefleksikan dinamika pertambahan mahasiswa dan visi jangka panjang untuk mewujudkan kawasan riset terintegrasi berwawasan lingkungan.',
-    historicalContext:
-      'Sebelum terpusat di Tembalang, aktivitas perkuliahan terpencar di puluhan lokasi di Kota Semarang: Gedung GRIS di Jalan Pemuda, Kampus Pleburan di Jl. Hayam Wuruk, Jl. Imam Bardjo, hingga Jl. Dr. Soetomo. Integrasi fisik ke Tembalang pada dekade 1980-an hingga 2000-an menyatukan seluruh fakultas ke dalam satu ekosistem akademik yang solid.',
-    significance:
-      'Transformasi kampus dari fasilitas darurat menjadi salah satu kota kampus terindah di Asia Tenggara membuktikan ketangguhan dedikasi para pimpinan dan sivitas akademika Undip.',
-    stats: [
-      { label: 'Era Perintisan', value: 'GRIS & Pleburan (1957)' },
-      { label: 'Masterplan Tembalang', value: '180 Hektar (1977)' },
-      { label: 'Relokasi Penuh', value: 'Tahun 1990-an — 2010' },
-      { label: 'Status Kawasan', value: 'Kota Kampus Berkelanjutan' },
-    ],
-    items: [
-      {
-        id: 'z2-trans-gris',
-        title: '1. Gedung GRIS Jl. Pemuda (1957) — Titik Awal',
-        subtitle: 'Gedung Rakyat Indonesia Semarang, Tempat Kuliah Perdana 142 Mahasiswa',
-        dateOrYear: '1957',
-        imageKey: 'z2_img_trans_gris',
-        description:
-          'Foto arsip memperlihatkan aula GRIS Jl. Pemuda yang dipinjamkan oleh Pemerintah Kotapraja Semarang. Di ruangan beratap genteng tinggi inilah mahasiswa pertama menyimak orasi Mr. Imam Bardjo dengan penerangan lampu gantung klasik.',
-      },
-      {
-        id: 'z2-trans-pleburan',
-        title: '2. Kampus Pleburan Masa Keemasan (1960–1980-an)',
-        subtitle: 'Kompleks Gedung Kolonial Tropis di Semarang Bawah',
-        dateOrYear: '1960-an',
-        imageKey: 'z2_img_trans_pleburan',
-        description:
-          'Kampus Pleburan dengan ciri khas gedung putih berdaun jendela krepyak kayu dan halaman rumput luas menjadi saksi tumbuhnya fakultas-fakultas awal sebelum kepindahan ke Tembalang.',
-      },
-      {
-        id: 'z2-trans-blueprint-tembalang',
-        title: '3. Cetak Biru & Pembebasan Lahan Tembalang (1977)',
-        subtitle: 'Visi Berani Rektor Soedarto Membuka Perbukitan Selatan Semarang',
-        dateOrYear: '1977',
-        imageKey: 'z2_img_trans_blueprint',
-        description:
-          'Peta masterplan rancangan awal pembebasan lahan perbukitan Tembalang seluas 180 hektar. Saat itu kawasan Tembalang masih berupa tegalan tandus dan perkebunan karet yang sepi.',
-      },
-      {
-        id: 'z2-trans-widya-puraya-build',
-        title: '4. Konstruksi Gedung Widya Puraya (1986–1989)',
-        subtitle: 'Pembangunan Megastruktur Limas dan Menara Jam Sentral',
-        dateOrYear: '1986 – 1989',
-        imageKey: 'z2_img_trans_widya_build',
-        description:
-          'Dokumentasi langka proses pengecoran beton bertulang atap limas bertingkat Gedung Widya Puraya yang dikerjakan oleh para insinyur alumni Fakultas Teknik Undip.',
-      },
-      {
-        id: 'z2-trans-rsnd-inauguration',
-        title: '5. Pembangunan Rumah Sakit Nasional Diponegoro (2010–2014)',
-        subtitle: 'Pusat Riset Kesehatan & Pelayanan Medis Paripurna',
-        dateOrYear: '2014',
-        imageKey: 'z2_img_trans_rsnd',
-        description:
-          'Pembangunan gedung rumah sakit pendidikan modern 8 lantai di kawasan barat Kampus Tembalang yang memperkuat kapasitas riset kedokteran dan layanan rujukan medis di Jawa Tengah.',
-      },
-      {
-        id: 'z2-trans-green-eco',
-        title: '6. Lanskap Kampus Hijau & Danau Resapan Edukasi',
-        subtitle: 'Integrasi Hutan Kampus Tropis, Jalur Sepeda, dan Energi Surya',
-        dateOrYear: 'Era Modern',
-        imageKey: 'z2_img_trans_eco',
-        description:
-          'Panorama udara Kampus Tembalang masa kini yang dikelilingi pepohonan rimbun, waduk air edukasi, dan instalasi panel surya atap gedung kuliah.',
-      },
-    ],
-  },
-
-  z2_research: {
-    id: 'z2_research',
-    code: 'z2_research',
-    zoneNumber: 2,
-    areaName: 'Sayap Timur · Ruang Arsip Akademik & Riset Keilmuan',
-    title: 'Pengembangan Pendidikan, Riset Kelautan & Laboratorium Unggulan',
-    subtitle: 'Zona 2 — The Growth of Knowledge: Pola Ilmiah Pokok Pesisir (Coastal Eco-Development) & Inovasi Sains',
-    badgeText: 'Zona 2 — Research & Education',
-    mainDescription:
-      'Sayap timur museum menampilkan rekam jejak riset dan pengembangan keilmuan Universitas Diponegoro. Sebagai perguruan tinggi berwawasan maritim, Undip menetapkan Pola Ilmiah Pokok (PIP) bertema "Pengembangan Wilayah Pesisir dan Lautan" (Coastal Region Eco-Development) yang menjadi rujukan riset kemaritiman tropis nasional.',
-    historicalContext:
-      'Sejak ditetapkan pada tahun 1974, Pola Ilmiah Pokok memandu kolaborasi antarfakultas: Fakultas Teknik meneliti konstruksi pelabuhan dan gelombang laut; FPIK meneliti ekosistem mangrove dan perikanan tangkap; Fakultas Hukum merumuskan hukum laut dan batas maritim; sedangkan FEB mengkaji ekonomi maritim dan kesejahteraan nelayan.',
-    significance:
-      'Kiprah riset ini diperkuat dengan fasilitas laboratorium sentral terpadu berstandar internasional, stasiun riset Teluk Awur, serta puluhan jurnal ilmiah terakreditasi internasional yang mempublikasikan ribuan karya ilmiah sivitas akademika setiap tahunnya.',
-    stats: [
-      { label: 'Pola Ilmiah Pokok', value: 'Coastal Region Eco-Development' },
-      { label: 'Stasiun Riset Laut', value: 'Teluk Awur Jepara (52 Ha)' },
-      { label: 'Laboratorium Sentral', value: 'Integrated Lab Tembalang' },
-      { label: 'Publikasi Ilmiah', value: 'Ribuan Artikel Scopus/WOS' },
-    ],
-    items: [
-      {
-        id: 'z2-res-pip-charter',
-        title: '1. Piagam Pola Ilmiah Pokok (PIP) Pengembangan Pesisir — 1974',
-        subtitle: 'Landasan Filosofis Riset Kemaritiman Universitas Diponegoro',
-        dateOrYear: '1974',
-        imageKey: 'z2_img_res_pip',
-        description:
-          'Naskah penetapan Pola Ilmiah Pokok yang mengarahkan tridharma perguruan tinggi Undip untuk menggali potensi, mengonservasi, dan menyejahterakan masyarakat wilayah pesisir nusantara.',
-      },
-      {
-        id: 'z2-res-marine-station',
-        title: '2. Stasiun Oseanografi & Konservasi Terumbu Karang Teluk Awur',
-        subtitle: 'Laboratorium Basah Eksplorasi Hayati Laut Dangkal & Pesisir',
-        dateOrYear: '1987 – kini',
-        imageKey: 'z2_img_res_station',
-        description:
-          'Fasilitas riset tepi pantai di Jepara yang menjadi laboratorium alam bagi peneliti dunia dalam mempelajari pemulihan terumbu karang (coral transplantation), ekologi lamun, dan pemetaan dinamika arus laut Jawa.',
-      },
-      {
-        id: 'z2-res-integrated-lab',
-        title: '3. Laboratorium Terpadu & Clean Room Sentral Tembalang',
-        subtitle: 'Peralatan Spektroskopi, Mikroskopi Elektron & Analisis Kimia Presisi',
-        dateOrYear: '2015 – kini',
-        imageKey: 'z2_img_res_intlab',
-        description:
-          'Gedung laboratorium modern berstandar ISO 17025 yang dilengkapi instrumen uji mutakhir (SEM, TEM, XRD, HPLC, GC-MS) untuk mendukung penelitian sains dasar, rekayasa material maju, dan formulasi obat.',
-      },
-      {
-        id: 'z2-res-scopus-journals',
-        title: '4. Galeri Jurnal Ilmiah Bereputasi Internasional (Scopus Q1/Q2)',
-        subtitle: 'Diseminasi Pengetahuan Global Karya Dosen dan Peneliti Undip',
-        dateOrYear: 'Koleksi Publikasi',
-        imageKey: 'z2_img_res_journals',
-        description:
-          'Pameran jurnal-jurnal ilmiah kebanggaan Undip yang terindeks bereputasi dunia, seperti Bulletin of Chemical Reaction Engineering & Catalysis (BCREC) dan Journal of Coastal Development.',
-      },
-      {
-        id: 'z2-res-clean-energy',
-        title: '5. Inovasi Desalinisasi Air Laut & Pembangkit Energi Ramah Lingkungan',
-        subtitle: 'Teknologi Tepat Guna untuk Masyarakat Pulau Terpencil',
-        dateOrYear: 'Inovasi Terapan',
-        imageKey: 'z2_img_res_energy',
-        description:
-          'Alat destilasi air laut bertenaga surya dan turbin angin pesisir skala mikro karya periset teknik Undip yang telah dioperasikan di pulau-pulau kecil di Kepulauan Karimunjawa.',
-      },
-    ],
-  },
-
-  z2_achievements: {
-    id: 'z2_achievements',
-    code: 'z2_achievements',
-    zoneNumber: 2,
-    areaName: 'Dinding Selatan · Galeri Prestasi & Pengabdian Masyarakat',
-    title: 'Prestasi Akademik, Inovasi Mahasiswa & Pelopor KKN Pengabdian Masyarakat',
-    subtitle: 'Zona 2 — The Growth of Knowledge: Dari KKN Perintis Desa Hingga Rekor Employability Dunia',
-    badgeText: 'Zona 2 — Achievements & Contribution',
-    mainDescription:
-      'Dinding pameran selatan mempersembahkan bukti nyata kontribusi Universitas Diponegoro bagi bangsa dan dunia. Sejak era 1970-an, Undip telah menjadi pionir program Kuliah Kerja Nyata (KKN) mahasiswa di perdesaan, sekaligus menorehkan prestasi gemilang dalam kompetisi inovasi teknologi, keberlanjutan kampus, dan rekor daya serap lulusan.',
-    historicalContext:
-      'Semangat kepahlawanan Pangeran Diponegoro menjiwai setiap mahasiswa Undip untuk tidak sekadar unggul di ruang kuliah, melainkan turun langsung ke masyarakat membawa solusi atas persoalan riil di desa-desa nelayan, pegunungan, dan perkotaan.',
-    significance:
-      'Prestasi ini membuktikan mutu lulusan Undip yang adaptif, berkarakter tangguh, dan memiliki daya saing tinggi di kancah industri global.',
-    stats: [
-      { label: 'Pelopor KKN Tematik', value: 'Sejak Dekade 1970-an' },
-      { label: 'Employability Ranking', value: 'Juara #1 & #2 di Indonesia (QS)' },
-      { label: 'Prestasi Robotik', value: 'Juara Nasional & Internasional' },
-      { label: 'Predikat Green Campus', value: 'Peringkat 2 Nasional' },
-    ],
-    items: [
-      {
-        id: 'z2-ach-kkn-pioneer',
-        title: '1. Pelopor Kuliah Kerja Nyata (KKN) Tematik Nasional',
-        subtitle: 'Pengabdian Mahasiswa Menembus Ribuan Desa di Jawa Tengah & Nusantara',
-        dateOrYear: '1971 – kini',
-        imageKey: 'z2_img_ach_kkn',
-        description:
-          'Undip merupakan salah satu dari tiga perguruan tinggi perintis program KKN di Indonesia bersama UGM dan Unhas. Ribuan mahasiswa setiap tahun diterjunkan ke desa untuk pemberdayaan UMKM, sanitasi lingkungan, dan edukasi hukum.',
-      },
-      {
-        id: 'z2-ach-qs-employability',
-        title: '2. Peringkat Tertinggi Lulusan Cepat Mendapat Kerja (QS GER)',
-        subtitle: 'Keterserapan Alumni Undip di Dunia Kerja Tingkat Nasional & Asia',
-        dateOrYear: '2020 – 2024',
-        imageKey: 'z2_img_ach_qs',
-        description:
-          'Lembaga pemeringkatan dunia Quacquarelli Symonds menempatkan Undip di peringkat #1 dan #2 nasional dalam kategori Graduate Employability Rankings, membuktikan tingginya kepercayaan industri terhadap lulusan Undip.',
-      },
-      {
-        id: 'z2-ach-robotic-eco',
-        title: '3. Inovasi Mobil Hemat Energi & Robotik Bawah Air Diponegoro',
-        subtitle: 'Juara Shell Eco-Marathon Asia & Kontes Robot Bawah Air Nasional',
-        dateOrYear: '2016 – kini',
-        imageKey: 'z2_img_ach_robot',
-        description:
-          'Kendaraan prototipe hemat energi bertenaga listrik dan etanol karya tim mahasiswa Fakultas Teknik yang mencetak rekor efisiensi jarak tempuh ratusan kilometer per kilowatt-hour di sirkuit internasional.',
-      },
-      {
-        id: 'z2-ach-bionic-hand',
-        title: '4. Tangan Bionik & Kaki Palsu Robotik untuk Disabilitas',
-        subtitle: 'Pusat Riset Biomekatronika CBIOM3S Undip Berpenghargaan Nasional',
-        dateOrYear: '2018 – kini',
-        imageKey: 'z2_img_ach_bionic',
-        description:
-          'Inovasi tangan palsu prostetik bionik dengan sensor mioelektrik sensor otot yang dijual dengan harga terjangkau bagi para penyandang disabilitas dan korban kecelakaan kerja di seluruh Indonesia.',
-      },
-      {
-        id: 'z2-ach-disaster-relief',
-        title: '5. Tim Medis Darurat & Tanggap Bencana Diponegoro (Disaster Relief)',
-        subtitle: 'Bakti Kemanusiaan Dokter, Relawan, dan Logistik Cepat Tanggap',
-        dateOrYear: 'Bakti Kemanusiaan',
-        imageKey: 'z2_img_ach_disaster',
-        description:
-          'Tim tanggap darurat sivitas akademika Undip yang secara konsisten terjun dalam penanganan medis darurat bencana gempa bumi, banjir lahar, dan tsunami di berbagai penjuru nusantara.',
+          'Kampus tepi pantai seluas 52 hektar di Kabupaten Jepara yang menjadi basis penelitian Fakultas Perikanan dan Ilmu Kelautan, dilengkapi dermaga riset dan laboratorium basah oseanografi.',
       },
     ],
   },
 }
+
+/**
+ * KOLEKSI BUKU SEJARAH INTERAKTIF PADA 5 RAK BUKU MUSEUM
+ * Materi Zona 1 s/d Zona 5 disajikan melalui buku-buku yang tersusun di rak
+ */
+export const MUSEUM_BOOKS: MuseumBook[] = [
+  // =========================================================================
+  // RAK 01 — ZONA 1: THE ORIGIN OF UNDIP
+  // =========================================================================
+  {
+    id: 'book_z1_origin',
+    shelfId: 'shelf_z1',
+    shelfCategory: 'Rak 01 — Zona 1: The Origin of Undip',
+    zoneNumber: 1,
+    zoneName: 'The Origin of Undip',
+    title: 'Akta Notaris No. 59 & Kelahiran Universitas Semarang',
+    subtitle: 'Warkat Otentik Pembentukan Yayasan & Kuliah Perdana di Aula GRIS',
+    spineLabel: '1956 · AKTA NOTARIS NO. 59',
+    coverColor: '#3a2014',
+    period: '1956 – 1957',
+    synopsis:
+      'Dokumentasi lengkap mengenai naskah legal berdirinya Yayasan Universitas Semarang di hadapan Notaris R.M. Soeprapto pada 4 Desember 1956, susunan pengurus, dan kuliah perdana di Gedung Rakyat Indonesia Semarang.',
+    referenceUrl: 'https://undip.ac.id/sejarah-2',
+    chapters: [
+      {
+        chapterNumber: 1,
+        title: 'Prakarsa Luhur Cendekiawan Semarang',
+        pageHeader: 'Kebutuhan Mendesak Pendidikan Tinggi di Jawa Tengah Bagian Utara',
+        period: '1950 – 1956',
+        imageKey: 'history_background',
+        narrativeParagraphs: [
+          'Pasca pengakuan kedaulatan Republik Indonesia, aspirasi pemuda di Jawa Tengah bagian utara untuk melanjutkan pendidikan ke jenjang universitas menghadapi kendala besar karena satu-satunya perguruan tinggi negeri di wilayah ini berkedudukan di Yogyakarta (UGM).',
+          'Para praktisi hukum, notaris, dokter, pamong praja, dan pejuang di Semarang sepakat mendirikan perguruan tinggi mandiri dengan semangat gotong royong.',
+        ],
+        keyMilestones: [
+          'Pertemuan perintis di Pengadilan Negeri Semarang.',
+          'Dukungan moral segenap pemuka masyarakat Kota Semarang.',
+        ],
+      },
+      {
+        chapterNumber: 2,
+        title: 'Naskah Akta Notaris R.M. Soeprapto No. 59',
+        pageHeader: 'Landasan Yuridis Formal Tanggal 4 Desember 1956',
+        period: '4 Desember 1956',
+        imageKey: 'history_founding',
+        narrativeParagraphs: [
+          'Pada hari Selasa tanggal 4 Desember 1956 di hadapan Notaris R.M. Soeprapto, diresmikan pembentukan Yayasan Universitas Semarang.',
+          'Akta memuat susunan dewan pengurus pertama: Mr. Sudarto (Ketua), Mr. Dan Soelaiman (Wakil Ketua), Mr. Soesanto Kartoatmodjo (Panitera), Achmad Tjokrokoesoemo (Bendahara), Mr. Imam Bardjo, Mr. Goenawan Goetomo, Mr. Tan Tjing Hak, dan Mr. Koo Swan Ik.',
+        ],
+        historicalQuote: '“Badan hukum yayasan menjadi tonggak resmi berdirinya universitas mandiri di ibukota Jawa Tengah.”',
+      },
+      {
+        chapterNumber: 3,
+        title: 'Peresmian Khidmat di Aula GRIS Jl. Pemuda',
+        pageHeader: '9 Januari 1957 — Pelantikan Mr. Imam Bardjo sebagai Presiden I',
+        period: '9 Januari 1957',
+        imageKey: 'photo_campus_gris',
+        narrativeParagraphs: [
+          'Upacara pembukaan Universitas Semarang berlangsung khidmat di Gedung Rakyat Indonesia Semarang (GRIS) di Jalan Pemuda, disaksikan para pemuka masyarakat dan pemerintah daerah.',
+          'Mr. Imam Bardjo dilantik sebagai Presiden Universitas pertama dan memimpin kuliah perdana bagi empat fakultas perintis: Hukum, Ekonomi, Teknik, dan Akademi Tata Praja.',
+        ],
+      },
+    ],
+  },
+  {
+    id: 'book_z1_soekarno',
+    shelfId: 'shelf_z1',
+    shelfCategory: 'Rak 01 — Zona 1: The Origin of Undip',
+    zoneNumber: 1,
+    zoneName: 'The Origin of Undip',
+    title: 'Amanat Bung Karno & Penganugerahan Nama "Diponegoro"',
+    subtitle: 'Penganugerahan Nama Pahlawan Nasional & Penegerian PP No. 7 Tahun 1961',
+    spineLabel: '1960 · AMANAT BUNG KARNO',
+    coverColor: '#2b1b12',
+    period: '1960 – 1961',
+    synopsis:
+      'Kisah penganugerahan nama Universitas Diponegoro oleh Presiden Soekarno pada Dies Natalis ke-3 tahun 1960 dan penetapan status PTN serta hari jadi 15 Oktober.',
+    referenceUrl: 'https://undip.ac.id/sejarah-2',
+    chapters: [
+      {
+        chapterNumber: 1,
+        title: 'Dies Natalis III di Semarang',
+        pageHeader: '9 Januari 1960 — Kunjungan Kenegaraan Presiden Soekarno',
+        period: '9 Januari 1960',
+        imageKey: 'photo_dies_soekarno',
+        narrativeParagraphs: [
+          'Presiden Soekarno berkenan hadir langsung dalam Dies Natalis ke-3 Universitas Semarang dan menyampaikan orasi kebangsaan yang membakar semangat sivitas akademika.',
+          'Beliau menganugerahkan nama baru: “UNIVERSITAS DIPONEGORO” sebagai amanat agar seluruh insan akademika meneladani keberanian dan kejujuran Pangeran Diponegoro.',
+        ],
+        historicalQuote: '“Jadikanlah nama Diponegoro sebagai obor pengabdian kepada tanah air!” — Ir. Soekarno',
+      },
+      {
+        chapterNumber: 2,
+        title: 'Peraturan Pemerintah No. 7 Tahun 1961',
+        pageHeader: 'Status Negeri Penuh & Makna Dies Natalis 15 Oktober',
+        period: '15 Oktober 1957 / 1961',
+        imageKey: 'history_ptn',
+        narrativeParagraphs: [
+          'Status universitas negeri dikukuhkan melalui Peraturan Pemerintah No. 7 Tahun 1961 yang berlaku surut sejak 15 Oktober 1957.',
+          'Tanggal 15 Oktober ditetapkan sebagai hari jadi untuk mengenang meletusnya Pertempuran Lima Hari di Semarang melawan pendudukan militer Jepang.',
+        ],
+      },
+    ],
+  },
+
+  // =========================================================================
+  // RAK 02 — ZONA 2: THE GROWTH OF KNOWLEDGE
+  // =========================================================================
+  {
+    id: 'book_z2_faculties',
+    shelfId: 'shelf_z2',
+    shelfCategory: 'Rak 02 — Zona 2: The Growth of Knowledge',
+    zoneNumber: 2,
+    zoneName: 'The Growth of Knowledge',
+    title: 'Evolusi 11 Fakultas & 2 Sekolah Undip',
+    subtitle: 'Dari 4 Fakultas Perintis Menuju 170+ Program Studi Unggul',
+    spineLabel: 'EVOLUSI FAKULTAS UNDIP',
+    coverColor: '#4a2d1d',
+    period: '1957 – Kini',
+    synopsis:
+      'Catatan komprehensif mengenai sejarah berdirinya 11 fakultas, Sekolah Pascasarjana, dan Sekolah Vokasi di Universitas Diponegoro beserta capaian akreditasi internasional.',
+    referenceUrl: 'https://undip.ac.id/fakultas',
+    chapters: [
+      {
+        chapterNumber: 1,
+        title: 'Trisula Perintis: Hukum, Ekonomi, dan Teknik (1957)',
+        pageHeader: 'Kawah Candradimuka Sarjana Hukum, Ekonomi, dan Insinyur',
+        period: '1957',
+        imageKey: 'z2_img_fac_hukum',
+        narrativeParagraphs: [
+          'Fakultas Hukum, Fakultas Ekonomika dan Bisnis, serta Fakultas Teknik merupakan tiga tiang penyangga utama saat Undip berdiri tahun 1957.',
+          'Fakultas Hukum melahirkan mazhab Hukum Progresif oleh Prof. Satjipto Rahardjo, FEB meraih akreditasi elit AACSB, dan Teknik memelopori rekayasa infrastruktur maritim.',
+        ],
+      },
+      {
+        chapterNumber: 2,
+        title: 'Pemekaran Sains, Kedokteran, Agrokompleks, dan Soshum',
+        pageHeader: 'Lahirnya FK, FPP, FIB, FISIP, FPIK, FSM, FKM, dan Psikologi',
+        period: '1961 – 2007',
+        imageKey: 'z2_img_fac_kedokteran',
+        narrativeParagraphs: [
+          'Tuntutan pembangunan nasional mendorong lahirnya Fakultas Kedokteran (1961), FPP (1964), FIB (1965), FISIP (1968), FPIK (1968), FSM (1988), FKM (1993), dan Fakultas Psikologi (2007).',
+          'Kini Undip mendidik lebih dari lima puluh ribu mahasiswa dengan ratusan program studi berakreditasi Unggul.',
+        ],
+      },
+    ],
+  },
+  {
+    id: 'book_z2_campus',
+    shelfId: 'shelf_z2',
+    shelfCategory: 'Rak 02 — Zona 2: The Growth of Knowledge',
+    zoneNumber: 2,
+    zoneName: 'The Growth of Knowledge',
+    title: 'Transformasi Spasial: Dari Pleburan Menuju Lembah Tembalang',
+    subtitle: 'Cetak Biru Pembebasan Lahan 180 Hektar & Pembangunan Kampus Hijau',
+    spineLabel: 'TRANSFORMASI TEMBALANG',
+    coverColor: '#3d2516',
+    period: '1977 – Kini',
+    synopsis:
+      'Kisah visioner pemindahan kampus dari kawasan sempit Pleburan ke perbukitan Tembalang oleh Rektor Soedarto dan Rektor Muladi hingga menjadi kota kampus terpadu.',
+    chapters: [
+      {
+        chapterNumber: 1,
+        title: 'Visi Berani Rektor Soedarto (1977)',
+        pageHeader: 'Membebaskan Perbukitan Tandus Tembalang untuk Masa Depan Almamater',
+        period: '1977 – 1986',
+        imageKey: 'z2_img_trans_blueprint',
+        narrativeParagraphs: [
+          'Pada akhir dekade 1970-an, daya tampung kampus Pleburan sudah jenuh. Rektor Prof. Mr. Soedarto mengambil keputusan berani membebaskan lahan seluas 180 hektar di perbukitan Tembalang.',
+          'Kawasan yang semula berupa tegalan sepi disulap menjadi kawasan pendidikan terintegrasi nomor satu di Jawa Tengah.',
+        ],
+      },
+      {
+        chapterNumber: 2,
+        title: 'Kemegahan Gedung Widya Puraya & Waduk Pendidikan',
+        pageHeader: 'Pembangunan Ikon Limas 1989 & Lanskap Eco-Green Campus',
+        period: '1989 – Kini',
+        imageKey: 'z2_img_widya_puraya',
+        narrativeParagraphs: [
+          'Gedung Rektorat Widya Puraya dengan arsitektur limas berundak dan menara jam sentral diresmikan pada 1989 sebagai simbol keagungan ilmu pengetahuan.',
+          'Pembangunan waduk pendidikan dan hutan kampus tropis melengkapi visi green campus berkelanjutan.',
+        ],
+      },
+    ],
+  },
+  {
+    id: 'book_z2_pip',
+    shelfId: 'shelf_z2',
+    shelfCategory: 'Rak 02 — Zona 2: The Growth of Knowledge',
+    zoneNumber: 2,
+    zoneName: 'The Growth of Knowledge',
+    title: 'Pola Ilmiah Pokok: Eksplorasi Kelautan & Pesisir Nusantara',
+    subtitle: 'Coastal Region Eco-Development & Stasiun Riset Teluk Awur Jepara',
+    spineLabel: 'PIP KELAUTAN & TELUK AWUR',
+    coverColor: '#251b14',
+    period: '1974 – Kini',
+    synopsis:
+      'Dokumentasi Pola Ilmiah Pokok (PIP) Undip yang memusatkan keunggulan riset pada bidang kelautan, bioteknologi pesisir, dan konservasi terumbu karang.',
+    chapters: [
+      {
+        chapterNumber: 1,
+        title: 'Piagam Pola Ilmiah Pokok (1974)',
+        pageHeader: 'Penetapan Keunggulan Maritim dan Pesisir Tropis',
+        period: '1974',
+        imageKey: 'z2_img_res_pip',
+        narrativeParagraphs: [
+          'Sebagai universitas di pesisir utara Jawa Tengah, Undip menetapkan Pola Ilmiah Pokok (PIP) "Pengembangan Wilayah Pesisir dan Lautan" yang memandu riset seluruh fakultas.',
+          'Dari ilmu hukum maritim, teknik kelautan, oseanografi, hingga ekonomi nelayan bersinergi dalam PIP ini.',
+        ],
+      },
+      {
+        chapterNumber: 2,
+        title: 'Stasiun Riset Kelautan Teluk Awur Jepara',
+        pageHeader: 'Laboratorium Bahari Alam 52 Hektar',
+        period: '1987 – Kini',
+        imageKey: 'z2_img_teluk_awur',
+        narrativeParagraphs: [
+          'Stasiun riset laut di Teluk Awur Jepara menjadi pusat penelitian terumbu karang, budidaya udang vaname, dan ekspedisi kapal riset KM Diponegoro.',
+        ],
+      },
+    ],
+  },
+
+  // =========================================================================
+  // RAK 03 — ZONA 3: THE HERITAGE OF UNDIP
+  // =========================================================================
+  {
+    id: 'book_z3_heritage',
+    shelfId: 'shelf_z3',
+    shelfCategory: 'Rak 03 — Zona 3: The Heritage of Undip',
+    zoneNumber: 3,
+    zoneName: 'The Heritage of Undip',
+    title: 'Pangeran Diponegoro: Jiwa Ksatria & Moralitas Keilmuan',
+    subtitle: 'Falsafah Kejuangan, Kejujuran Budi, dan Keteguhan Prinsip Almamater',
+    spineLabel: 'FALSAFAH PANGERAN DIPONEGORO',
+    coverColor: '#382215',
+    period: 'Warisan Abadi',
+    synopsis:
+      'Kajian mendalam tentang falsafah hidup Pangeran Diponegoro sebagai figur keteladanan moral civitas akademika: berani membela kebenaran, dekat dengan rakyat, dan berpegang teguh pada keluhuran budi.',
+    chapters: [
+      {
+        chapterNumber: 1,
+        title: 'Keteladanan Moral Sang Pangeran',
+        pageHeader: 'Keteguhan Prinsip Membela Keadilan dan Wong Cilik',
+        period: '1785 – 1855',
+        imageKey: 'doc_crest_charter',
+        narrativeParagraphs: [
+          'Pangeran Diponegoro dikenal sebagai ksatria yang menolak kemewahan istana demi memperjuangkan harkat martabat rakyat tertindas.',
+          'Jiwa ksatria inilah yang diadaptasi menjadi nilai dasar sivitas akademika Undip: jujur, berani, adil, dan peduli.',
+        ],
+        historicalQuote: '“Kejujuran budi adalah pusaka paling berharga dari insan terpelajar.”',
+      },
+      {
+        chapterNumber: 2,
+        title: 'Panji Almamater & Keris Pusaka',
+        pageHeader: 'Makna Simbolik Ksatria Berkuda Membawa Keris',
+        period: '1960',
+        imageKey: 'doc_crest_charter',
+        narrativeParagraphs: [
+          'Lambang Undip menggambarkan Pangeran Diponegoro menunggang kuda putih dengan keris pusaka terhunus.',
+          'Kuda melambangkan ketangkasan dan mobilitas, sedangkan keris melambangkan ketajaman budi pekerti dalam membedakan yang benar dan salah.',
+        ],
+      },
+    ],
+  },
+  {
+    id: 'book_z3_tradition',
+    shelfId: 'shelf_z3',
+    shelfCategory: 'Rak 03 — Zona 3: The Heritage of Undip',
+    zoneNumber: 3,
+    zoneName: 'The Heritage of Undip',
+    title: 'Tradisi Almamater, Hymne & Eco-Culture Campus',
+    subtitle: 'Lagu Kebanggaan, Gamelan Jawa & Konservasi Budaya Lokal',
+    spineLabel: 'TRADISI & BUDAYA ALMAMATER',
+    coverColor: '#422818',
+    period: 'Tradisi Hidup',
+    synopsis:
+      'Catatan mengenai tradisi wisuda agung, penciptaan Hymne dan Mars Undip, pagelaran gamelan Jawa di kampus, serta integrasi nilai-nilai kebudayaan lokal dalam tata pergaulan akademik.',
+    chapters: [
+      {
+        chapterNumber: 1,
+        title: 'Hymne dan Mars Universitas Diponegoro',
+        pageHeader: 'Lagu Sakral Pemersatu Puluhan Ribu Alumni',
+        period: 'Era Perintis',
+        imageKey: 'history_ptn',
+        narrativeParagraphs: [
+          'Hymne Undip yang agung menggemakan sumpah setia para lulusan untuk senantiasa mengamalkan ilmu pengetahuan bagi kejayaan nusa dan bangsa.',
+        ],
+      },
+    ],
+  },
+
+  // =========================================================================
+  // RAK 04 — ZONA 4: UNDIP TODAY
+  // =========================================================================
+  {
+    id: 'book_z4_ptnbh',
+    shelfId: 'shelf_z4',
+    shelfCategory: 'Rak 04 — Zona 4: Undip Today',
+    zoneNumber: 4,
+    zoneName: 'Undip Today',
+    title: 'Transformasi PTN-BH: Kemandirian & Otonomi Riset',
+    subtitle: 'Peraturan Pemerintah No. 81/2014 & Statuta PP No. 52/2015',
+    spineLabel: 'PTN-BH & OTONOMI RISET',
+    coverColor: '#301c10',
+    period: '2014 – Kini',
+    synopsis:
+      'Tonggak penetapan Universitas Diponegoro sebagai Perguruan Tinggi Negeri Badan Hukum yang memberikan kemandirian penuh dalam pengelolaan akademik, keuangan, dan aset riset terpadu.',
+    chapters: [
+      {
+        chapterNumber: 1,
+        title: 'Penetapan Status PTN-BH oleh Presiden RI',
+        pageHeader: 'PP No. 81 Tahun 2014 dan Penguatan Otonomi Kampus',
+        period: '17 Oktober 2014',
+        imageKey: 'history_ptn',
+        narrativeParagraphs: [
+          'Pada tanggal 17 Oktober 2014, Presiden RI menandatangani PP No. 81 Tahun 2014 yang menetapkan Undip sebagai PTN-BH mandiri.',
+          'Status ini mempercepat pengambilan keputusan strategis, pembangunan laboratorium bertaraf dunia, dan kemitraan industri internasional.',
+        ],
+      },
+      {
+        chapterNumber: 2,
+        title: 'Rumah Sakit Nasional Diponegoro (RSND)',
+        pageHeader: 'Pusat Riset Biomedis & Pelayanan Kesehatan Masyarakat',
+        period: '2014 – Kini',
+        imageKey: 'z2_img_rsnd',
+        narrativeParagraphs: [
+          'RSND berdiri megah di kawasan barat Tembalang dengan fasilitas modern 8 lantai, melayani masyarakat Jawa Tengah sekaligus menjadi sarana praktik kedokteran terpadu.',
+        ],
+      },
+    ],
+  },
+  {
+    id: 'book_z4_global',
+    shelfId: 'shelf_z4',
+    shelfCategory: 'Rak 04 — Zona 4: Undip Today',
+    zoneNumber: 4,
+    zoneName: 'Undip Today',
+    title: 'Reputasi Dunia: Top Graduate Employability & Riset Scopus',
+    subtitle: 'Juara Keterserapan Kerja Lulusan Versi QS GER & Ribuan Publikasi Dunia',
+    spineLabel: 'REPUTASI GLOBAL & QS RANKING',
+    coverColor: '#352115',
+    period: '2020 – Kini',
+    synopsis:
+      'Pencapaian prestisius Undip dalam peringkat QS World University Rankings, rekor lulusan tercepat terserap kerja di Asia Tenggara, dan produktivitas publikasi ilmiah internasional.',
+    chapters: [
+      {
+        chapterNumber: 1,
+        title: 'Peringkat #1 Keterserapan Kerja Lulusan di Indonesia',
+        pageHeader: 'Kepercayaan Tinggi Dunia Industri terhadap Karakter Alumni Undip',
+        period: '2020 – 2024',
+        imageKey: 'z2_img_ach_qs',
+        narrativeParagraphs: [
+          'Lembaga pemeringkatan Quacquarelli Symonds menobatkan Undip di posisi puncak Graduate Employability Rankings di Indonesia.',
+          'Alumni Undip dikenal tangguh, beretika luhur, adaptif terhadap teknologi baru, dan memiliki jiwa kepemimpinan.',
+        ],
+      },
+    ],
+  },
+
+  // =========================================================================
+  // RAK 05 — ZONA 5: UNDIP FUTURE
+  // =========================================================================
+  {
+    id: 'book_z5_smart_campus',
+    shelfId: 'shelf_z5',
+    shelfCategory: 'Rak 05 — Zona 5: Undip Future',
+    zoneNumber: 5,
+    zoneName: 'Undip Future',
+    title: 'Smart Digital Campus: Kecerdasan Buatan & Robotika Maritim',
+    subtitle: 'Inovasi AI, Tangan Bionik CBIOM3S & Kapal Riset Nirawak',
+    spineLabel: 'SMART DIGITAL & AI CAMPUS',
+    coverColor: '#271911',
+    period: 'Visi Masa Depan',
+    synopsis:
+      'Cetak biru transformasi digital Undip menuju Smart University: penerapan big data, kecerdasan buatan, mobil formula listrik, robot bawah air, dan tangan bionik terjangkau.',
+    chapters: [
+      {
+        chapterNumber: 1,
+        title: 'Pusat Riset Biomekatronika & Robotika Cerdas',
+        pageHeader: 'Tangan Bionik untuk Kemanusiaan & Robot Penjelajah Bahari',
+        period: 'Inovasi Aktif',
+        imageKey: 'z2_img_ach_bionic',
+        narrativeParagraphs: [
+          'Pusat riset CBIOM3S Undip memproduksi tangan prostetik bionik berbasis sinyal otot dengan harga sangat terjangkau bagi para penyandang disabilitas.',
+          'Tim robotik mahasiswa secara berkala menjuarai kontes robot bawah air dan perancangan kendaraan hemat energi internasional.',
+        ],
+      },
+    ],
+  },
+  {
+    id: 'book_z5_green_energy',
+    shelfId: 'shelf_z5',
+    shelfCategory: 'Rak 05 — Zona 5: Undip Future',
+    zoneNumber: 5,
+    zoneName: 'Undip Future',
+    title: 'Green Energy & Cetak Biru Menuju Indonesia Emas 2045',
+    subtitle: 'Transisi Energi Terbarukan, Dekarbonisasi Pesisir & Kedaulatan Pangan',
+    spineLabel: 'INDONESIA EMAS 2045',
+    coverColor: '#3a2416',
+    period: '2025 – 2045',
+    synopsis:
+      'Peta jalan strategis Universitas Diponegoro dalam menyongsong 100 tahun Republik Indonesia: mencetak sejuta inovator, kemandirian energi bersih, dan pengentasan kemiskinan pesisir.',
+    chapters: [
+      {
+        chapterNumber: 1,
+        title: 'Roadmap Menuju Indonesia Emas 2045',
+        pageHeader: 'Undip Bermartabat, Undip Bermanfaat bagi Peradaban Dunia',
+        period: '2025 – 2045',
+        imageKey: 'z2_img_res_energy',
+        narrativeParagraphs: [
+          'Dengan semangat Pangeran Diponegoro yang pantang menyerah, Undip melangkah menuju satu abad kemerdekaan Indonesia.',
+          'Fokus riset diarahkan pada kemandirian pangan bahari, transisi energi surya dan angin di pulau-pulau terluar, serta keadilan hukum yang berpihak pada kesejahteraan rakyat.',
+        ],
+        historicalQuote: '“Bekerja keras, berkarya nyata, dan menjaga keluhuran ilmu demi masa depan kejayaan peradaban nusantara.”',
+      },
+    ],
+  },
+]
+
+/**
+ * 5 Rak Buku Sejarah di Museum (Kategori Zona 1 s/d Zona 5)
+ */
+export interface BookshelfCategory {
+  shelfId: 'shelf_z1' | 'shelf_z2' | 'shelf_z3' | 'shelf_z4' | 'shelf_z5'
+  zoneNumber: 1 | 2 | 3 | 4 | 5
+  zoneName: string
+  label: string
+  subtitle: string
+  cameraFocusPos: [number, number, number]
+  cameraLookPos: [number, number, number]
+}
+
+export const BOOKSHELF_CATEGORIES: BookshelfCategory[] = [
+  {
+    shelfId: 'shelf_z1',
+    zoneNumber: 1,
+    zoneName: 'The Origin of Undip',
+    label: 'Rak 01 — The Origin of Undip',
+    subtitle: 'Arsip Akta Notaris 1956, Peresmian GRIS & Amanat Bung Karno 1960',
+    cameraFocusPos: [7.2, 1.68, -4.2],
+    cameraLookPos: [9.7, 1.6, -4.2],
+  },
+  {
+    shelfId: 'shelf_z2',
+    zoneNumber: 2,
+    zoneName: 'The Growth of Knowledge',
+    label: 'Rak 02 — The Growth of Knowledge',
+    subtitle: 'Babad 11 Fakultas, Transformasi Lembah Tembalang & PIP Kelautan',
+    cameraFocusPos: [7.2, 1.68, 0],
+    cameraLookPos: [9.7, 1.6, 0],
+  },
+  {
+    shelfId: 'shelf_z3',
+    zoneNumber: 3,
+    zoneName: 'The Heritage of Undip',
+    label: 'Rak 03 — The Heritage of Undip',
+    subtitle: 'Falsafah Pangeran Diponegoro, Panji Lambang & Budaya Almamater',
+    cameraFocusPos: [7.2, 1.68, 4.2],
+    cameraLookPos: [9.7, 1.6, 4.2],
+  },
+  {
+    shelfId: 'shelf_z4',
+    zoneNumber: 4,
+    zoneName: 'Undip Today',
+    label: 'Rak 04 — Undip Today',
+    subtitle: 'Status Mandiri PTN-BH, RSND & Reputasi QS Top Employability',
+    cameraFocusPos: [-7.8, 1.68, -5.5],
+    cameraLookPos: [-7.8, 1.6, -7.8],
+  },
+  {
+    shelfId: 'shelf_z5',
+    zoneNumber: 5,
+    zoneName: 'Undip Future',
+    label: 'Rak 05 — Undip Future',
+    subtitle: 'Inovasi AI Cerdas, Tangan Bionik & Peta Jalan Indonesia Emas 2045',
+    cameraFocusPos: [7.8, 1.68, -5.5],
+    cameraLookPos: [7.8, 1.6, -7.8],
+  },
+]
+
+/**
+ * 5 Pameran Fisik Utama di Museum
+ */
+export interface PhysicalExhibitItem {
+  id: string
+  code: 'history' | 'founders_5' | 'directors_13' | 'photos' | 'miniature'
+  title: string
+  subtitle: string
+  cameraFocusPos: [number, number, number]
+  cameraLookPos: [number, number, number]
+}
+
+export const PHYSICAL_EXHIBITS: PhysicalExhibitItem[] = [
+  {
+    id: 'history',
+    code: 'history',
+    title: '1. Sejarah Utama Undip (undip.ac.id/sejarah-2)',
+    subtitle: 'Mimbar Baca Sejarah & Dinding Linimasa 1950–1961',
+    cameraFocusPos: [-7.5, 1.68, 0],
+    cameraLookPos: [-9.8, 1.6, 0],
+  },
+  {
+    id: 'founders_5',
+    code: 'founders_5',
+    title: '2. Galeri 5 Pendiri Utama Undip',
+    subtitle: 'Mr. Sudarto, Ir. Dan Soelaiman, Mr. Soesanto, Achmad Tjokrokoesoemo, Mr. Imam Bardjo',
+    cameraFocusPos: [-7.0, 1.68, 5.5],
+    cameraLookPos: [-8.8, 1.8, 7.8],
+  },
+  {
+    id: 'directors_13',
+    code: 'directors_13',
+    title: '3. Galeri Tokoh Direktorat & Rektorat (13 Tokoh)',
+    subtitle: 'Suksesi Kepemimpinan Rektorat dari Periode ke Periode (1957 — Kini)',
+    cameraFocusPos: [0, 1.68, 5.2],
+    cameraLookPos: [0, 1.9, 7.9],
+  },
+  {
+    id: 'photos',
+    code: 'photos',
+    title: '4. Galeri Foto Dokumentasi Kampus Awal',
+    subtitle: 'Pleburan, Aula GRIS Jl. Pemuda, Kuliah Perdana, Dies Natalis 1960',
+    cameraFocusPos: [0, 1.68, -5.2],
+    cameraLookPos: [0, 1.9, -7.9],
+  },
+  {
+    id: 'miniature',
+    code: 'miniature',
+    title: '5. Miniatur 3D Transformasi Kampus Undip',
+    subtitle: 'Meja Vitrine Arsitektur Widya Puraya, Waduk Tembalang & Teluk Awur',
+    cameraFocusPos: [0, 1.68, -2.6],
+    cameraLookPos: [0, 1.2, 0],
+  },
+]

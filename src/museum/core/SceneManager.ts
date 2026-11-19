@@ -4,8 +4,8 @@ import { LightingManager } from './LightingManager'
 import { ObjectManager, type InteractiveTarget } from './ObjectManager'
 import { CameraController } from './CameraController'
 import { InteractionManager } from './InteractionManager'
-import { AssetManager } from './AssetManager'
 import { SoundManager } from './SoundManager'
+import { PHYSICAL_EXHIBITS, BOOKSHELF_CATEGORIES } from '../data/historyData'
 
 export class SceneManager {
   private container: HTMLElement
@@ -20,8 +20,8 @@ export class SceneManager {
   private interactionManager: InteractionManager
   private soundManager: SoundManager
 
-  // Active Zone ID
-  private activeZoneId = 'zone-1'
+  // Active zone is single heritage room
+  private activeZoneId = 'archive-room'
 
   // Clock & animation loop
   private clock = new THREE.Clock()
@@ -32,7 +32,7 @@ export class SceneManager {
 
   // Adaptive on-demand rendering & modal pause state
   private isModalOpen = false
-  private settleFrames = 15 // Render first frames to ensure complete illumination
+  private settleFrames = 20
   private onResizeBound: () => void
   private onVisibilityChangeBound: () => void
 
@@ -44,16 +44,16 @@ export class SceneManager {
     this.container = container
     this.soundManager = SoundManager.getInstance()
 
-    // 1. Scene — soft warm heritage atmosphere
+    // 1. Scene — soft warm vintage heritage atmosphere
     this.scene = new THREE.Scene()
-    this.scene.background = new THREE.Color(0x241a12)
-    this.scene.fog = new THREE.Fog(0x241a12, 18, 34)
+    this.scene.background = new THREE.Color(0x1e1610)
+    this.scene.fog = new THREE.Fog(0x1e1610, 18, 38)
 
     // 2. Camera
     const aspect = container.clientWidth / container.clientHeight
-    this.camera = new THREE.PerspectiveCamera(60, aspect, 0.1, 40)
+    this.camera = new THREE.PerspectiveCamera(60, aspect, 0.1, 45)
 
-    // 3. Renderer — balanced exposure; shadows disabled on touch devices
+    // 3. Renderer — balanced exposure; optimized shadows
     const isTouch =
       'ontouchstart' in window || navigator.maxTouchPoints > 0 || window.innerWidth <= 840
     this.renderer = new THREE.WebGLRenderer({
@@ -66,36 +66,40 @@ export class SceneManager {
     this.renderer.shadowMap.enabled = !isTouch
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping
-    this.renderer.toneMappingExposure = 1.3
+    this.renderer.toneMappingExposure = 1.32
     this.renderer.outputColorSpace = THREE.SRGBColorSpace
 
     container.appendChild(this.renderer.domElement)
 
-    // 4. Initialize Modular Managers (Start with Zone 1)
+    // 4. Initialize Single Room Managers
     this.lightingManager = new LightingManager(isTouch)
-    this.scene.add(this.lightingManager.getZone1Group())
+    this.scene.add(this.lightingManager.getGroup())
 
     this.roomBuilder = new RoomBuilder()
-    this.scene.add(this.roomBuilder.getZone1Group())
+    this.scene.add(this.roomBuilder.getGroup())
 
     this.objectManager = new ObjectManager()
-    this.scene.add(this.objectManager.getZone1Group())
+    this.scene.add(this.objectManager.getGroup())
 
-    // 5. Camera Controller with collision obstacles
+    // 5. Camera Controller with collision obstacles & room bounds
     this.cameraController = new CameraController(
       this.camera,
       this.renderer.domElement,
-      this.roomBuilder.roomSize,
-      this.objectManager.getZone1Obstacles(),
+      this.roomBuilder.roomWidth,
+      this.objectManager.getObstacles(),
     )
-    this.cameraController.setRoomBounds(this.roomBuilder.roomSize / 2, this.roomBuilder.roomSize / 2)
-    this.cameraController.setSpawn(0, this.cameraController.eyeHeight, 3.4, 0)
+    this.cameraController.setRoomBounds(
+      this.roomBuilder.roomWidth / 2 - 0.4,
+      this.roomBuilder.roomDepth / 2 - 0.4,
+    )
+    // Spawn at South Entrance looking North towards central miniature
+    this.cameraController.setSpawn(0, this.cameraController.eyeHeight, 5.2, 0)
 
     // 6. Interaction Manager
     this.interactionManager = new InteractionManager(
       this.camera,
       this.renderer.domElement,
-      this.objectManager.getZone1Targets(),
+      this.objectManager.getInteractiveTargets(),
       onHoverChange,
       (target) => {
         this.soundManager.playPaperTurn()
@@ -112,7 +116,7 @@ export class SceneManager {
         this.pause()
       } else {
         this.start()
-        this.requestRender(8)
+        this.requestRender(10)
       }
     }
     window.addEventListener('resize', this.onResizeBound)
@@ -127,155 +131,77 @@ export class SceneManager {
   }
 
   public getInteractiveTargets(): InteractiveTarget[] {
-    return this.activeZoneId === 'zone-2'
-      ? this.objectManager.getZone2Targets()
-      : this.objectManager.getZone1Targets()
+    return this.objectManager.getInteractiveTargets()
   }
 
   public getActiveZoneId(): string {
     return this.activeZoneId
   }
 
-  public switchZone(zoneId: string): void {
-    if (this.activeZoneId === zoneId) return
-
-    // 1. Detach old zone groups from active scene
-    if (this.activeZoneId === 'zone-1') {
-      this.scene.remove(this.roomBuilder.getZone1Group())
-      this.scene.remove(this.objectManager.getZone1Group())
-      this.scene.remove(this.lightingManager.getZone1Group())
-    } else if (this.activeZoneId === 'zone-2') {
-      this.scene.remove(this.roomBuilder.getZone2Group())
-      this.scene.remove(this.objectManager.getZone2Group())
-      this.scene.remove(this.lightingManager.getZone2Group())
+  public focusOnExhibit(exhibitId: string): void {
+    const exhibit = PHYSICAL_EXHIBITS.find((e) => e.id === exhibitId)
+    if (exhibit) {
+      this.camera.position.set(...exhibit.cameraFocusPos)
+      this.camera.lookAt(...exhibit.cameraLookPos)
+      this.requestRender(15)
     }
+  }
 
-    this.activeZoneId = zoneId
-
-    // 2. Attach new zone groups & configure boundaries, obstacles, spawn and targets
-    if (zoneId === 'zone-2') {
-      this.scene.add(this.roomBuilder.getZone2Group())
-      this.scene.add(this.objectManager.getZone2Group())
-      this.scene.add(this.lightingManager.getZone2Group())
-
-      this.cameraController.setRoomBounds(
-        this.roomBuilder.zone2Width / 2,
-        this.roomBuilder.zone2Depth / 2,
-      )
-      this.cameraController.setObstacles(this.objectManager.getZone2Obstacles())
-      this.cameraController.setSpawn(0, this.cameraController.eyeHeight, 5.2, 0)
-      this.interactionManager.setTargets(this.objectManager.getZone2Targets())
-    } else {
-      // Zone 1
-      this.scene.add(this.roomBuilder.getZone1Group())
-      this.scene.add(this.objectManager.getZone1Group())
-      this.scene.add(this.lightingManager.getZone1Group())
-
-      this.cameraController.setRoomBounds(
-        this.roomBuilder.roomSize / 2,
-        this.roomBuilder.roomSize / 2,
-      )
-      this.cameraController.setObstacles(this.objectManager.getZone1Obstacles())
-      this.cameraController.setSpawn(0, this.cameraController.eyeHeight, 3.4, 0)
-      this.interactionManager.setTargets(this.objectManager.getZone1Targets())
+  public focusOnBookshelf(shelfId: string): void {
+    const shelf = BOOKSHELF_CATEGORIES.find((s) => s.shelfId === shelfId)
+    if (shelf) {
+      this.camera.position.set(...shelf.cameraFocusPos)
+      this.camera.lookAt(...shelf.cameraLookPos)
+      this.requestRender(15)
     }
-
-    // 3. Clear interaction hover state and request ample render settle frames
-    this.interactionManager.clearHover()
-    this.requestRender(25)
   }
 
   public resetCameraToActiveZone(): void {
-    if (this.activeZoneId === 'zone-2') {
-      this.cameraController.setSpawn(0, this.cameraController.eyeHeight, 5.2, 0)
+    this.cameraController.setSpawn(0, this.cameraController.eyeHeight, 5.2, 0)
+    this.requestRender(12)
+  }
+
+  // Backwards compatibility stub
+  public switchZone(_zoneId: string): void {
+    this.resetCameraToActiveZone()
+  }
+
+  public setModalOpen(isOpen: boolean): void {
+    this.isModalOpen = isOpen
+    if (isOpen) {
+      this.pause()
     } else {
-      this.cameraController.setSpawn(0, this.cameraController.eyeHeight, 3.4, 0)
-    }
-    this.requestRender(10)
-  }
-
-  public start(): void {
-    if (!this.isRunning) {
-      this.isRunning = true
-      this.clock.start()
-      this.loop()
+      this.start()
+      this.requestRender(15)
     }
   }
 
-  public pause(): void {
-    this.isRunning = false
-    if (this.animationFrameId !== null) {
-      cancelAnimationFrame(this.animationFrameId)
-      this.animationFrameId = null
-    }
+  public getIsModalOpen(): boolean {
+    return this.isModalOpen
   }
 
-  public setModalOpen(open: boolean): void {
-    this.isModalOpen = open
-    if (!open) {
-      this.requestRender(8)
-    }
+  public requestRender(frameCount = 5): void {
+    this.settleFrames = Math.max(this.settleFrames, frameCount)
   }
 
-  public requestRender(frames = 4): void {
-    this.settleFrames = Math.max(this.settleFrames, frames)
+  public triggerBookPageTurn(): void {
+    this.objectManager.triggerBookPageTurn()
+    this.soundManager.playPaperTurn()
+    this.requestRender(45)
   }
 
-  private loop(): void {
-    if (!this.isRunning) return
-
-    this.animationFrameId = requestAnimationFrame(() => this.loop())
-
-    // Pause WebGL rendering entirely when reading exhibits in modal dialogs
-    if (this.isModalOpen) return
-
-    const delta = this.clock.getDelta()
-    const elapsedTime = this.clock.getElapsedTime()
-
-    // Update camera motion & collisions
-    this.cameraController.update(delta)
-
-    // Update raycast interaction
-    this.interactionManager.update(elapsedTime)
-
-    // Update decorative objects & 3D book leaf animation
-    this.objectManager.update(elapsedTime, delta)
-
-    // Clock ticking sound every 1 second
-    this.tickTimer += delta
-    if (this.tickTimer >= 1.0) {
-      this.tickTimer -= 1.0
-      this.soundManager.playClockTick(this.isTock)
-      this.isTock = !this.isTock
-    }
-
-    // Adaptive on-demand render triggers: motion, hover glow pulse, or page turns
-    if (this.cameraController.isMoving()) {
-      this.requestRender(4)
-    }
-    if (this.interactionManager.hasActiveHighlight()) {
-      this.requestRender(2)
-    }
-    if (this.objectManager.isAnimating()) {
-      this.requestRender(2)
-    }
-
-    // Only render WebGL frame when actively moving/animating or settling
-    if (this.settleFrames > 0) {
-      this.settleFrames--
-      this.renderer.render(this.scene, this.camera)
-    }
+  public setJoystickInput(x: number, y: number): void {
+    this.cameraController.setJoystickInput(x, y)
+    this.requestRender(4)
   }
 
-  private onWindowResize(): void {
-    if (!this.container) return
-    const width = this.container.clientWidth
-    const height = this.container.clientHeight
+  public addTouchLook(dx: number, dy: number): void {
+    this.cameraController.addTouchLook(dx, dy)
+    this.requestRender(4)
+  }
 
-    this.camera.aspect = width / height
-    this.camera.updateProjectionMatrix()
-    this.renderer.setSize(width, height)
-    this.requestRender(6)
+  public setLookSensitivity(val: number): void {
+    this.cameraController.setLookSensitivity(val)
   }
 
   public getCameraController(): CameraController {
@@ -286,51 +212,110 @@ export class SceneManager {
     return this.interactionManager
   }
 
-  public setJoystickInput(x: number, y: number): void {
-    this.cameraController.setJoystickInput(x, y)
-    this.requestRender(4)
+  public getObjectManager(): ObjectManager {
+    return this.objectManager
   }
 
-  public addTouchLook(deltaX: number, deltaY: number): void {
-    this.cameraController.addTouchLook(deltaX, deltaY)
-    this.requestRender(4)
+  public getRoomBuilder(): RoomBuilder {
+    return this.roomBuilder
   }
 
-  public setLookSensitivity(val: number): void {
-    this.cameraController.setLookSensitivity(val)
+  public getLightingManager(): LightingManager {
+    return this.lightingManager
   }
 
-  public getLookSensitivity(): number {
-    return this.cameraController.getLookSensitivity()
+  public getRenderer(): THREE.WebGLRenderer {
+    return this.renderer
   }
 
-  public interactCurrentTarget(): void {
-    this.interactionManager.interactCurrentTarget()
+  public getScene(): THREE.Scene {
+    return this.scene
   }
 
-  public triggerBookPageTurn(): void {
-    this.objectManager.triggerBookPageTurn()
-    this.soundManager.playPaperTurn()
-    this.requestRender(30)
+  public getCamera(): THREE.PerspectiveCamera {
+    return this.camera
+  }
+
+  public start(): void {
+    if (this.isRunning) return
+    this.isRunning = true
+    this.clock.start()
+    this.animate()
+  }
+
+  public pause(): void {
+    this.isRunning = false
+    if (this.animationFrameId !== null) {
+      cancelAnimationFrame(this.animationFrameId)
+      this.animationFrameId = null
+    }
+  }
+
+  private animate = (): void => {
+    if (!this.isRunning) return
+
+    this.animationFrameId = requestAnimationFrame(this.animate)
+
+    const delta = Math.min(this.clock.getDelta(), 0.1)
+    const time = this.clock.getElapsedTime()
+
+    // 1. Update Camera movement & physics
+    this.cameraController.update(delta)
+
+    // 2. Update ObjectManager animations
+    this.objectManager.update(time, delta)
+
+    // 3. Update interaction raycast (throttled at ~20Hz inside manager)
+    this.interactionManager.update(time)
+
+    // 4. Vintage clock tick sound
+    this.tickTimer += delta
+    if (this.tickTimer >= 1.0) {
+      this.tickTimer = 0
+      this.soundManager.playClockTick(this.isTock)
+      this.isTock = !this.isTock
+    }
+
+    // 5. On-Demand Rendering check
+    const isMoving = this.cameraController.isMoving()
+    const isAnim = this.objectManager.isAnimating()
+
+    if (isMoving || isAnim || this.settleFrames > 0) {
+      this.renderer.render(this.scene, this.camera)
+      if (this.settleFrames > 0) {
+        this.settleFrames--
+      }
+    }
+  }
+
+  private onWindowResize(): void {
+    const width = this.container.clientWidth
+    const height = this.container.clientHeight
+    if (width === 0 || height === 0) return
+
+    this.camera.aspect = width / height
+    this.camera.updateProjectionMatrix()
+    this.renderer.setSize(width, height)
+    this.requestRender(10)
   }
 
   public dispose(): void {
     this.pause()
+
     window.removeEventListener('resize', this.onResizeBound)
     document.removeEventListener('visibilitychange', this.onVisibilityChangeBound)
 
     this.cameraController.dispose()
     this.interactionManager.dispose()
-    this.objectManager.dispose()
-    this.roomBuilder.dispose()
     this.lightingManager.dispose()
 
     this.renderer.dispose()
-    if (this.renderer.domElement.parentNode) {
-      this.renderer.domElement.parentNode.removeChild(this.renderer.domElement)
+    if (this.renderer.domElement.parentElement) {
+      this.renderer.domElement.parentElement.removeChild(this.renderer.domElement)
     }
 
-    AssetManager.getInstance().dispose()
-    this.soundManager.stopAmbient()
+    if (import.meta.env.DEV) {
+      delete (window as unknown as { __museum?: unknown }).__museum
+    }
   }
 }
