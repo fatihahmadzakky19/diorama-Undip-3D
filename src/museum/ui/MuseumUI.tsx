@@ -53,7 +53,7 @@ const MuseumHeader = React.memo(function MuseumHeader({
         </div>
         <div className="museum-brand-text">
           <h1>Museum Sejarah Universitas Diponegoro</h1>
-          <p>Arsip Warisan 1957 · Semarang — Tembalang</p>
+          <p>Zona 1 — The Origin of Undip · Arsip Warisan 1957</p>
         </div>
       </div>
       <div className="museum-hud-actions">
@@ -407,7 +407,7 @@ const CollectionModal = React.memo(function CollectionModal({
 
                   <div className="subitem-info-wrapper">
                     <h4>{currentSubItem.title}</h4>
-                    {isFounderExhibit && <div className="detail-label">Jabatan / Peran</div>}
+                    {isFounderExhibit && <div className="detail-label">Jabatan & Kepemimpinan Rektorat</div>}
                     {isPhotoExhibit && <div className="detail-label">Tahun</div>}
                     {isDocumentExhibit && <div className="detail-label">Nomor / Tahun Dokumen</div>}
                     {currentSubItem.subtitle && <div className="subitem-subtitle">{currentSubItem.subtitle}</div>}
@@ -419,12 +419,12 @@ const CollectionModal = React.memo(function CollectionModal({
                       </>
                     )}
 
-                    <div className="detail-label">{isFounderExhibit ? 'Biografi Singkat' : 'Keterangan Sejarah'}</div>
+                    <div className="detail-label">{isFounderExhibit ? 'Biografi & Kepemimpinan' : 'Keterangan Sejarah'}</div>
                     <p className="subitem-desc">{currentSubItem.description}</p>
 
                     {currentSubItem.details && (
                       <>
-                        <div className="detail-label">{isFounderExhibit ? 'Kontribusi' : 'Rincian'}</div>
+                        <div className="detail-label">{isFounderExhibit ? 'Kiprah, Kebijakan & Prestasi' : 'Rincian'}</div>
                         <ul className="subitem-details-list">
                           {currentSubItem.details.map((detail, i) => <li key={i}>{detail}</li>)}
                         </ul>
@@ -518,7 +518,7 @@ const HelpModal = React.memo(function HelpModal({ onClose }: { onClose: () => vo
               <ul>
                 <li><strong>Sayap barat</strong> — buku sejarah di mimbar baca & lemari arsip 1956</li>
                 <li><strong>Dinding utara</strong> — galeri foto kampus awal Pleburan & GRIS</li>
-                <li><strong>Dinding selatan</strong> — galeri 13 tokoh pendiri</li>
+                <li><strong>Dinding selatan</strong> — galeri rektor & pimpinan rektorat dari periode ke periode</li>
                 <li><strong>Sayap timur</strong> — etalase dokumen resmi penegerian</li>
               </ul>
             </div>
@@ -553,13 +553,13 @@ const WelcomeScreen = React.memo(function WelcomeScreen({
             <path d="M6 6h10M6 10h10M6 14h6" />
           </svg>
         </div>
-        <div className="welcome-pretitle">Diorama Sejarah Virtual 3D</div>
+        <div className="welcome-pretitle">Diorama Sejarah Virtual 3D · Zona 1 — The Origin of Undip</div>
         <h2 className="welcome-title">Museum Sejarah Universitas Diponegoro</h2>
-        <div className="welcome-subtitle">Kronik Pendirian, Tokoh Pendiri & Arsip Resmi 1957 — kini</div>
+        <div className="welcome-subtitle">Kronik Pendirian, Tokoh Pimpinan Rektorat & Arsip Resmi 1957 — Kini</div>
         <div className="welcome-divider" />
         <p className="welcome-prologue">
           Jelajahi ruang arsip ini secara alami. Dekati koleksi untuk melihat nama pameran, lalu tekan
-          <strong> E </strong> untuk membaca buku sejarah, profil tokoh pendiri, foto kampus awal, atau dokumen resmi penegerian.
+          <strong> E </strong> untuk membaca buku sejarah, galeri pimpinan rektorat dari periode ke periode, foto kampus awal, atau dokumen resmi penegerian.
         </p>
         <button className="welcome-btn-start" onClick={onStart}>MULAI EKSPLORASI</button>
         <div className="welcome-hint">

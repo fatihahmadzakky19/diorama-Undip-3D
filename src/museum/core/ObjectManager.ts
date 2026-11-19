@@ -356,8 +356,10 @@ export class ObjectManager {
   }
 
   // =================================================================
-  // 13 FOUNDERS GALLERY — South wall
-  // Exactly 13 consistent dark-walnut frames, symmetric 7 / 6 arrangement
+  // RECTOR & LEADERSHIP SUCCESSION GALLERY — South wall
+  // 12 Undip Rectors arranged in a pristine, spaced-out 6x2 grid
+  // Row 1 (Top): Historical succession (1957 – 1994)
+  // Row 0 (Bottom): Modern & Development succession (1994 – Kini)
   // =================================================================
   private buildFoundersGallery(): void {
     const group = new THREE.Group()
@@ -367,62 +369,64 @@ export class ObjectManager {
     const frameMat = new THREE.MeshStandardMaterial({ color: 0x18110c, roughness: 0.48, metalness: 0.08 })
     const matMat = new THREE.MeshStandardMaterial({ color: 0xf7f2e8, roughness: 0.85 })
 
-    const founders = [
-      { key: 'founder_soedarto', name: '1. Mr. Sudarto', role: 'Ketua Yayasan', row: 1, col: 0, idx: 0 },
-      { key: 'founder_danuwidjojo', name: '2. Mr. Dan Soelaiman', role: 'Wakil Ketua', row: 1, col: 1, idx: 1 },
-      { key: 'founder_goenawan', name: '3. Mr. Soesanto Kartoatmodjo', role: 'Panitera', row: 1, col: 2, idx: 2 },
-      { key: 'founder_tan_tjiang_bie', name: '4. Achmad Tjokrokoesoemo', role: 'Bendahara', row: 1, col: 3, idx: 3 },
-      { key: 'founder_imam_bardjo', name: '5. Mr. Imam Bardjo', role: 'Presiden Universitas I', row: 1, col: 4, idx: 4 },
-      { key: 'founder_soerodjo', name: '9. Hadi Soebeno Sosrowardoyo', role: 'Ketua Dewan Kurator', row: 1, col: 5, idx: 8 },
-      { key: 'founder_soeprapto', name: '13. R.M. Soeprapto', role: 'Notaris Pendirian', row: 1, col: 6, idx: 12 },
-      { key: 'founder_soenardi', name: '6. Mr. Goenawan Goetomo', role: 'Anggota Pengurus', row: 0, col: 0, idx: 5 },
-      { key: 'founder_marjono', name: '7. Mr. Tan Tjing Hak', role: 'Anggota Pengurus', row: 0, col: 1, idx: 6 },
-      { key: 'founder_soemarman', name: '8. Mr. Koo Swan Ik', role: 'Anggota Pengurus', row: 0, col: 2, idx: 7 },
-      { key: 'founder_boentaran', name: '10. Dr. Marzuki', role: 'Dewan Kurator', row: 0, col: 3, idx: 9 },
-      { key: 'founder_hurustiati', name: '11. Dr. V. Soedjito', role: 'Dewan Kurator', row: 0, col: 4, idx: 10 },
-      { key: 'founder_soejono', name: '12. Mr. Abdulmadjid Djojodhiningrat', role: 'Dewan Kurator', row: 0, col: 5, idx: 11 },
+    const rectors = [
+      // BARIS 1 (ATAS) — Pimpinan & Rektor Periode 1957 – 1994
+      { key: 'rector_imam_bardjo', name: '1. Prof. Mr. Imam Bardjo', role: '1957–1961 · Presiden Univ. I', row: 1, col: 0, idx: 0 },
+      { key: 'rector_soedarto', name: '2. Prof. Mr. Soedarto, S.H.', role: '1961–62 & 1977–86 · Rektor Ke-2', row: 1, col: 1, idx: 1 },
+      { key: 'rector_jakub_rais', name: '3. Prof. Dr. Ir. Jakub Rais', role: '1965–1966 · Caretaker Rektor', row: 1, col: 2, idx: 2 },
+      { key: 'rector_moeljono_sostro', name: '4. Drs. Moeljono Sostrohadikoesoemo', role: '1966–1973 · Rektor Ke-4', row: 1, col: 3, idx: 3 },
+      { key: 'rector_soenarjo', name: '5. Prof. Dr. Soenarjo, S.H.', role: '1973–1977 · Rektor Ke-5', row: 1, col: 4, idx: 4 },
+      { key: 'rector_muladi', name: '6. Prof. Dr. H. Muladi, S.H.', role: '1986–1994 · Rektor Ke-6', row: 1, col: 5, idx: 5 },
+
+      // BARIS 0 (BAWAH) — Pimpinan & Rektor Periode 1994 – Kini
+      { key: 'rector_eko_budihardjo', name: '7. Prof. Ir. Eko Budihardjo, M.Sc.', role: '1994–1998 · Rektor Ke-7', row: 0, col: 0, idx: 6 },
+      { key: 'rector_temijo', name: '8. Prof. Dr. Temijo, S.H.', role: '1998–2006 · Rektor Ke-8', row: 0, col: 1, idx: 7 },
+      { key: 'rector_susilo_wibowo', name: '9. Prof. Dr. dr. H. Susilo Wibowo', role: '2006–2010 · Rektor Ke-9', row: 0, col: 2, idx: 8 },
+      { key: 'rector_sudharto_hadi', name: '10. Prof. Ir. Sudharto P. Hadi', role: '2010–2015 · Rektor Ke-10', row: 0, col: 3, idx: 9 },
+      { key: 'rector_yos_johan', name: '11. Prof. Dr. Yos Johan Utama', role: '2015–2024 · Rektor Ke-11', row: 0, col: 4, idx: 10 },
+      { key: 'rector_suharnomo', name: '12. Prof. Dr. Suharnomo, S.E.', role: '2024–2029 · Rektor Ke-12 (Kini)', row: 0, col: 5, idx: 11 },
     ]
 
-    const fw = 0.84
-    const fh = 1.0
-    const spacing = 1.26
+    const fw = 0.90
+    const fh = 0.85
+    const colSpacing = 1.70
 
-    // Shared geometries across all 13 founders
-    const sharedFounderFrameGeo = new THREE.BoxGeometry(fw, fh, 0.045)
-    const sharedFounderMatGeo = new THREE.PlaneGeometry(fw - 0.07, fh - 0.07)
-    const sharedFounderPortraitGeo = new THREE.PlaneGeometry(fw - 0.14, fh - 0.14)
-    const sharedFounderPlateGeo = new THREE.BoxGeometry(fw * 0.94, 0.2, 0.015)
+    // Shared geometries across all 12 rectors
+    const sharedRectorFrameGeo = new THREE.BoxGeometry(fw, fh, 0.045)
+    const sharedRectorMatGeo = new THREE.PlaneGeometry(fw - 0.07, fh - 0.07)
+    const sharedRectorPortraitGeo = new THREE.PlaneGeometry(fw - 0.14, fh - 0.14)
+    const sharedRectorPlateGeo = new THREE.BoxGeometry(fw * 0.96, 0.16, 0.015)
 
-    founders.forEach((f) => {
-      const isTop = f.row === 1
-      const x = isTop ? -3.78 + f.col * spacing : -3.15 + f.col * spacing
-      const y = isTop ? 2.62 : 1.85
+    rectors.forEach((r) => {
+      const isTop = r.row === 1
+      const x = (r.col - 2.5) * colSpacing // Symmetrical alignment across 6 columns
+      const y = isTop ? 2.55 : 1.30 // 22cm vertical gap, completely eliminating overlap
       const frameGroup = new THREE.Group()
       frameGroup.position.set(x, y, 0)
 
-      const frame = new THREE.Mesh(sharedFounderFrameGeo, frameMat)
+      const frame = new THREE.Mesh(sharedRectorFrameGeo, frameMat)
       frame.castShadow = true
       frameGroup.add(frame)
-      const mat = new THREE.Mesh(sharedFounderMatGeo, matMat)
+      const mat = new THREE.Mesh(sharedRectorMatGeo, matMat)
       mat.position.z = 0.024
       frameGroup.add(mat)
       const portrait = new THREE.Mesh(
-        sharedFounderPortraitGeo,
-        new THREE.MeshStandardMaterial({ map: this.assetManager.getImageTexture(f.key), roughness: 0.45 }),
+        sharedRectorPortraitGeo,
+        new THREE.MeshStandardMaterial({ map: this.assetManager.getImageTexture(r.key), roughness: 0.45 }),
       )
       portrait.position.z = 0.03
       frameGroup.add(portrait)
-      const nameplate = new THREE.Mesh(sharedFounderPlateGeo, this.label(f.name, f.role))
-      nameplate.position.set(0, -fh / 2 - 0.115, 0.012)
+      const nameplate = new THREE.Mesh(sharedRectorPlateGeo, this.label(r.name, r.role))
+      nameplate.position.set(0, -fh / 2 - 0.10, 0.012)
       frameGroup.add(nameplate)
 
       group.add(frameGroup)
       this.interactiveTargets.push({
         id: 'founders',
         zoneNumber: 3,
-        name: `Tokoh Pendiri: ${f.name}`,
-        areaName: 'Galeri 13 Tokoh Pendiri — Dinding Selatan',
-        subItemIndex: f.idx,
+        name: `Rektor: ${r.name}`,
+        areaName: 'Galeri Rektor & Pimpinan — Dinding Selatan',
+        subItemIndex: r.idx,
         mesh: frameGroup,
         highlightMeshes: [frame, portrait],
         // Group is rotated 180°, so world X is inverted
@@ -431,10 +435,13 @@ export class ObjectManager {
     })
 
     const title = new THREE.Mesh(
-      new THREE.BoxGeometry(5.6, 0.28, 0.025),
-      this.label('GALERI 13 TOKOH PENDIRI', 'Akta Notaris R.M. Soeprapto No. 59 Tahun 1956'),
+      new THREE.BoxGeometry(7.2, 0.32, 0.025),
+      this.label(
+        'GALERI REKTOR & PIMPINAN UNIVERSITAS DIPONEGORO',
+        'Suksesi Tokoh Kepemimpinan Rektorat dari Masa ke Masa (1957 — Kini)',
+      ),
     )
-    title.position.set(0, 3.48, 0.012)
+    title.position.set(0, 3.35, 0.012)
     group.add(title)
     this.group.add(group)
   }

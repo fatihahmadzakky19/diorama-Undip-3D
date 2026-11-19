@@ -435,7 +435,7 @@ export class AssetManager {
   }
 
   private generateImageCanvas(key: string): HTMLCanvasElement {
-    const isPortrait = key.startsWith('founder') || key === 'history_soekarno'
+    const isPortrait = key.startsWith('founder') || key.startsWith('rector') || key === 'history_soekarno'
     const w = isPortrait ? 512 : 640
     const h = isPortrait ? 680 : 480
     const { canvas, ctx } = createHelper(w, h)
@@ -452,6 +452,25 @@ export class AssetManager {
     ctx.fillStyle = 'rgba(60, 40, 20, 0.04)'
     for (let i = 0; i < 2000; i++) {
       ctx.fillRect(Math.random() * w, Math.random() * h, 1.5, 1.5)
+    }
+
+    // SUKSESI TOKOH REKTORAT DARI MASA KE MASA (1957 — KINI)
+    const rectorsMap: Record<
+      string,
+      { name: string; years: string; role: string; peci: boolean; glasses: boolean }
+    > = {
+      rector_imam_bardjo: { name: '1. Prof. Mr. Imam Bardjo', years: '1957–1961', role: 'Presiden Univ. I', peci: true, glasses: false },
+      rector_soedarto: { name: '2. Prof. Mr. Soedarto, S.H.', years: '1961–62 & 1977–86', role: 'Rektor Undip Ke-2', peci: false, glasses: true },
+      rector_jakub_rais: { name: '3. Prof. Dr. Ir. Jakub Rais', years: '1965–1966', role: 'Caretaker Rektor', peci: false, glasses: true },
+      rector_moeljono_sostro: { name: '4. Drs. Moeljono Sostrohadikoesoemo', years: '1966–1973', role: 'Rektor Undip Ke-4', peci: false, glasses: false },
+      rector_soenarjo: { name: '5. Prof. Dr. Soenarjo, S.H.', years: '1973–1977', role: 'Rektor Undip Ke-5', peci: false, glasses: false },
+      rector_muladi: { name: '6. Prof. Dr. H. Muladi, S.H.', years: '1986–1994', role: 'Rektor Undip Ke-6', peci: false, glasses: true },
+      rector_eko_budihardjo: { name: '7. Prof. Ir. Eko Budihardjo, M.Sc.', years: '1994–1998', role: 'Rektor Undip Ke-7', peci: false, glasses: true },
+      rector_temijo: { name: '8. Prof. Dr. Temijo, S.H.', years: '1998–2006', role: 'Rektor Undip Ke-8', peci: false, glasses: false },
+      rector_susilo_wibowo: { name: '9. Prof. Dr. dr. H. Susilo Wibowo', years: '2006–2010', role: 'Rektor Undip Ke-9', peci: false, glasses: true },
+      rector_sudharto_hadi: { name: '10. Prof. Ir. Sudharto P. Hadi', years: '2010–2015', role: 'Rektor Undip Ke-10', peci: false, glasses: true },
+      rector_yos_johan: { name: '11. Prof. Dr. Yos Johan Utama', years: '2015–2024', role: 'Rektor Undip Ke-11', peci: true, glasses: true },
+      rector_suharnomo: { name: '12. Prof. Dr. Suharnomo, S.E.', years: '2024–2029', role: 'Rektor Undip Ke-12 (Kini)', peci: true, glasses: true },
     }
 
     // 13 FOUNDERS DATA MAPPING (Berdasarkan Akta Notaris No. 59 Th. 1956 - undip.ac.id/sejarah-2)
@@ -474,7 +493,10 @@ export class AssetManager {
       founder_soeprapto: { name: '13. R.M. Soeprapto', years: '1905–1972', role: 'Notaris Akta Pendirian & Kurator', peci: true, glasses: true },
     }
 
-    if (foundersMap[key]) {
+    if (rectorsMap[key]) {
+      const r = rectorsMap[key]
+      this.drawArtisticFigure(ctx, w, h, r.name, r.years, r.role, r.peci, r.glasses)
+    } else if (foundersMap[key]) {
       const f = foundersMap[key]
       this.drawArtisticFigure(ctx, w, h, f.name, f.years, f.role, f.peci, f.glasses, f.female)
     } else if (key === 'photo_campus_pleburan' || key === 'history_founding') {
